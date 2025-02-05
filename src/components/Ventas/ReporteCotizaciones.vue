@@ -48,6 +48,10 @@
                     {{ props.row.nombreUsuario }}
                 </b-table-column>
 
+                <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" sortable v-slot="props">
+                    {{ props.row.hasta }}
+                </b-table-column>
+
                 <b-table-column field="total" label="Total" sortable  v-slot="props">
                     <b>${{ props.row.total }}</b>
                 </b-table-column>

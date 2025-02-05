@@ -100,6 +100,7 @@ aria-modal>
       },
 
       onTerminar(venta){
+        console.log(venta)
         this.ventaRealizada = {
           total: this.total,
           productos: this.productos,
@@ -133,10 +134,10 @@ aria-modal>
           break
           case 'cotiza' :
           this.ventaRealizada.tipo = 'cotiza'
+          this.ventaRealizada.hasta = venta.hasta
           console.log(this.ventaRealizada)
           break
         }
-
 
         this.tipoVenta = venta.tipo
 
@@ -147,24 +148,20 @@ aria-modal>
         }
 
         HttpService.registrar('vender.php', datos)
-        .then(registrado => {
-          console.log(registrado)
-          if(registrado){
-            this.productos = []
-            this.total = 0
-            this.cargando = false
-            this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
-            this.mostrarDialogo = false
-            this.$buefy.toast.open({
-              type: 'is-info',
-              message: tipo.toUpperCase() + ' registrado con éxito'
-            })
-            this.mostrarComprobante = true
-          }
-
-        })
-
-
+          .then(registrado => {
+            if(registrado){
+              this.productos = []
+              this.total = 0
+              this.cargando = false
+              this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
+              this.mostrarDialogo = false
+              this.$buefy.toast.open({
+                type: 'is-info',
+                message: tipo.toUpperCase() + ' registrado con éxito'
+              })
+              this.mostrarComprobante = true
+            }
+          })
       },
 
       cancelarVenta(){   

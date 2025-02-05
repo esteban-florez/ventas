@@ -208,7 +208,7 @@ function obtenerCuentasApartados($filtros, $tipo){
 }
 
 function obtenerCotizaciones($filtros, $tipo){
-	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
@@ -312,8 +312,8 @@ function agregarCuentaApartado($venta){
 }
 
 function agregarCotizacion($venta){
-	$sentencia = "INSERT INTO cotizaciones(fecha, total, idCliente, idUsuario) VALUES (?,?,?,?)";
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->cliente, $venta->usuario];
+	$sentencia = "INSERT INTO cotizaciones(fecha, total, hasta, idCliente, idUsuario) VALUES (?,?,?,?,?)";
+	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->hasta, $venta->cliente, $venta->usuario];
 
 	$registrado = insertar($sentencia, $parametros);
 	$idCotizacion =  obtenerUltimoId('cotizaciones');

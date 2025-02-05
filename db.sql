@@ -97,6 +97,7 @@ CREATE TABLE `cotizaciones` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `total` decimal(9,2) NOT NULL,
+  `hasta` date NOT NULL,
   `idCliente` bigint(20) DEFAULT NULL,
   `idUsuario` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -105,12 +106,12 @@ CREATE TABLE `cotizaciones` (
 -- Volcado de datos para la tabla `cotizaciones`
 --
 
-INSERT INTO `cotizaciones` (`id`, `fecha`, `total`, `idCliente`, `idUsuario`) VALUES
-(1, '2022-07-03 16:33:23', '1162.00', 2, 1),
-(2, '2022-07-03 16:36:43', '1000.00', 1, 1),
-(4, '2022-07-06 14:33:04', '4518.00', 2, 1),
-(5, '2022-07-06 18:10:45', '1342.00', 2, 1),
-(6, '2022-08-01 09:54:23', '6594.00', 4, 1);
+INSERT INTO `cotizaciones` (`id`, `fecha`, `total`, `hasta`, `idCliente`, `idUsuario`) VALUES
+(1, '2022-07-03 16:33:23', '1162.00', '2022-07-13', 2, 1),
+(2, '2022-07-03 16:36:43', '1000.00', '2022-07-09', 1, 1),
+(4, '2022-07-06 14:33:04', '4518.00', '2022-07-28', 2, 1),
+(5, '2022-07-06 18:10:45', '1342.00', '2022-07-15', 2, 1),
+(6, '2022-08-01 09:54:23', '6594.00', '2022-08-15', 4, 1);
 
 -- --------------------------------------------------------
 

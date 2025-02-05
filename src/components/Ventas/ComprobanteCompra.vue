@@ -7,6 +7,7 @@
             <p><b>Cliente:</b>{{ venta.nombreCliente }}</p>
             <p><b>Atiende:</b>{{ venta.nombreUsuario }}</p>
             <p><b>Fecha: </b>{{ venta.fecha }}</p>
+            <p v-if="tipo === 'cotiza'"><b>Válido hasta: </b>{{ venta.hasta }}</p>
             <table>
                 <thead>
                     <th>Producto</th>
