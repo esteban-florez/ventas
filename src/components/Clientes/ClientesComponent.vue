@@ -7,11 +7,19 @@
 				{{ props.row.nombre }}
 			</b-table-column>
 
+			<b-table-column field="ci" label="Cédula/RIF" sortable searchable v-slot="props">
+				{{ props.row.ci }}
+			</b-table-column>
+
+			<b-table-column field="tipo" label="Tipo" sortable searchable v-slot="props">
+				{{ props.row.tipo }}
+			</b-table-column>
+
 			<b-table-column field="telefono" label="Teléfono" sortable searchable v-slot="props">
 				{{ props.row.telefono }}
 			</b-table-column>
 
-			<b-table-column field="eliminar" label="Eliminar" v-slot="props">
+			<b-table-column field="elim inar" label="Eliminar" v-slot="props">
 				<b-button type="is-danger" icon-left="delete" @click="eliminar(props.row.id)">Eliminar</b-button>
 			</b-table-column>
 

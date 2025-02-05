@@ -1,0 +1,8 @@
+.wide .select {
+  width: 100%;
+  display: block;
+}
+
+.wide .select select {
+  width: 100%;
+}

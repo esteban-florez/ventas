@@ -5,7 +5,6 @@ Entrega: 24-25 de febrero
 
 ## Easy (2-3 días)
 
-- Añadir cédula o RIF al formulario de clientes
 - Agregar unidades a los productos (kg, mt, cm, gr, plancks)
 - Al momento de "Agregar a cuenta" se debe seleccionar los días: 7, 10 o 15.
 - Al registrar producto, debe tener 3 campos para precios de venta

@@ -5,7 +5,7 @@
             align="is-left"
         >
             <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
-            <b-breadcrumb-item tag='router-link' to="/cientes">Clientes</b-breadcrumb-item>
+            <b-breadcrumb-item tag='router-link' to="/clientes">Clientes</b-breadcrumb-item>
             <b-breadcrumb-item active>Agregar cliente</b-breadcrumb-item>
         </b-breadcrumb>
         <form-cliente :cliente="datosCliente" @registrar="onRegistrar"/>
@@ -24,13 +24,14 @@
             cargando: false,
             datosCliente: {
                 nombre: "",
-                telefono: ""
+                telefono: "",
+                tipo: "",
+                ci: "",
             }
         }),
 
         methods: {
             onRegistrar(cliente){
-                console.log(cliente)
                 this.cargando = true
                 let payload = {
                     accion: "registrar",

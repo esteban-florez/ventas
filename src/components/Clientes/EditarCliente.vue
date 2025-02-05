@@ -5,7 +5,7 @@
             align="is-left"
         >
             <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
-            <b-breadcrumb-item tag='router-link' to="/cientes">Clientes</b-breadcrumb-item>
+            <b-breadcrumb-item tag='router-link' to="/clientes">Clientes</b-breadcrumb-item>
             <b-breadcrumb-item active>Editar cliente</b-breadcrumb-item>
         </b-breadcrumb>
         <form-cliente :cliente="datosCliente" @registrar="onEditar" v-if="datosCliente" />

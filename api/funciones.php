@@ -499,8 +499,8 @@ function obtenerClientes(){
 }
 
 function registrarCliente($cliente){
-	$sentencia = "INSERT INTO clientes (nombre, telefono) VALUES (?,?)";
-	$parametros = [$cliente->nombre, $cliente->telefono];
+	$sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
+	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci];
 	return insertar($sentencia, $parametros);
 }
 
