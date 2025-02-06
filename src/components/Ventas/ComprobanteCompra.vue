@@ -8,7 +8,7 @@
             <p><b>Atiende:</b>{{ venta.nombreUsuario }}</p>
             <p><b>Fecha: </b>{{ venta.fecha }}</p>
             <p v-if="tipo === 'cotiza'"><b>Válido hasta: </b>{{ venta.hasta }}</p>
-            <table>
+            <table style="width: 100%;">
                 <thead>
                     <th>Producto</th>
                     <th></th>
@@ -16,9 +16,9 @@
                 </thead>
                 <tbody>
                     <tr v-for="(producto, index) in venta.productos" :key="index">
-                        <td>{{ producto.nombre }}</td>
-                        <td>${{ producto.precio}} X {{ producto.cantidad }}</td>
-                        <td>${{ producto.precio * producto.cantidad }}</td>
+                        <td class="ml-2">{{ producto.nombre }}</td>
+                        <td class="mr-2">${{ producto.precio }} X {{ producto.cantidad }} {{ producto.unidad }}.</td>
+                        <td style="text-align: end;">${{ producto.precio * producto.cantidad }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -76,23 +76,13 @@
         }),
 
         beforeMount(){
-            this.generarTitulo()
-            this.obtenerDatosNegocio()
+          this.generarTitulo()
+          this.obtenerDatosNegocio()
         },
 
         mounted(){
-            
-
-            this.d = new Printd();
-            const { contentWindow } = this.d.getIFrame();
-            contentWindow.addEventListener("beforeprint", () =>
-              console.log("before print event!")
-            );
-            contentWindow.addEventListener("afterprint", () =>
-              console.log("after print event!")
-            );
-
-            this.imprimir();
+          this.d = new Printd();
+          this.imprimir();
         },
 
         methods:{

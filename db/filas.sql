@@ -114,18 +114,18 @@ UNLOCK TABLES;
 --
 -- Dumping data for table `productos`
 --
-
+  
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
 INSERT INTO `productos` VALUES
-(1,'1321355155','Bocina',500.00,1000.00,25,0,0.00,0.00,0,0),
-(2,'12123146556415','Libreta de Call of duty',15.00,22.00,99,0,0.00,0.00,1,1),
-(3,'113241564546','Cuaderno cosido ',15.00,22.00,66,1,13.00,10.00,2,1),
-(4,'1321354564','Lapiz bonito',5.00,10.00,453,1,8.00,20.00,3,2),
-(6,'12131212545454','Mouse inalámbrico ',50.00,100.00,96,0,0.00,0.00,0,0),
-(7,'11321345495','Teclado inálambrico',105.00,200.00,496,0,0.00,0.00,0,0),
-(8,'1213221','Calculadora',25.00,28.00,11,0,0.00,0.00,0,0),
-(9,'123135135487487','Goma pelikan strike',1.54,4.00,3,1,3.00,20.00,4,0);
+(1,'1321355155','Bocina', 'uds', 500.00,1000.00,900.00,1100.00,25,0,NULL,NULL,NULL,NULL),
+(2,'12123146556415','Thinner', 'lt', 15.00,22.00,NULL,NULL,99,0,NULL,NULL,1,1),
+(3,'113241564546','Cuaderno cosido ', 'uds', 15.00,22.00,20.00,NULL,66,1,13.00,10,2,1),
+(4,'1321354564','Lapiz bonito', 'uds', 5.00,10.00,8.00,15.00,453,1,8.00,20,3,2),
+(6,'12131212545454','Mouse inalámbrico ', 'uds', 50.00,100.00,NULL,NULL,96,0,NULL,NULL,NULL,NULL),
+(7,'11321345495','Teclado inálambrico', 'uds', 105.00,200.00,250.00,NULL,496,0,NULL,NULL,NULL, NULL),
+(8,'1213221','Calculadora', 'uds', 25.00,28.00,20.00,NULL,11,0,NULL,NULL,NULL,NULL),
+(9,'123135135487487','Mecate', 'mt', 1.54,4.00,NULL,NULL,3,1,3.00,20,4,NULL);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -1,12 +1,10 @@
 <template>
     <section>
         <nav-component :titulo="'Inventario'" :link="{ path: '/agregar-producto' }" :texto="'Agregar producto'"/>
-        <b-breadcrumb
-            align="is-left"
-        >
+        <b-breadcrumb align="is-left">
             <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
             <b-breadcrumb-item active>Inventario</b-breadcrumb-item>
-        </b-breadcrumb>     
+        </b-breadcrumb>
         <mensaje-inicial :titulo="'No se han encontrado productos :('" :subtitulo="'Agrega productos pulsando el botón de Agregar productos'" v-if="productos.length<1"/>
         
         <div v-if="productos.length>0">
@@ -52,6 +50,14 @@
                     ${{ props.row.precioVenta }}
                 </b-table-column>
 
+                <b-table-column field="precioVenta2" label="Precio venta 2" sortable v-slot="props">
+                    ${{ props.row.precioVenta2 }}
+                </b-table-column>
+
+                <b-table-column field="precioVenta3" label="Precio venta 3" sortable v-slot="props">
+                    ${{ props.row.precioVenta3 }}
+                </b-table-column>
+
                 <b-table-column field="ganancia" label="Ganacia" sortable v-slot="props">
                     <b>${{ props.row.precioVenta - props.row.precioCompra }}</b>
                 </b-table-column>
@@ -66,7 +72,7 @@
                 </b-table-column>
 
                 <b-table-column field="existencia" label="Existencia" sortable v-slot="props">
-                    {{ props.row.existencia }}
+                    {{ props.row.existencia }} {{ props.row.unidad }}
                 </b-table-column>
 
                 <b-table-column field="nombreMarca" label="Marca" sortable searchable v-slot="props">

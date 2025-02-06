@@ -5,9 +5,7 @@ Entrega: 24-25 de febrero
 
 ## Easy (2-3 días)
 
-- Agregar unidades a los productos (kg, mt, cm, gr, plancks)
 - Al momento de "Agregar a cuenta" se debe seleccionar los días: 7, 10 o 15.
-- Al registrar producto, debe tener 3 campos para precios de venta
 - Agregar campo de tipo de pago al momento de registrar pagos de los clientes (apartado, abono de cuenta, o venta normal)
 
 ## Mid (8 días)

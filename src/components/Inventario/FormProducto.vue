@@ -7,15 +7,29 @@
             <b-field label="Nombre" expanded>
                 <b-input placeholder="Nombre o descripción del producto" v-model="producto.nombre"></b-input>
             </b-field>
-        </b-field>
-
-        <b-field grouped group-multiline>
+            <b-field label="Unidad" expanded>
+              <b-select class="wide" placeholder="Unidad" icon="tag-multiple" v-model="producto.unidad">
+                <option v-for="[value, title] in unidades" :key="value" :value="value">
+                  {{ title }}
+                </option>
+              </b-select>
+            </b-field>
             <b-field label="Precio compra" expanded>
                 <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de compra" v-model="producto.precioCompra"></b-input>
             </b-field>
+        </b-field>
 
+        <b-field class="mt-5" grouped group-multiline>
             <b-field label="Precio venta" expanded>
                 <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta" v-model="producto.precioVenta" :min="producto.precioCompra"></b-input>
+            </b-field>
+
+            <b-field label="Precio venta 2" expanded>
+                <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 2" v-model="producto.precioVenta2" :min="producto.precioCompra"></b-input>
+            </b-field>
+
+            <b-field label="Precio venta 3" expanded>
+                <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 3" v-model="producto.precioVenta3" :min="producto.precioCompra"></b-input>
             </b-field>
             
             <b-field label="Existencia" expanded>
@@ -71,6 +85,7 @@
     import HttpService from '../../Servicios/HttpService'
     import Utiles from '../../Servicios/Utiles'
     import ErroresComponent from '../Extras/ErroresComponent'
+    import { UNIDADES } from '@/consts'
     export default{
         name: "FormProducto",
         props: ['productoProp'],
@@ -82,16 +97,20 @@
             producto: {
                 codigo: "",
                 nombre: "",
+                unidad: "",
                 precioCompra: "",
                 precioVenta: "",
+                precioVenta2: "",
+                precioVenta3: "",
                 existencia: 0,
                 vendidoMayoreo: false,
                 precioMayoreo: "",
                 cantidadMayoreo: 0,
                 categoria: "",
-                marca:""
+                marca: "",
             },
-            mensajesError: []
+            mensajesError: [],
+            unidades: Object.entries(UNIDADES),
         }),
 
         mounted(){
@@ -117,6 +136,11 @@
                 this.mensajesError.push("El precio de venta debe ser mayor al precio compra")
             }
             if(this.mensajesError.length > 0) return
+
+            if (!this.producto.vendidoMayoreo) {
+              this.producto.cantidadMayoreo = ""
+            }
+
             this.$emit("registrado", this.producto)
             this.producto= {
                 codigo: "",

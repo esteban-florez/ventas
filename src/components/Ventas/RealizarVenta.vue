@@ -248,6 +248,7 @@ aria-modal>
             codigo: producto.codigo,
             nombre: producto.nombre,
             precio: producto.precioVenta,
+            unidad: producto.unidad,
             cantidad: 1,
             existencia: producto.existencia,
             vendidoMayoreo: producto.vendidoMayoreo,

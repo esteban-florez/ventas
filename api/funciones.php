@@ -248,7 +248,7 @@ function agregarProductosVendidos($arreglo, $tipo){
 }
 
 function obtenerProductosVendidos($id, $tipo) {
-	$sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id
+	$sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad
 	FROM productos_vendidos
 	LEFT JOIN productos ON productos.id =  productos_vendidos.idProducto
 	WHERE productos_vendidos.idReferencia = ? AND productos_vendidos.tipo = ?";
@@ -510,8 +510,8 @@ function obtenerClientePorId($id){
 }
 
 function editarCliente($cliente){
-	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ? WHERE id = ?";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->id];
+	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
+	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->id];
 	return editar($sentencia, $parametros);
 }
 
@@ -575,8 +575,16 @@ function buscarProductoPorNombreOCodigo($producto){
 }
 
 function registrarProducto($producto){
-	$sentencia = "INSERT INTO productos (codigo, nombre, precioCompra, precioVenta, existencia, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria) VALUES(?,?,?,?,?,?,?,?,?,?)";
-	$parametros = [$producto->codigo, $producto->nombre, $producto->precioCompra, $producto->precioVenta, $producto->existencia, $producto->vendidoMayoreo, $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria];
+    $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, existencia, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->existencia, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria];
+
+    foreach ($parametros as $index => $value) {
+        if ($value === '') {
+            $parametros[$index] = null;
+        }
+    }
+
 	return insertar($sentencia, $parametros);
 }
 
@@ -594,8 +602,16 @@ function obtenerProductoPorId($id){
 }
 
 function editarProducto($producto){
-	$sentencia = "UPDATE productos SET codigo = ?, nombre = ?, precioCompra = ?, precioVenta = ?, existencia = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ? WHERE id = ?";
-	$parametros = [$producto->codigo, $producto->nombre, $producto->precioCompra, $producto->precioVenta, $producto->existencia, $producto->vendidoMayoreo, $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->id];
+	$sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, existencia = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ? WHERE id = ?";
+
+    $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->existencia, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->id];
+    
+    foreach ($parametros as $index => $value) {
+        if ($value === '') {
+            $parametros[$index] = null;
+        }
+    }
+
 	return editar($sentencia, $parametros);
 }
 
@@ -717,9 +733,16 @@ function obtenerUltimoId($tabla){
 	return $sql->fetchObject()->id;
 }
 
-function insertar($sentencia, $parametros){
+function insertar($sentencia, $parametros) {
 	$bd = conectarBD();
 	$sql = $bd->prepare($sentencia);
+
+    foreach ($parametros as $index => $value) {
+        if ($value === '') {
+            $parametros[$index] = null;
+        }
+    }
+
 	return $sql->execute($parametros);
 }
 
@@ -775,3 +798,7 @@ function conectarBD(){
 	     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 	}
  }
+
+function dd($value) {
+    error_log(gettype($value) . ' ' . var_export($value, true), 4);
+}

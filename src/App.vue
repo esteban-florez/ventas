@@ -28,12 +28,10 @@
     mounted(){
       const log = AyudanteSesion.verificarSesion()
       this.logeado = log
-      console.log(this.logeado)
     },
 
     methods: {
       onLogin(resultado){
-        console.log(resultado)
         if(resultado.estado) {
           AyudanteSesion.establecerSesion(resultado.usuario)
           this.logeado = AyudanteSesion.verificarSesion()
