@@ -76,7 +76,6 @@
                                         this.$buefy.toast.open('Contraseña actualizada')
                                         this.cargando = false
                                     }
-                                    console.log(resultado)
                                     
                                 }
                             })

@@ -31,7 +31,6 @@
 
         methods: {
             onRegistrar(usuario) {
-                console.log(usuario)
                 this.cargando = true
                 let payload = {
                     accion: 'registrar',

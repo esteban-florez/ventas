@@ -164,7 +164,7 @@
                         break
 
                     default:
-                        console.log("No reconocido")
+                        console.error('No reconocido')
                 }
             },
 

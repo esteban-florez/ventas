@@ -30,7 +30,6 @@
 
 		methods: {
 			onRegistrar(datos){
-				console.log(datos)
 				this.cargando = true
 				HttpService.registrar('ajustes.php', {
 					accion: 'registrar', 

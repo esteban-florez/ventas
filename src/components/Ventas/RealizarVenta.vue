@@ -100,7 +100,6 @@ aria-modal>
       },
 
       onTerminar(venta){
-        console.log(venta)
         this.ventaRealizada = {
           total: this.total,
           productos: this.productos,
@@ -118,24 +117,20 @@ aria-modal>
           this.ventaRealizada.tipo = 'venta'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.cambio = venta.cambio
-          console.log(this.ventaRealizada)
           break
           case 'cuenta' :
           this.ventaRealizada.tipo = 'cuenta'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
-          console.log(this.ventaRealizada)
           break
           case 'apartado' :
           this.ventaRealizada.tipo = 'apartado'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
-          console.log(this.ventaRealizada)
           break
           case 'cotiza' :
           this.ventaRealizada.tipo = 'cotiza'
           this.ventaRealizada.hasta = venta.hasta
-          console.log(this.ventaRealizada)
           break
         }
 
@@ -230,7 +225,6 @@ aria-modal>
 
           if(verificaExistencia) return
 
-            console.log(producto)
           if(producto.vendidoMayoreo){
             this.verificarMayoreo(producto.cantidadMayoreo, producto.id, producto.precioMayoreo)
           }

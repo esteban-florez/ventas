@@ -38,7 +38,6 @@
 
         methods: {
             onRegistrado(producto) {
-                console.log(producto)
                 this.cargando = true
                 let payload = {
                     accion: 'registrar',

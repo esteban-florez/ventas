@@ -38,16 +38,16 @@
 				setTimeout(() => this.producto = '', 10)
 			},
 
-			buscarProductos(){
+			buscarProductos() {
 				let payload = {
 					accion: 'obtener_nombre_codigo',
 					producto: this.producto
 				}
 
 				HttpService.obtenerConConsultas('productos.php', payload)
-				.then(productos =>{ 
-					this.productosEncontrados = productos
-				})
+          .then(productos => { 
+            this.productosEncontrados = productos
+          })
 			},
 
 			ponerFocus(){
