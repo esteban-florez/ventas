@@ -1,4 +1,4 @@
-export const TIPOS_CLIENTE = ['Venezolano', 'Extranjero', 'Jurídico'];
+export const TIPOS_CLIENTE = ['Venezolano', 'Extranjero', 'Jurídico']
 
 export const UNIDADES = {
   uds: 'Unidades',
@@ -12,3 +12,5 @@ export const UNIDADES = {
   ml: 'Mililitros',
   lt: 'Litros',
 }
+
+export const DIAS = [7, 10, 15]

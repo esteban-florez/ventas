@@ -118,17 +118,18 @@ aria-modal>
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.cambio = venta.cambio
           break
-          case 'cuenta' :
+          case 'cuenta':
           this.ventaRealizada.tipo = 'cuenta'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
+          this.ventaRealizada.dias = venta.dias
           break
-          case 'apartado' :
+          case 'apartado':
           this.ventaRealizada.tipo = 'apartado'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
           break
-          case 'cotiza' :
+          case 'cotiza':
           this.ventaRealizada.tipo = 'cotiza'
           this.ventaRealizada.hasta = venta.hasta
           break

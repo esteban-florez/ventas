@@ -26,6 +26,7 @@
             <p v-if="tipo !== 'cotiza'"><b>Su pago:</b>${{ venta.pagado }}</p>
             <p v-if="tipo === 'venta'"><b>Cambio:</b>${{ venta.pagado - venta.total }}</p>
             <p v-if="tipo === 'cuenta' || tipo === 'apartado'"><b>Por pagar:</b>${{ venta.porPagar }}</p>
+            <p v-if="tipo === 'cuenta'"><b>Vence en:</b> {{ venta.dias }} días</p>
             <p><b>Gracias por su preferencia</b></p>
             <p>----------------------------</p>
             <p>Sistema de ventas por</p>

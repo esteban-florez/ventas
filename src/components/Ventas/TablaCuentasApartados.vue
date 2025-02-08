@@ -45,8 +45,12 @@
                 <span class="has-text-danger has-text-weight-bold"> ${{ props.row.porPagar }}</span>
             </b-table-column>
 
-            <b-table-column field="total" label="Total" sortable  v-slot="props">
+            <b-table-column field="total" label="Total" sortable v-slot="props">
                 <b>${{ props.row.total }}</b>
+            </b-table-column>
+
+            <b-table-column field="dias" label="Duración" sortable v-slot="props">
+                {{ props.row.dias }} días
             </b-table-column>
 
             <b-table-column field="productos" label="Productos" sortable  v-slot="props">

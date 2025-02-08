@@ -92,6 +92,7 @@ CREATE TABLE `cuentas_apartados` (
   `total` decimal(9,2) NOT NULL,
   `pagado` decimal(9,2) NOT NULL,
   `porPagar` decimal(9,2) NOT NULL,
+  `dias` int(11) DEFAULT NULL,
   `tipo` enum('apartado','cuenta') NOT NULL,
   `idCliente` bigint(20) DEFAULT NULL,
   `idUsuario` bigint(20) NOT NULL,

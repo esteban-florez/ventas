@@ -189,7 +189,7 @@ function obtenerPagosCuentasApartados($filtros, $tipo){
 }
 
 function obtenerCuentasApartados($filtros, $tipo){
-	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha, cuentas_apartados.total, cuentas_apartados.pagado, cuentas_apartados.porPagar, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha, cuentas_apartados.total, cuentas_apartados.pagado, cuentas_apartados.porPagar, cuentas_apartados.dias, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
 		FROM cuentas_apartados
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
@@ -298,8 +298,8 @@ function vender($venta){
 }
 
 function agregarCuentaApartado($venta){
-	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, pagado, porPagar, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?)";
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->porPagar, $venta->tipo, $venta->cliente, $venta->usuario];
+	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, pagado, porPagar, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?)";
+	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->porPagar, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
 
 	$registrado = insertar($sentencia, $parametros);
 	

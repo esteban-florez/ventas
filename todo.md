@@ -5,7 +5,6 @@ Entrega: 24-25 de febrero
 
 ## Easy (2-3 días)
 
-- Al momento de "Agregar a cuenta" se debe seleccionar los días: 7, 10 o 15.
 - Agregar campo de tipo de pago al momento de registrar pagos de los clientes (apartado, abono de cuenta, o venta normal)
 
 ## Mid (8 días)
