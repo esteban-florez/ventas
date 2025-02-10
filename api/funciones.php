@@ -61,6 +61,54 @@ function registrarAjustes($ajustes){
 	return (!obtenerAjustes()) ? insertar($sentencia, $parametros) : editar($sentencia, $parametros);
 }
 
+function obtenerMetodos() {
+	$sentencia = "SELECT * FROM metodos";
+	return selectQuery($sentencia);
+}
+
+function eliminarMetodo($id){
+	$sentencia = "DELETE FROM metodos WHERE id = ?";
+	return eliminar($sentencia, $id);
+}
+
+function registrarMetodo($metodo) {
+    $campos = '';
+    $marcadores = '';
+
+    switch ($metodo->tipo) {
+        case 'Pago Móvil':
+            $campos = 'telefono, banco, tipoCi, ci';
+            $marcadores = '?,?,?,?';
+            $datos = [$metodo->telefono, $metodo->banco, $metodo->tipoCi, $metodo->ci];
+            break;
+
+        case 'Transferencia':
+            $campos = 'cuenta, banco, tipoCi, ci, beneficiario';
+            $marcadores = '?,?,?,?,?';
+            $datos = [$metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario];
+            break;
+
+        default:
+            $campos = 'correo';
+            $marcadores = '?';
+            $datos = [$metodo->correo];
+            break;
+    }
+
+    $parametros = array_merge([$metodo->nombre], $datos);
+	$sentencia = "INSERT INTO metodo (nombre, $campos) VALUES (?,$marcadores)";
+
+	return insertar($sentencia, $parametros);
+}
+
+function editarMetodo($metodo) {
+    $sentencia = 'UPDATE metodo SET nombre = ?, cuenta = ?, banco = ?, tipoCi = ?, ci = ?, beneficiario = ?, telefono = ?, correo = ? WHERE id = ?';
+
+    $parametros = [$metodo->nombre, $metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario, $$metodo->telefono, $metodo->correo, $metodo->id];
+
+    return editar($sentencia, $parametros);
+}
+
 /*
 
  __   __  _______  __    _  _______  _______  _______ 

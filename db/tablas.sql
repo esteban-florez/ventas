@@ -115,6 +115,28 @@ CREATE TABLE `marcas` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `metodos`
+--
+
+DROP TABLE IF EXISTS `metodos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `metodos` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `tipo` enum('Pago Móvil', 'Transferencia', 'Zelle', 'Binance') NOT NULL,
+  `cuenta` varchar(20) DEFAULT NULL,
+  `banco` varchar(20) DEFAULT NULL,
+  `tipoCi` varchar(20) DEFAULT NULL,
+  `ci` varchar(20) DEFAULT NULL,
+  `beneficiario` varchar(30) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `correo` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `productos`
 --
 

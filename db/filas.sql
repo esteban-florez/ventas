@@ -112,6 +112,21 @@ INSERT INTO `marcas` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `metodos`
+--
+
+LOCK TABLES `metodos` WRITE;
+/*!40000 ALTER TABLE `metodos` DISABLE KEYS */;
+INSERT INTO `metodos` VALUES
+(1,'Pago Móvil Personal','Pago Móvil',NULL,'BANCARIBE','Venezolano','12312312',NULL,'04151231231',NULL),
+(2,'Pago Móvil Negocio','Pago Móvil',NULL,'BANESCO','Jurídico','4294102491204',NULL,'04151424346',NULL),
+(3,'Transferencia Negocio','Transferencia','02440294912051920342','BANCO MERCANTIL','Jurídico','4294102491204','Luis Pérez',NULL,NULL),
+(4,'Zelle Personal','Zelle',NULL,NULL,NULL,NULL,NULL,NULL,'correozelle@gmail.com'),
+(5,'Binance Personal','Binance',NULL,NULL,NULL,NULL,NULL,NULL,'correobinance@gmail.com');
+/*!40000 ALTER TABLE `metodos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `productos`
 --
   
