@@ -101,13 +101,28 @@
         </template>
 
         <template #end>
-            <b-navbar-item  tag="router-link" :to="{ path: '/configurar' }">
+            <b-navbar-item>
                 <b-icon
-                    icon="cogs"
-                    size="is-medium">
+                icon="cogs"
+                size="is-medium"
+                class="is-pulled-left">
                 </b-icon>
-                <span></span>
-                Configurar
+                <b-navbar-dropdown label="Configurar" icon="home">
+                <b-navbar-item tag="router-link" :to="{ path: '/configurar' }">
+                    <b-icon
+                    icon="cogs">
+                    </b-icon>
+                    <span></span>
+                    General
+                </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/metodos' }">
+                    <b-icon
+                    icon="wallet">
+                    </b-icon>
+                    <span></span>
+                    Métodos de pago
+                </b-navbar-item>
+                </b-navbar-dropdown>
             </b-navbar-item>
 
             <b-navbar-item  tag="router-link" :to="{ path: '/perfil' }">

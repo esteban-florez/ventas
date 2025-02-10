@@ -16,6 +16,7 @@ import UsuariosComponent from '@/components/Usuarios/UsuariosComponent'
 import AgregarUsuario from '@/components/Usuarios/AgregarUsuario'
 import EditarUsuario from '@/components/Usuarios/EditarUsuario'
 import ConfiguracionComponent from '@/components/Configuracion/ConfiguracionComponent'
+import MetodosComponent from '@/components/Configuracion/MetodosComponent'
 import PerfilComponent from '@/components/Usuarios/PerfilComponent'
 import CambiarPassword from '@/components/Usuarios/CambiarPassword'
 import InicioComponent from '@/components/InicioComponent'
@@ -108,6 +109,16 @@ const routes = [
     name: 'ConfiguracionComponent',
     component: ConfiguracionComponent
   },
+  {
+    path: '/metodos',
+    name: 'MetodosComponent',
+    component: MetodosComponent
+  },
+  // {
+  //   path: '/editar-metodo/:id',
+  //   name: 'EditarMetodo',
+  //   component: EditarMetodo
+  // },
   {
     path: '/perfil',
     name: 'PerfilComponent',
