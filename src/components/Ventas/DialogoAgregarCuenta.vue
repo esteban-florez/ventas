@@ -86,6 +86,7 @@
             type: 'is-danger',
             message: 'Debes seleccionar los días de vencimiento.'
           })
+          return
         }
 
 				let payload = {

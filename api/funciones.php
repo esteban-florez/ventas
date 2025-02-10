@@ -283,7 +283,7 @@ function terminarVenta($venta){
 
 }
 
-function vender($venta){
+function vender($venta) {
 	$venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
 	$sentencia = "INSERT INTO ventas (fecha, total, pagado, idCliente, idUsuario) VALUES (?,?,?,?,?)";
 	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->cliente, $venta->usuario];
@@ -297,11 +297,12 @@ function vender($venta){
 	if(count($productosRegistrados)>0 && count($productosEditados)>0) return true;
 }
 
-function agregarCuentaApartado($venta){
-	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, pagado, porPagar, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?)";
+function agregarCuentaApartado($venta) {
+	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, pagado, porPagar, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+
 	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->porPagar, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
 
-	$registrado = insertar($sentencia, $parametros);
+	$registrado = insertar($sentencia, clean($parametros));
 	
 	if(!$registrado) return false;
 
@@ -579,13 +580,7 @@ function registrarProducto($producto){
 
     $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->existencia, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria];
 
-    foreach ($parametros as $index => $value) {
-        if ($value === '') {
-            $parametros[$index] = null;
-        }
-    }
-
-	return insertar($sentencia, $parametros);
+	return insertar($sentencia, clean($parametros));
 }
 
 function obtenerProductos(){
@@ -801,4 +796,16 @@ function conectarBD(){
 
 function dd($value) {
     error_log(gettype($value) . ' ' . var_export($value, true), 4);
+}
+
+function clean($array) {
+    $copy = $array;
+
+    foreach ($copy as $key => $value) {
+        if ($value === '') {
+            $copy[$key] = null;
+        }
+    }
+
+    return $copy;
 }

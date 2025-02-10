@@ -7,7 +7,7 @@
             <p><b>Cliente:</b>{{ venta.nombreCliente }}</p>
             <p><b>Atiende:</b>{{ venta.nombreUsuario }}</p>
             <p><b>Fecha: </b>{{ venta.fecha }}</p>
-            <p v-if="tipo === 'cotiza'"><b>Válido hasta: </b>{{ venta.hasta }}</p>
+            <p v-if="cotiza"><b>Válido hasta: </b>{{ venta.hasta }}</p>
             <table style="width: 100%;">
                 <thead>
                     <th>Producto</th>
@@ -23,10 +23,10 @@
                 </tbody>
             </table>
             <p><b>Total:</b>${{ venta.total }}</p>
-            <p v-if="tipo !== 'cotiza'"><b>Su pago:</b>${{ venta.pagado }}</p>
-            <p v-if="tipo === 'venta'"><b>Cambio:</b>${{ venta.pagado - venta.total }}</p>
-            <p v-if="tipo === 'cuenta' || tipo === 'apartado'"><b>Por pagar:</b>${{ venta.porPagar }}</p>
-            <p v-if="tipo === 'cuenta'"><b>Vence en:</b> {{ venta.dias }} días</p>
+            <p v-if="!cotiza"><b>Su pago:</b>${{ venta.pagado }}</p>
+            <p v-if="tipoVenta"><b>Cambio:</b>${{ venta.pagado - venta.total }}</p>
+            <p v-if="cuenta || apartado"><b>Por pagar:</b>${{ venta.porPagar }}</p>
+            <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
             <p><b>Gracias por su preferencia</b></p>
             <p>----------------------------</p>
             <p>Sistema de ventas por</p>
@@ -84,6 +84,21 @@
         mounted(){
           this.d = new Printd();
           this.imprimir();
+        },
+
+        computed: {
+          cuenta: function () {
+            return this.tipo === 'cuenta'
+          },
+          apartado: function () {
+            return this.tipo === 'apartado'
+          },
+          cotiza: function () {
+            return this.tipo === 'cotiza'
+          },
+          tipoVenta: function () {
+            return this.tipo === 'venta'
+          },
         },
 
         methods:{

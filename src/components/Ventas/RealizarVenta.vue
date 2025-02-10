@@ -128,11 +128,16 @@ aria-modal>
           this.ventaRealizada.tipo = 'apartado'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
+          this.ventaRealizada.dias = venta.dias
           break
           case 'cotiza':
           this.ventaRealizada.tipo = 'cotiza'
           this.ventaRealizada.hasta = venta.hasta
           break
+        }
+
+        if (tipo !== 'cotiza' || this.ventaRealizada.pagado === '') {
+          this.ventaRealizada.pagado = 0
         }
 
         this.tipoVenta = venta.tipo

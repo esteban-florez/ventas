@@ -11,8 +11,16 @@
 			<section class="modal-card-body">
 				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
 				<busqueda-cliente @seleccionado="onSeleccionado"/>
-				<b-field label="Pago inicial" >
+				<b-field label="Pago inicial">
 					<b-input step="any" icon="currency-usd" type="number" placeholder="Cuánto deja el cliente" v-model="pagado" @input="calcularRestante" size="is-medium"></b-input>
+				</b-field>
+        <b-field label="Vence en">
+          <b-select class="wide" icon="tag-multiple" v-model="dias">
+            <option value="" disabled>Seleccionar...</option>
+            <option v-for="dia in DIAS" :key="dia" :value="dia">
+              {{ dia }} días
+            </option>
+          </b-select>
 				</b-field>
 				<p class="is-size-1 has-text-weight-bold">Por Pagar ${{ porPagar }}</p>
 			</section>
@@ -34,6 +42,7 @@
 </template>
 <script>
 	import BusquedaCliente from '../Clientes/BusquedaCliente'
+  import { DIAS } from '@/consts'
 
 	export default{
 		name:"DialogoAgregarApartado",
@@ -43,6 +52,8 @@
 		data:()=>({
 			pagado: "",
 			porPagar: 0,
+      dias: "",
+      DIAS: DIAS,
 			cliente: {}
 		}),
 
@@ -60,19 +71,28 @@
 			},
 
 			agregarApartado(){
-				if(Object.keys(this.cliente).length === 0) {
+				if (Object.keys(this.cliente).length === 0) {
 					this.$buefy.toast.open({
-                         type: 'is-danger',
-                         message: 'Debes seleccionar un cliente.'
-                    })
-                    return
+            type: 'is-danger',
+            message: 'Debes seleccionar un cliente.'
+          })
+          return
 				}
+
+        if (!this.dias) {
+          this.$buefy.toast.open({
+            type: 'is-danger',
+            message: 'Debes seleccionar los días de vencimiento.'
+          })
+          return
+        }
 
 				let payload = {
 					tipo: 'apartado',
 					pagado: this.pagado,
 					porPagar: this.porPagar,
-					cliente: this.cliente
+					cliente: this.cliente,
+          dias: this.dias,
 				}
 
 				this.$emit("terminar", payload)
