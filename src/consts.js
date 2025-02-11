@@ -35,6 +35,7 @@ export const TIPOS_PAGO = {
 
 export const BANCOS = [
   'BANCAMIGA',
+  'BANCARIBE',
   'BANCO ACTIVO',
   'BANCO AGRICOLA',
   'BANCO CARONI',

@@ -1,9 +1,9 @@
 <template>
-  <form @submit="registrar">
+  <form @submit.prevent="submit">
     <b-field label="Nombre">
       <b-input name="name" type="text" placeholder="Ej. Pago Móvil Personal" required v-model="campos.nombre"></b-input>
     </b-field>
-    <b-field label="Plataforma">
+    <b-field label="Plataforma" v-if="!editar">
       <b-select name="tipo" class="wide" required v-model="campos.tipo">
         <option value="" disabled>Seleccionar...</option>
         <option v-for="tipo in TIPOS_PAGO" :key="tipo" :value="tipo">
@@ -45,7 +45,7 @@
     </b-field>
     <div class="buttons has-text-centered">
       <b-button native-type="submit" type="is-primary" size="is-large" icon-left="check">Registrar</b-button>
-      <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/usuarios">Cancelar</b-button>
+      <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/metodos">Cancelar</b-button>
     </div>
     <errores-component :errores="mensajesError" v-if="mensajesError.length > 0" />
   </form>
@@ -53,6 +53,7 @@
 
 <script>
 import ErroresComponent from '../Extras/ErroresComponent'
+import HttpService from '../../Servicios/HttpService'
 import { TIPOS_PAGO_CRUD, TIPOS_CLIENTE, BANCOS, TIPOS_PAGO } from '@/consts'
 
 const camposIniciales = {
@@ -70,7 +71,7 @@ const camposIniciales = {
 export default {
   name: 'FormUsuario',
   props: {
-    metodo: [Object, undefined],
+    editar: [Boolean, undefined],
   },
   components: { ErroresComponent },
 
@@ -82,9 +83,14 @@ export default {
     mensajesError: []
   }),
 
-  mounted() {
-    if (this.metodo) {
-      this.campos = this.metodo
+  async mounted() {
+    if (this.editar === true) {
+      this.$emit('cargando', true)
+      this.campos = await HttpService.obtenerConConsultas('metodos.php', {
+        accion: 'obtener_por_id',
+        id: this.$route.params.id
+      })
+      this.$emit('cargando', false)
     }
   },
 
@@ -106,8 +112,8 @@ export default {
   },
 
   methods: {
-    registrar() {
-      this.$emit('registrar', this.campos)
+    submit() {
+      this.$emit('submit', this.campos)
       this.campos = structuredClone(camposIniciales)
     }
   }

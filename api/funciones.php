@@ -66,6 +66,11 @@ function obtenerMetodos() {
 	return selectQuery($sentencia);
 }
 
+function obtenerMetodoPorId($id){
+	$sentencia = "SELECT * FROM metodos WHERE id = ?";
+	return selectRegresandoObjeto($sentencia, [$id]);
+}
+
 function eliminarMetodo($id){
 	$sentencia = "DELETE FROM metodos WHERE id = ?";
 	return eliminar($sentencia, $id);
@@ -101,10 +106,10 @@ function registrarMetodo($metodo) {
 	return insertar($sentencia, $parametros);
 }
 
-function editarMetodo($metodo) {
+function editarMetodo($id, $metodo) {
     $sentencia = 'UPDATE metodos SET nombre = ?, cuenta = ?, banco = ?, tipoCi = ?, ci = ?, beneficiario = ?, telefono = ?, correo = ? WHERE id = ?';
 
-    $parametros = [$metodo->nombre, $metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario, $$metodo->telefono, $metodo->correo, $metodo->id];
+    $parametros = [$metodo->nombre, $metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario, $metodo->telefono, $metodo->correo, $id];
 
     return editar($sentencia, $parametros);
 }

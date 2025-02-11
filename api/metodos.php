@@ -18,7 +18,7 @@ switch ($accion) {
 		break;
 
 	case 'editar':
-        $resultado = editarMetodo($payload->metodo);
+        $resultado = editarMetodo($payload->id, $payload->metodo);
 		echo json_encode($resultado);
 		break;
 
@@ -32,6 +32,9 @@ switch ($accion) {
 		echo json_encode($metodos);
 		break;
 
+    case 'obtener_por_id':
+        echo json_encode(obtenerMetodoPorId($payload->id));
+        break;
 	
 	default:
 		echo json_encode("No se reconoce");

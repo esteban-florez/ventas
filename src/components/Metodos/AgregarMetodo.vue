@@ -6,7 +6,7 @@
       <b-breadcrumb-item tag='router-link' to="/metodos">Métodos de pago</b-breadcrumb-item>
       <b-breadcrumb-item active>Agregar método de pago</b-breadcrumb-item>
     </b-breadcrumb>
-    <form-metodo @registrar="onRegistrar" />
+    <form-metodo @submit="onRegistrar" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
