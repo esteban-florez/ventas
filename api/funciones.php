@@ -96,13 +96,13 @@ function registrarMetodo($metodo) {
     }
 
     $parametros = array_merge([$metodo->nombre], $datos);
-	$sentencia = "INSERT INTO metodo (nombre, $campos) VALUES (?,$marcadores)";
+	$sentencia = "INSERT INTO metodos (nombre, $campos) VALUES (?,$marcadores)";
 
 	return insertar($sentencia, $parametros);
 }
 
 function editarMetodo($metodo) {
-    $sentencia = 'UPDATE metodo SET nombre = ?, cuenta = ?, banco = ?, tipoCi = ?, ci = ?, beneficiario = ?, telefono = ?, correo = ? WHERE id = ?';
+    $sentencia = 'UPDATE metodos SET nombre = ?, cuenta = ?, banco = ?, tipoCi = ?, ci = ?, beneficiario = ?, telefono = ?, correo = ? WHERE id = ?';
 
     $parametros = [$metodo->nombre, $metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario, $$metodo->telefono, $metodo->correo, $metodo->id];
 

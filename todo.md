@@ -3,9 +3,7 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-## Easy (2-3 días)
-
-- Agregar campo de tipo de pago al momento de registrar pagos de los clientes (apartado, abono de cuenta, o venta normal)
+- CRUD de métodos de pago, que se puedan seleccionar métodos de pago al momento de realizar apartado, agregar a cuenta, o terminar venta
 
 ## Mid (8 días)
 
@@ -14,7 +12,7 @@ Entrega: 24-25 de febrero
   - En caso de cobro a empresa, se registra ese monto que se debe a dicho chofer
 - Listado de choferes, con lo que se les debe a cada uno, y poder abonar a dichas deudas.
 - Listado de deliveries (2 días o más)
-- Agregar historial de abonos por cuenta, en nueva pagina (2 días o menos)
+- Agregar historial de abonos para cuentas y apartados, en nueva pagina (2 días o menos), ponerle método de pago a cada abono
 - En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)
 - Agregar modulo proveedores, y añadir campo de proveedor al registrar producto (1/2 día)
 - Crear historial de inventario, con las entradas y las salidas de los productos (2 días)
@@ -31,7 +29,7 @@ Entrega: 24-25 de febrero
   - Comprobante de Abono (cuanto se pago, cuanto resta, nombre de persona que abono, la firma de ambas partes)
 
 6 días:
-- Cuando transcurran esos días sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
+- Cuando transcurran los días de vencimiento de las cuentas/apartados sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
 - Envíar documentos de facturas por WhatsApp, de los mismos reportes que aparecen arriba
 
 ## Después

@@ -16,10 +16,12 @@ import UsuariosComponent from '@/components/Usuarios/UsuariosComponent'
 import AgregarUsuario from '@/components/Usuarios/AgregarUsuario'
 import EditarUsuario from '@/components/Usuarios/EditarUsuario'
 import ConfiguracionComponent from '@/components/Configuracion/ConfiguracionComponent'
-import MetodosComponent from '@/components/Configuracion/MetodosComponent'
 import PerfilComponent from '@/components/Usuarios/PerfilComponent'
 import CambiarPassword from '@/components/Usuarios/CambiarPassword'
 import InicioComponent from '@/components/InicioComponent'
+import AgregarMetodo from '@/components/Metodos/AgregarMetodo'
+import MetodosComponent from '@/components/Metodos/MetodosComponent'
+import EditarMetodo from '@/components/Metodos/EditarMetodo.vue'
 
 Vue.use(VueRouter)
 
@@ -103,7 +105,7 @@ const routes = [
     path: '/editar-usuario/:id',
     name: 'EditarUsuario',
     component: EditarUsuario
-  },  
+  },
   {
     path: '/configurar',
     name: 'ConfiguracionComponent',
@@ -114,11 +116,16 @@ const routes = [
     name: 'MetodosComponent',
     component: MetodosComponent
   },
-  // {
-  //   path: '/editar-metodo/:id',
-  //   name: 'EditarMetodo',
-  //   component: EditarMetodo
-  // },
+  {
+    path: '/agregar-metodo',
+    name: 'AgregarMetodo',
+    component: AgregarMetodo
+  },
+  {
+    path: '/editar-metodo/:id',
+    name: 'EditarMetodo',
+    component: EditarMetodo
+  },
   {
     path: '/perfil',
     name: 'PerfilComponent',

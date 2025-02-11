@@ -1,6 +1,7 @@
 <template>
   <section>
-    <h1 class="title is-1">Métodos de pago</h1>
+    
+    <nav-component titulo="Métodos de pago" :link="{ path: '/agregar-metodo' }" texto="Agregar método de pago" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item acive>Métodos de pago</b-breadcrumb-item>
@@ -27,15 +28,15 @@
           {{ props.row.tipo }}
         </b-table-column>
 
-        <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+        <b-table-column field="acciones" label="Acciones" v-slot="props">
           <b-button type="is-danger" @click="eliminar(props.row.id)">
             <b-icon icon="delete">
             </b-icon>
           </b-button>
-          <!-- <b-button class="ml-4" type="is-warning" @click="editar(props.row.id)">
+          <b-button tag="router-link" class="ml-4" type="is-warning" :to="{ name: 'EditarMetodo', params: { id: props.row.id } }">
             <b-icon icon="pen">
             </b-icon>
-          </b-button> -->
+          </b-button>
         </b-table-column> 
       </b-table>
     </div>
@@ -45,9 +46,11 @@
 
 <script>
 import HttpService from '../../Servicios/HttpService'
+import NavComponent from '../Extras/NavComponent.vue';
 
 export default {
   name: "MetodosComponent",
+  components: { NavComponent },
 
   data: () => ({
     cargando: false,
