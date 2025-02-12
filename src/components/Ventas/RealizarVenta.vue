@@ -10,17 +10,17 @@
         </p>
         <nav class="level mt-2">
           <div class="level-item has-text-centered">
-           <b-button class="button is-responsive" type="is-success" inverted  icon-left="check" size="is-large" @click=" abrirDialogo('venta') ">
+           <b-button class="button is-responsive" type="is-success" inverted  icon-left="check" size="is-large" @click="abrirDialogo('venta') ">
             Terminar venta
           </b-button>
         </div>
         <div class="level-item has-text-centered">
-         <b-button class="button is-responsive" type="is-info" inverted  icon-left="wallet-plus" size="is-large" @click=" abrirDialogo('cuenta') ">
+         <b-button class="button is-responsive" type="is-info" inverted  icon-left="wallet-plus" size="is-large" @click="abrirDialogo('cuenta') ">
           Agregar a cuenta
         </b-button>
       </div>
       <div class="level-item has-text-centered">
-        <b-button class="button is-responsive" type="is-dark" inverted  icon-left="wallet-travel" size="is-large" @click=" abrirDialogo('apartado') ">
+        <b-button class="button is-responsive" type="is-dark" inverted  icon-left="wallet-travel" size="is-large" @click="abrirDialogo('apartado') ">
           Realizar apartado
         </b-button>
       </div>
@@ -47,7 +47,7 @@ aria-role="dialog"
 aria-label="Modal Terminar Venta"
 close-button-aria-label="Close"
 aria-modal>
-<dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta"></dialogo-terminar-venta>
+<dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos"></dialogo-terminar-venta>
 <dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta"></dialogo-agregar-cuenta>
 <dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado"></dialogo-agregar-apartado>
 <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
@@ -83,6 +83,7 @@ aria-modal>
     data:()=>({
       cargando: false,
       productos: [],
+      metodos: [],
       total: 0,
       mostrarDialogo: false,
       mostrarTerminarVenta: false,
@@ -93,6 +94,16 @@ aria-modal>
       mostrarComprobante: false,
       tipoVenta: ""
     }),
+
+    mounted() {
+      this.cargando = true
+      const payload = { accion: 'obtener' }
+      HttpService.obtenerConConsultas('metodos.php', payload)
+        .then(resultado => {
+          this.metodos = resultado
+          this.cargando = false
+        })
+    },
 
     methods: {
       onImpreso(resultado){
@@ -112,11 +123,13 @@ aria-modal>
 
         let tipo = venta.tipo
 
-        switch(tipo){
+        switch (tipo) {
           case 'venta':
           this.ventaRealizada.tipo = 'venta'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.cambio = venta.cambio
+          this.ventaRealizada.simple = venta.simple
+          this.ventaRealizada.idMetodo = venta.idMetodo
           break
           case 'cuenta':
           this.ventaRealizada.tipo = 'cuenta'
@@ -150,7 +163,7 @@ aria-modal>
 
         HttpService.registrar('vender.php', datos)
           .then(registrado => {
-            if(registrado){
+            if (registrado) {
               this.productos = []
               this.total = 0
               this.cargando = false

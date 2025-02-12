@@ -209,6 +209,9 @@ CREATE TABLE `ventas` (
   `fecha` datetime NOT NULL,
   `total` decimal(9,2) NOT NULL,
   `pagado` decimal(9,2) NOT NULL,
+  `origen` varchar(30) NOT NULL,
+  `simple` varchar(20) DEFAULT NULL,
+  `idMetodo` bigint(20) DEFAULT NULL,
   `idCliente` bigint(20) DEFAULT NULL,
   `idUsuario` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)

@@ -3,8 +3,6 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-- CRUD de métodos de pago, que se puedan seleccionar métodos de pago al momento de realizar apartado, agregar a cuenta, o terminar venta
-
 ## Mid (8 días)
 
 - En pagina de Vender, añadir checkbox de delivery, en caso de sí, pedir nombre del chofer (upsert), sitio de destino, precio del delivery, checkbox cobro al cliente o empresa.

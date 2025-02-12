@@ -282,10 +282,11 @@ function obtenerCotizaciones($filtros, $tipo){
 function obtenerVentas($filtros){
 	$fechaInicio = ($filtros->fechaInicio === "") ? FECHA_HOY : $filtros->fechaInicio;
 	$fechaFin = ($filtros->fechaFin === "") ? FECHA_HOY : $filtros->fechaFin;
-	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
+        LEFT JOIN metodos on metodos.id = ventas.idMetodo
 		WHERE DATE(ventas.fecha) >= ? AND  DATE(ventas.fecha) <= ?
 		ORDER BY ventas.id DESC";
 	$parametros = [$fechaInicio, $fechaFin];
@@ -338,8 +339,8 @@ function terminarVenta($venta){
 
 function vender($venta) {
 	$venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
-	$sentencia = "INSERT INTO ventas (fecha, total, pagado, idCliente, idUsuario) VALUES (?,?,?,?,?)";
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->cliente, $venta->usuario];
+	$sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?)";
+	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
 	$registrado = insertar($sentencia, $parametros);
 	
 	if(!$registrado) return false;
