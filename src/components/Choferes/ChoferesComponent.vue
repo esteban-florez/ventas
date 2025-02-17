@@ -22,10 +22,6 @@
         ${{ Number(props.row.deuda).toFixed(2) || 0..toFixed(2) }}
       </b-table-column>
 
-      <b-table-column field="eliminar" label="Eliminar" v-slot="props">
-        <b-button type="is-danger" icon-left="delete" @click="eliminar(props.row.id)">Eliminar</b-button>
-      </b-table-column>
-
       <b-table-column field="editar" label="Editar" v-slot="props">
         <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarChofer', params: { id: props.row.id } }">
           Editar
@@ -53,41 +49,6 @@ export default {
   },
 
   methods: {
-    async eliminar(idChofer) {
-      this.$buefy.dialog.confirm({
-        title: 'Eliminar chofer',
-        message: 'Seguro que quieres <b>eliminar</b> este chofer? Esta acción no se puede revertir.',
-        confirmText: 'Sí, eliminar',
-        cancelText: 'Cancelar',
-        type: 'is-danger',
-        hasIcon: true,
-        onConfirm: () => this.confirmarEliminar(idChofer),
-      })
-    },
-
-    async confirmarEliminar(idChofer) {
-      this.cargando = true
-      const resultado = HttpService.eliminar('choferes.php', {
-        accion: 'eliminar',
-        id: idChofer
-      })
-
-      if (!resultado) {
-        this.$buefy.toast.open('Error al eliminar')
-        this.cargando = false
-        return
-      }
-
-      if (resultado) {
-        this.cargando = false
-        this.$buefy.toast.open({
-          type: 'is-info',
-          message: 'Chofer eliminado.'
-        })
-        this.obtenerChoferes()
-      }
-    },
-
     obtenerChoferes() {
       this.cargando = true
       let payload = {

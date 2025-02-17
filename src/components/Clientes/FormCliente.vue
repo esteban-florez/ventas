@@ -27,7 +27,6 @@
 	import Utiles from '../../Servicios/Utiles'
 	import ErroresComponent from '../Extras/ErroresComponent'
   import { TIPOS_CLIENTE } from '@/consts'
-  import '@/assets/styles.css'
 
 	export default {
 		name: "FormCliente",

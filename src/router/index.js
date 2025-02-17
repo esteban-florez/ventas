@@ -23,6 +23,7 @@ import AgregarMetodo from '@/components/Metodos/AgregarMetodo'
 import MetodosComponent from '@/components/Metodos/MetodosComponent'
 import EditarMetodo from '@/components/Metodos/EditarMetodo.vue'
 import ChoferesComponent from '@/components/Choferes/ChoferesComponent.vue'
+import EditarChofer from '@/components/Choferes/EditarChofer.vue'
 
 Vue.use(VueRouter)
 
@@ -81,6 +82,11 @@ const routes = [
     path: '/choferes',
     name: 'ChoferesComponent',
     component: ChoferesComponent,
+  },
+  {
+    path: '/editar-chofer/:id',
+    name: 'EditarChofer',
+    component: EditarChofer,
   },
   {
     path: '/clientes',

@@ -591,7 +591,7 @@ function obtenerChoferesPorNombre($nombre) {
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         AND deliveries.gratis = 0
-        WHERE nombre LIKE ?
+        WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
 	return selectPrepare($sentencia, $parametros);
@@ -602,20 +602,15 @@ function obtenerChoferPorId($id) {
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         AND deliveries.gratis = 0
-        WHERE id = ?
+        WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function editarChofer($cliente) {
-	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->id];
+function editarChofer($chofer) {
+	$sentencia = "UPDATE choferes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
+	$parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci, $chofer->id];
 	return editar($sentencia, $parametros);
-}
-
-function eliminarChofer($id) {
-	$sentencia = "DELETE FROM clientes WHERE id = ?";
-	return eliminar($sentencia, $id);
 }
 
 /*

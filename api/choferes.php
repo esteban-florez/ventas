@@ -25,11 +25,7 @@ switch ($accion) {
 		break;
 
 	case 'editar':
-		echo json_encode(editarChofer($payload->cliente));
-		break;
-	
-	case 'eliminar':
-		echo json_encode(eliminarChofer($payload->id));
+		echo json_encode(editarChofer($payload->chofer));
 		break;
 	
 	default:
