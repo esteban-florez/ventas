@@ -3,13 +3,15 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
+- Listado de choferes, con lo que se les debe a cada uno.
+- Listado de deliveries.
+
 ## Mid (8 días)
 
 - En pagina de Vender, añadir checkbox de delivery, en caso de sí, pedir nombre del chofer (upsert), sitio de destino, precio del delivery, checkbox cobro al cliente o empresa.
   - En caso de cobro al cliente, se suma delivery al monto de factura
   - En caso de cobro a empresa, se registra ese monto que se debe a dicho chofer
-- Listado de choferes, con lo que se les debe a cada uno, y poder abonar a dichas deudas.
-- Listado de deliveries (2 días o más)
+
 - Agregar historial de abonos para cuentas y apartados, en nueva pagina (2 días o menos), ponerle método de pago a cada abono
 - En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)
 - Agregar modulo proveedores, y añadir campo de proveedor al registrar producto (1/2 día)

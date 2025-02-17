@@ -33,6 +33,21 @@ INSERT INTO `categorias` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `choferes`
+--
+
+LOCK TABLES `choferes` WRITE;
+/*!40000 ALTER TABLE `choferes` DISABLE KEYS */;
+INSERT INTO `choferes` VALUES
+(1,'Adrían Díaz','04153940124', 'Venezolano', '22147159'),
+(2,'María Pérez','04157584900', 'Venezolano', '15592050'),
+(3,'Juan González', '04150988907', 'Venezolano', '18291293'),
+(4,'Luisa Medina','04151234123', 'Venezolano', '31424898'),
+(5,'Pedro Vargas','04153941234', 'Venezolano', '14489391');
+/*!40000 ALTER TABLE `choferes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `clientes`
 --
 
@@ -81,15 +96,30 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2022-06-25 17:30:03',1000.00,1000.00,0.00,7,'cuenta',2,1),
+(1,'2022-06-25 17:30:03',1002.00,1000.00,0.00,7,'cuenta',2,1),
 (2,'2022-06-25 17:36:09',1000.00,1000.00,0.00,NULL,'apartado',1,1),
-(3,'2022-06-25 17:53:10',1000.00,900.00,100.00,10,'cuenta',1,1),
+(3,'2022-06-25 17:53:10',1000.00,910.50,100.00,10,'cuenta',1,1),
 (4,'2022-06-25 17:53:25',1000.00,1000.00,0.00,NULL,'apartado',2,1),
 (5,'2022-07-03 17:53:15',22.00,22.00,0.00,15,'cuenta',1,1),
 (6,'2022-07-03 18:13:16',1000.00,300.00,700.00,NULL,'apartado',4,1),
 (7,'2022-07-06 18:09:30',300.00,50.00,250.00,7,'cuenta',2,1),
 (8,'2022-07-06 18:10:14',1022.00,0.00,1022.00,NULL,'apartado',4,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `deliveries`
+--
+
+LOCK TABLES `deliveries` WRITE;
+/*!40000 ALTER TABLE `deliveries` DISABLE KEYS */;
+INSERT INTO `deliveries` VALUES
+(1,4.0,'Calle 25, Casa 10, Barrio Ejemplo, Valencia, Carabobo', 1, 1, 1, NULL),
+(2,2.0,'Calle 50, Casa 42, Barrio Ejemplo, Maracay, Aragua', 1, 2, NULL, 1),
+(3,1.5,'Calle 61, Casa 84, Barrio Ejemplo, Caracas, Dtto Capital', 0, 1, 2, NULL),
+(4,10.5,'Calle 22, Casa 63, Barrio Ejemplo, Maracaibo, Zulia', 0, 3, NULL, 3),
+(5,9.5,'Calle 40, Casa 37, Barrio Ejemplo, Cagua, Aragua', 1, 5, 3, NULL);
+/*!40000 ALTER TABLE `deliveries` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -229,16 +259,12 @@ INSERT INTO `usuarios` VALUES
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Dumping data for table `ventas`
---
-
 LOCK TABLES `ventas` WRITE;
 /*!40000 ALTER TABLE `ventas` DISABLE KEYS */;
 INSERT INTO `ventas` VALUES
-(1,'2025-02-25 17:30:52',42.00,50.00,NULL,'Punto de Venta',NULL,0,1),
-(2,'2025-02-25 17:52:56',32.00,50.00,'04151231234',NULL,2,0,1),
-(3,'2025-02-28 13:38:54',32.00,50.00,NULL,'Efectivo (Bs)',NULL,0,1),
+(1,'2025-02-25 17:30:52',42.00,54.00,NULL,'Punto de Venta',NULL,0,1),
+(2,'2025-02-25 17:52:56',32.00,51.50,'04151231234',NULL,2,0,1),
+(3,'2025-02-28 13:38:54',32.00,59.50,NULL,'Efectivo (Bs)',NULL,0,1),
 (4,'2025-02-28 14:48:09',1000.00,1000.00,'pagozelle@correo.com',NULL,4,1,1),
 (5,'2025-03-01 16:43:50',22.00,30.00,NULL,'Punto de Venta',NULL,0,1),
 (6,'2025-03-01 17:25:46',110.00,200.00,NULL,'Efectivo ($)',NULL,0,1),

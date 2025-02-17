@@ -31,6 +31,23 @@ CREATE TABLE `categorias` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `choferes`
+--
+
+DROP TABLE IF EXISTS `choferes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `choferes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `tipo` varchar(20) NOT NULL,
+  `ci` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `clientes`
 --
 
@@ -96,6 +113,25 @@ CREATE TABLE `cuentas_apartados` (
   `tipo` enum('apartado','cuenta') NOT NULL,
   `idCliente` bigint(20) DEFAULT NULL,
   `idUsuario` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `deliveries`
+--
+
+DROP TABLE IF EXISTS `deliveries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `deliveries` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `costo` decimal(9,2) NOT NULL,
+  `destino` varchar(50) NOT NULL,
+  `gratis` tinyint(1) NOT NULL,
+  `idChofer` bigint(20) NOT NULL,
+  `idVenta` bigint(20) DEFAULT NULL,
+  `idCuenta` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -207,8 +243,8 @@ DROP TABLE IF EXISTS `ventas`;
 CREATE TABLE `ventas` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `fecha` datetime NOT NULL,
-  `total` decimal(9,2) NOT NULL,
   `pagado` decimal(9,2) NOT NULL,
+  `total` decimal(9,2) NOT NULL,
   `origen` varchar(30) NOT NULL,
   `simple` varchar(20) DEFAULT NULL,
   `idMetodo` bigint(20) DEFAULT NULL,
