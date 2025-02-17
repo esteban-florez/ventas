@@ -116,8 +116,8 @@ LOCK TABLES `deliveries` WRITE;
 INSERT INTO `deliveries` VALUES
 (1,4.0,'Calle 25, Casa 10, Barrio Ejemplo, Valencia, Carabobo', 1, 1, 1, NULL),
 (2,2.0,'Calle 50, Casa 42, Barrio Ejemplo, Maracay, Aragua', 1, 2, NULL, 1),
-(3,1.5,'Calle 61, Casa 84, Barrio Ejemplo, Caracas, Dtto Capital', 0, 1, 2, NULL),
-(4,10.5,'Calle 22, Casa 63, Barrio Ejemplo, Maracaibo, Zulia', 0, 3, NULL, 3),
+(3,1.5,'Calle 61, Casa 84, Barrio Ejemplo, Caracas, Dtto Capital', 0, 3, 2, NULL),
+(4,10.5,'Calle 22, Casa 63, Barrio Ejemplo, Maracaibo, Zulia', 0, 4, NULL, 3),
 (5,9.5,'Calle 40, Casa 37, Barrio Ejemplo, Cagua, Aragua', 1, 5, 3, NULL);
 /*!40000 ALTER TABLE `deliveries` ENABLE KEYS */;
 UNLOCK TABLES;

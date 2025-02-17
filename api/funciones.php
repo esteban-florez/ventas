@@ -541,7 +541,6 @@ function obtenerVentasPorCliente(){
 	return selectQuery($sentencia);
 }
 
-
 function obtenerClientesPorNombre($nombre){
 	$sentencia = "SELECT * FROM clientes WHERE nombre LIKE ?";
 	$parametros = ["%".$nombre."%"];
@@ -571,6 +570,50 @@ function editarCliente($cliente){
 }
 
 function eliminarCliente($id){
+	$sentencia = "DELETE FROM clientes WHERE id = ?";
+	return eliminar($sentencia, $id);
+}
+
+
+/* Choferes */
+
+function obtenerChoferes() {
+	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+        FROM choferes
+        LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        AND deliveries.gratis = 0
+        GROUP BY choferes.id;";
+	return selectQuery($sentencia);
+}
+
+function obtenerChoferesPorNombre($nombre) {
+	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+        FROM choferes
+        LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        AND deliveries.gratis = 0
+        WHERE nombre LIKE ?
+        GROUP BY choferes.id;";
+	$parametros = ["%".$nombre."%"];
+	return selectPrepare($sentencia, $parametros);
+}
+
+function obtenerChoferPorId($id) {
+	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+        FROM choferes
+        LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        AND deliveries.gratis = 0
+        WHERE id = ?
+        GROUP BY choferes.id;";
+	return selectRegresandoObjeto($sentencia, [$id]);
+}
+
+function editarChofer($cliente) {
+	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
+	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->id];
+	return editar($sentencia, $parametros);
+}
+
+function eliminarChofer($id) {
 	$sentencia = "DELETE FROM clientes WHERE id = ?";
 	return eliminar($sentencia, $id);
 }
