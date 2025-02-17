@@ -127,7 +127,7 @@ DROP TABLE IF EXISTS `deliveries`;
 CREATE TABLE `deliveries` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `costo` decimal(9,2) NOT NULL,
-  `destino` varchar(50) NOT NULL,
+  `destino` varchar(255) NOT NULL,
   `gratis` tinyint(1) NOT NULL,
   `idChofer` bigint(20) NOT NULL,
   `idVenta` bigint(20) DEFAULT NULL,

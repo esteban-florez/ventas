@@ -613,6 +613,14 @@ function editarChofer($chofer) {
 	return editar($sentencia, $parametros);
 }
 
+function obtenerDeliveries() {
+	$sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer
+        FROM deliveries
+        LEFT JOIN choferes ON deliveries.idChofer = choferes.id;";
+
+	return selectQuery($sentencia);
+}
+
 /*
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 

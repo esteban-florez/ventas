@@ -1,6 +1,10 @@
 <template>
   <section>
     <nav-component :titulo="'Choferes'" />
+    <b-breadcrumb align="is-left">
+      <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
+      <b-breadcrumb-item active>Choferes</b-breadcrumb-item> 
+    </b-breadcrumb>
     <b-table :data="choferes">
       <b-table-column field="nombre" label="Nombre del chofer" sortable searchable v-slot="props">
         {{ props.row.nombre }}
