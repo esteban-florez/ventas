@@ -22,6 +22,7 @@ import InicioComponent from '@/components/InicioComponent'
 import AgregarMetodo from '@/components/Metodos/AgregarMetodo'
 import MetodosComponent from '@/components/Metodos/MetodosComponent'
 import EditarMetodo from '@/components/Metodos/EditarMetodo.vue'
+import ChoferesComponent from '@/components/Choferes/ChoferesComponent.vue'
 
 Vue.use(VueRouter)
 
@@ -75,6 +76,11 @@ const routes = [
     path: '/reporte-cotizaciones',
     name: 'ReporteCotizaciones',
     component: ReporteCotizaciones
+  },
+  {
+    path: '/choferes',
+    name: 'ChoferesComponent',
+    component: ChoferesComponent,
   },
   {
     path: '/clientes',

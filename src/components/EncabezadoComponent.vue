@@ -78,18 +78,24 @@
                     <span></span>
                     Cotizaciones
                 </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/deliveries' }">
+                    <b-icon
+                    icon="truck-delivery">
+                    </b-icon>
+                    <span></span>
+                    Deliveries
+                </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/choferes' }">
+                    <b-icon
+                    icon="card-account-details">
+                    </b-icon>
+                    <span></span>
+                    Choferes
+                </b-navbar-item>
                 </b-navbar-dropdown>
             </b-navbar-item>
 
-            <b-navbar-item  tag="router-link" :to="{ path: '/usuarios' }">
-                <b-icon
-                    icon="account"
-                    size="is-medium">
-                </b-icon>
-                <span></span>
-                Usuarios
-            </b-navbar-item>
-            <b-navbar-item  tag="router-link" :to="{ path: '/clientes' }">
+            <b-navbar-item tag="router-link" :to="{ path: '/clientes' }">
                 <b-icon
                     icon="account-supervisor"
                     size="is-medium">
@@ -121,6 +127,13 @@
                     </b-icon>
                     <span></span>
                     Métodos de pago
+                </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/usuarios' }">
+                    <b-icon
+                      icon="account">
+                    </b-icon>
+                    <span></span>
+                    Usuarios
                 </b-navbar-item>
                 </b-navbar-dropdown>
             </b-navbar-item>
