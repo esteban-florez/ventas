@@ -103,7 +103,7 @@ function registrarMetodo($metodo) {
     $parametros = array_merge([$metodo->nombre], $datos);
 	$sentencia = "INSERT INTO metodos (nombre, $campos) VALUES (?,$marcadores)";
 
-	return insertar($sentencia, $parametros);
+	return insertar($sentencia, clean($parametros));
 }
 
 function editarMetodo($id, $metodo) {
@@ -310,7 +310,7 @@ function obtenerProductosVendidos($id, $tipo) {
 	return selectPrepare($sentencia, $parametros);
 }
 
-function terminarVenta($venta){
+function terminarVenta($venta) {
 	$tipo = $venta->tipo;
 
 	switch ($tipo) {
@@ -337,18 +337,39 @@ function terminarVenta($venta){
 
 }
 
+function registrarDelivery($venta, $relacion, $id) {
+    $delivery = $venta->delivery;
+
+    if ($delivery->idChofer === '0') {
+        $chofer = $venta->chofer;
+        $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
+        $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci];
+        insertar($sentencia, clean($parametros));
+        $delivery->idChofer = obtenerUltimoId('choferes');
+    }
+
+    $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
+    $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $delivery->idChofer, $id];
+    return insertar($sentencia, clean($parametros));
+}
+
 function vender($venta) {
 	$venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
-	$sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?)";
+	$sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
 	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
-	$registrado = insertar($sentencia, $parametros);
+	$registrado = insertar($sentencia, clean($parametros));
 	
 	if(!$registrado) return false;
 
 	$idVenta = obtenerUltimoId('ventas');
 	$productosRegistrados = registrarProductosVendidos($venta->productos, $idVenta, 'venta');
 	$productosEditados = descontarProductos($venta->productos);
-	if(count($productosRegistrados)>0 && count($productosEditados)>0) return true;
+    $productosExito = count($productosRegistrados) > 0 && count($productosEditados) > 0;
+
+	if (!$productosExito) return false;
+
+    if (!$venta->delivery) return true;
+    return registrarDelivery($venta, 'idVenta', $idVenta);
 }
 
 function agregarCuentaApartado($venta) {
@@ -360,22 +381,26 @@ function agregarCuentaApartado($venta) {
 	
 	if(!$registrado) return false;
 
-	$idVenta = obtenerUltimoId('cuentas_apartados');
-	$productosRegistrados = registrarProductosVendidos($venta->productos, $idVenta, $venta->tipo);
+	$idCuentaApartado = obtenerUltimoId('cuentas_apartados');
+	$productosRegistrados = registrarProductosVendidos($venta->productos, $idCuentaApartado, $venta->tipo);
 	if($venta->tipo === 'cuenta') descontarProductos($venta->productos);
-	if(count($productosRegistrados)>0 ) return true;
+
+	if(!(count($productosRegistrados) > 0)) return false;
+
+    if (!$venta->delivery) return true;
+    return registrarDelivery($venta, 'idCuenta', $idCuentaApartado);
 }
 
 function agregarCotizacion($venta){
 	$sentencia = "INSERT INTO cotizaciones(fecha, total, hasta, idCliente, idUsuario) VALUES (?,?,?,?,?)";
 	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->hasta, $venta->cliente, $venta->usuario];
 
-	$registrado = insertar($sentencia, $parametros);
-	$idCotizacion =  obtenerUltimoId('cotizaciones');
+	insertar($sentencia, clean($parametros));
+	$idCotizacion = obtenerUltimoId('cotizaciones');
 
 	$productosRegistrados = registrarProductosVendidos($venta->productos, $idCotizacion, $venta->tipo);
 
-	if(count($productosRegistrados)>0 ) return true;
+	if(count($productosRegistrados) > 0) return true;
 }
 
 function registrarProductosVendidos($productos, $idReferencia, $tipo){
@@ -555,7 +580,7 @@ function obtenerClientes(){
 function registrarCliente($cliente){
 	$sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
 	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci];
-	return insertar($sentencia, $parametros);
+	return insertar($sentencia, clean($parametros));
 }
 
 function obtenerClientePorId($id){
@@ -581,7 +606,7 @@ function obtenerChoferes() {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 0
+        AND deliveries.gratis = 1
         GROUP BY choferes.id;";
 	return selectQuery($sentencia);
 }
@@ -590,7 +615,7 @@ function obtenerChoferesPorNombre($nombre) {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 0
+        AND deliveries.gratis = 1
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
@@ -601,7 +626,7 @@ function obtenerChoferPorId($id) {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 0
+        AND deliveries.gratis = 1
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
@@ -831,13 +856,6 @@ function obtenerUltimoId($tabla){
 function insertar($sentencia, $parametros) {
 	$bd = conectarBD();
 	$sql = $bd->prepare($sentencia);
-
-    foreach ($parametros as $index => $value) {
-        if ($value === '') {
-            $parametros[$index] = null;
-        }
-    }
-
 	return $sql->execute($parametros);
 }
 

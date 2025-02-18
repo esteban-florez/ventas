@@ -10,7 +10,6 @@
 				field="nombre"
 				@input="buscarClientes"
 				@select="seleccionarCliente"
-				size="is-medium"
 			>
 			</b-autocomplete>
 		</b-field>

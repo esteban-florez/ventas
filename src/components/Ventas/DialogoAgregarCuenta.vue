@@ -63,7 +63,7 @@
 			},
 
 		methods:{
-			onSeleccionado(cliente){
+			onSeleccionado(cliente) {
 				this.cliente = cliente
 			},
 

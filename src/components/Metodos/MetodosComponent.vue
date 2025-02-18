@@ -76,7 +76,6 @@ export default {
       HttpService.obtenerConConsultas('metodos.php', {
         accion: 'obtener'
       }).then(resultado => {
-        console.log(resultado)
         this.metodos = resultado
         this.cargando = false
       })
