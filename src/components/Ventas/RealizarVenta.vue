@@ -47,7 +47,7 @@ aria-role="dialog"
 aria-label="Modal Terminar Venta"
 close-button-aria-label="Close"
 aria-modal>
-<dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos"></dialogo-terminar-venta>
+<dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-terminar-venta>
 <dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta"></dialogo-agregar-cuenta>
 <dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado"></dialogo-agregar-apartado>
 <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
@@ -80,11 +80,15 @@ aria-modal>
       ComprobanteCompra
     },
 
-    data:()=>({
+    data: () => ({
       cargando: false,
       productos: [],
+      choferes: [],
       metodos: [],
       total: 0,
+      costoDelivery: null,
+      esDelivery: false,
+      deliveryGratis: false,
       mostrarDialogo: false,
       mostrarTerminarVenta: false,
       mostrarAgregarCuenta: false,
@@ -98,21 +102,36 @@ aria-modal>
     mounted() {
       this.cargando = true
       const payload = { accion: 'obtener' }
-      HttpService.obtenerConConsultas('metodos.php', payload)
-        .then(resultado => {
-          this.metodos = resultado
-          this.cargando = false
-        })
+
+      Promise.all([
+        HttpService.obtenerConConsultas('metodos.php', payload),
+        HttpService.obtenerConConsultas('choferes.php', payload)
+      ]).then(([metodos, choferes]) => {
+        this.metodos = metodos
+        this.choferes = choferes
+        this.cargando = false
+      })
     },
 
     methods: {
-      onImpreso(resultado){
+      onImpreso(resultado) {
         this.mostrarComprobante = resultado
       },
 
-      onTerminar(venta){
+      actualizar(prop, valor) {
+        this[prop] = valor
+        this.total = this.calcularTotal()
+      },
+
+      onTerminar(venta) {
+        let total = this.total
+
+        if (venta.delivery && venta.delivery.gratis) {
+          total += parseFloat(venta.delivery.costo)
+        }
+
         this.ventaRealizada = {
-          total: this.total,
+          total,
           productos: this.productos,
           cliente: venta.cliente.id,
           usuario: AyudanteSesion.obtenerDatosSesion().id,
@@ -130,26 +149,34 @@ aria-modal>
           this.ventaRealizada.cambio = venta.cambio
           this.ventaRealizada.simple = venta.simple
           this.ventaRealizada.idMetodo = venta.idMetodo
+          this.ventaRealizada.delivery = venta.delivery
+          this.ventaRealizada.chofer = venta.chofer
+          console.log('switch: ', venta.pagado)
           break
+
           case 'cuenta':
           this.ventaRealizada.tipo = 'cuenta'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
           this.ventaRealizada.dias = venta.dias
+          this.ventaRealizada.delivery = venta.delivery
+          this.ventaRealizada.chofer = venta.chofer
           break
+
           case 'apartado':
           this.ventaRealizada.tipo = 'apartado'
           this.ventaRealizada.pagado = venta.pagado
           this.ventaRealizada.porPagar = venta.porPagar
           this.ventaRealizada.dias = venta.dias
           break
+
           case 'cotiza':
           this.ventaRealizada.tipo = 'cotiza'
           this.ventaRealizada.hasta = venta.hasta
           break
         }
 
-        if (tipo !== 'cotiza' || this.ventaRealizada.pagado === '') {
+        if (tipo !== 'cotiza' && this.ventaRealizada.pagado === '') {
           this.ventaRealizada.pagado = 0
         }
 
@@ -162,7 +189,7 @@ aria-modal>
         }
 
         HttpService.registrar('vender.php', datos)
-          .then(registrado => {
+        .then(registrado => {
             if (registrado) {
               this.productos = []
               this.total = 0
@@ -329,11 +356,18 @@ aria-modal>
 
         },
 
-        calcularTotal(){
+        calcularTotal() {
           let total = 0
-          this.productos.forEach(producto =>{
+          this.productos.forEach(producto => {
             total = parseFloat(producto.cantidad * producto.precio) + parseFloat(total)
           })
+
+          const costo = parseFloat(this.costoDelivery)
+
+          if (this.esDelivery && !this.deliveryGratis && !isNaN(costo)) {
+            total += costo
+          }
+
           return total
         }
       }
