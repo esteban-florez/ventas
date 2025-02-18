@@ -22,7 +22,7 @@
           </tr>
         </tbody>
       </table>
-      <p v-if="venta.delivery"><b>Delivery: ${{ venta.delivery.costo }}</b></p>
+      <p v-if="venta.delivery"><b>Delivery:</b>${{ venta.delivery.costo }}</p>
       <p><b>Total:</b>${{ venta.total }}</p>
       <p v-if="!cotiza"><b>Su pago:</b>${{ venta.pagado }}</p>
       <p v-if="tipoVenta"><b>Cambio:</b>${{ venta.pagado - venta.total }}</p>

@@ -3,13 +3,7 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-- Añadir campos a modales de cuentear
-
 ## Mid (8 días)
-
-- En pagina de Vender, añadir checkbox de delivery, en caso de sí, pedir nombre del chofer (upsert), sitio de destino, precio del delivery, checkbox cobro al cliente o empresa.
-  - En caso de cobro al cliente, se suma delivery al monto de factura
-  - En caso de cobro a empresa, se registra ese monto que se debe a dicho chofer
 
 - Agregar historial de abonos para cuentas y apartados, en nueva pagina (1 día), ponerle método de pago a cada abono
 - Crear historial de inventario, con las entradas y las salidas de los productos (1 días)

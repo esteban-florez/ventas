@@ -387,6 +387,7 @@ function agregarCuentaApartado($venta) {
 
 	if(!(count($productosRegistrados) > 0)) return false;
 
+    dd($venta->delivery);
     if (!$venta->delivery) return true;
     return registrarDelivery($venta, 'idCuenta', $idCuentaApartado);
 }

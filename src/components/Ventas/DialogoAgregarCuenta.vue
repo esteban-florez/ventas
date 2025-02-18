@@ -9,12 +9,8 @@
 					@click="$emit('close', 'cuenta')"/>
 			</header>
 			<section class="modal-card-body">
-				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
 				<busqueda-cliente @seleccionado="onSeleccionado"/>
-				<b-field label="Pago inicial">
-					<b-input step="any" icon="currency-usd" type="number" placeholder="Cuánto deja el cliente" v-model="pagado" @input="calcularRestante" size="is-medium"></b-input>
-				</b-field>
-				<b-field label="Vence en">
+				<b-field class="mt-3" label="Vence en">
           <b-select class="wide" icon="tag-multiple" v-model="dias">
             <option value="" disabled>Seleccionar...</option>
             <option v-for="dia in DIAS" :key="dia" :value="dia">
@@ -22,6 +18,52 @@
             </option>
           </b-select>
 				</b-field>
+        <b-switch v-model="esDelivery" @input="manejarEsDelivery" type="is-info">
+          ¿Añadir servicio de delivery?
+        </b-switch>
+        <div style="display: contents" v-if="esDelivery">
+          <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
+          <b-field class="mt-1" label="Costo del delivery">
+            <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
+          </b-field>
+          <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
+            ¿Delivery gratis para el cliente?
+          </b-switch>
+          <b-field label="Destino del delivery">
+            <b-input placeholder="Calle, casa, barrio, ciudad, estado" v-model="delivery.destino" required></b-input>
+          </b-field>
+          <b-field label="Chofer del delivery">
+            <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="delivery.idChofer" required>
+              <option value="0">Registrar nuevo chofer</option>
+              <option v-for="chofer in choferes" :key="chofer.id" :value="chofer.id">
+                {{ chofer.nombre }} ({{ chofer.tipo[0] }}-{{ chofer.ci }})
+              </option>
+            </b-select>
+          </b-field>
+        </div>
+        <div style="display: contents;" v-if="esDelivery && delivery.idChofer === '0' ">
+          <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del chofer</h4>
+          <b-field class="mt-1" label="Nombre del chofer">
+            <b-input step="any" icon="account" type="text" placeholder="Ej. Don Paco" v-model="chofer.nombre" required></b-input>
+          </b-field>
+          <b-field label="Teléfono del chofer">
+            <b-input step="any" icon="phone" type="number" placeholder="Ej. 2311459874" v-model="chofer.telefono" required></b-input>
+          </b-field>
+          <b-field label="Tipo de identidad">
+            <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="chofer.tipo" required>
+              <option v-for="tipo in tipos" :key="tipo" :value="tipo">
+                {{ tipo }}
+              </option>
+            </b-select>
+          </b-field>
+          <b-field label="Cédula/RIF">
+            <b-input type="number" placeholder="Ej. 30000000" v-model="chofer.ci" required></b-input>
+          </b-field>
+        </div>
+        <b-field class="mt-3" label="El cliente paga con">
+          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
+        </b-field>
+				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
 				<p class="is-size-1 has-text-weight-bold">Por Pagar ${{ porPagar }}</p>
 			</section>
 			<footer class="modal-card-foot">
@@ -42,37 +84,56 @@
 </template>
 <script>
 	import BusquedaCliente from '../Clientes/BusquedaCliente'
-  import { DIAS } from '@/consts'
+  import { DIAS, TIPOS_CLIENTE } from '@/consts'
 
 	export default{
 		name:"DialogoAgregarCuenta",
-		props: ['totalVenta'],
+		props: ['totalVenta', 'choferes'],
 		components: { BusquedaCliente },
 
-		data:()=>({
+		data: () => ({
 			pagado: "",
       dias: "",
-			porPagar: 0,
 			cliente: {},
+      esDelivery: false,
+      nuevoChofer: false,
+      delivery: {
+        costo: null,
+        destino: null,
+        gratis: false,
+        idChofer: null,
+      },
+      chofer: {
+        nombre: null,
+        ci: null,
+        tipo: null,
+        telefono: null,
+      },
       DIAS: DIAS,
+      tipos: TIPOS_CLIENTE,
 		}),
 
+    computed: {
+      porPagar() {
+        return parseFloat(this.totalVenta - this.pagado) ?? 0
+      },
+    },
 
-		mounted(){
-				this.calcularRestante()
+		methods: {
+      onSeleccionado(cliente) {
+        this.cliente = cliente
 			},
 
-		methods:{
-			onSeleccionado(cliente) {
-				this.cliente = cliente
-			},
+      manejarEsDelivery() {
+        this.$emit('actualizar', 'esDelivery', this.esDelivery)
+      },
+  
+      manejarCostoDelivery() {
+        this.$emit('actualizar', 'costoDelivery', this.delivery.costo)
+      },
 
 
-			calcularRestante(){
-				this.porPagar = parseFloat(this.totalVenta-this.pagado)
-			},
-
-			agregarCuenta(){
+			agregarCuenta() {
 				if (Object.keys(this.cliente).length === 0) {
 					this.$buefy.toast.open({
             type: 'is-danger',
@@ -96,6 +157,11 @@
 					cliente: this.cliente,
           dias: this.dias,
 				}
+
+      if (this.esDelivery) {
+        payload.delivery = this.delivery
+        payload.chofer = this.chofer
+      }
 
 				this.$emit("terminar", payload)
 			}	

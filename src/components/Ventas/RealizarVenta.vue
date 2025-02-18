@@ -48,7 +48,7 @@ aria-label="Modal Terminar Venta"
 close-button-aria-label="Close"
 aria-modal>
 <dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-terminar-venta>
-<dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta"></dialogo-agregar-cuenta>
+<dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-cuenta>
 <dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado"></dialogo-agregar-apartado>
 <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
 </b-modal>
@@ -151,7 +151,6 @@ aria-modal>
           this.ventaRealizada.idMetodo = venta.idMetodo
           this.ventaRealizada.delivery = venta.delivery
           this.ventaRealizada.chofer = venta.chofer
-          console.log('switch: ', venta.pagado)
           break
 
           case 'cuenta':
