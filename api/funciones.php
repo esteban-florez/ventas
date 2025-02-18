@@ -1,20 +1,5 @@
 <?php
 /*
-By
-   ___                                            _                   ___              
-  / _ \  __ _   ___   ___    /\  /\ _   _  _ __  | |_   ___  _ __    /   \  ___ __   __
- / /_)/ / _` | / __| / _ \  / /_/ /| | | || '_ \ | __| / _ \| '__|  / /\ / / _ \\ \ / /
-/ ___/ | (_| || (__ | (_) |/ __  / | |_| || | | || |_ |  __/| |    / /_// |  __/ \ V / 
-\/      \__,_| \___| \___/ \/ /_/   \__,_||_| |_| \__| \___||_|   /___,'   \___|  \_/  
-                                                                                       
-Aquí están todas las funciones empleadas para administrar los datos o como se diga.
-En cada función simplemente colocamos la sentencia SQL que necesitamos, si es necesario colocamos los 
-parámetros necesario y consumimos las funciones de la bd.
-
-*/
-
-
-/*
 
  _______      ___  __   __  _______  _______  _______  _______ 
 |   _   |    |   ||  | |  ||       ||       ||       ||       |
@@ -31,7 +16,7 @@ define("FECHA_HOY",date("Y-m-d") );
 
 define('DIRECTORIO', './logos/');
 
-define("PASSWORD_DEFECTO", "PacoHunterDev");
+define("PASSWORD_DEFECTO", "Admin123");
 
 
 function codificar($imagen) {
@@ -387,7 +372,6 @@ function agregarCuentaApartado($venta) {
 
 	if(!(count($productosRegistrados) > 0)) return false;
 
-    dd($venta->delivery);
     if (!$venta->delivery) return true;
     return registrarDelivery($venta, 'idCuenta', $idCuentaApartado);
 }
@@ -521,7 +505,7 @@ function cambiarPassword($idUsuario, $password){
 	$parametros = [$password, $idUsuario];
 	return editar($sentencia, $parametros);
 }
-function registrarUsuario($usuario){
+function registrarUsuario($usuario) {
 	$sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password) VALUES (?,?,?,?)";
 	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->password];
 	return insertar($sentencia, $parametros);
@@ -726,14 +710,8 @@ function editarProducto($producto){
 	$sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, existencia = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ? WHERE id = ?";
 
     $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->existencia, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->id];
-    
-    foreach ($parametros as $index => $value) {
-        if ($value === '') {
-            $parametros[$index] = null;
-        }
-    }
 
-	return editar($sentencia, $parametros);
+	return editar($sentencia, clean($parametros));
 }
 
 function eliminarProducto($id){

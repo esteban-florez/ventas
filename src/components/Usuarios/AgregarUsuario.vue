@@ -43,7 +43,7 @@
                         this.cargando = false
                         this.$buefy.toast.open({
                           type: 'is-info',
-                          message: 'Usuario registrado con éxito. Recuerda que la contraseña es PacoHunterDev'
+                          message: 'Usuario registrado con éxito. Recuerda que la contraseña es Admin123'
                         })
                     }
                 })

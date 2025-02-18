@@ -20,7 +20,7 @@ switch ($accion) {
 		$ajustes = obtenerAjustes();
 		if(!$ajustes){
 			$ajustes = [
-				"nombre" => "POSPacoHunterDev",
+				"nombre" => "Tienda Online",
 				"telefono" => "777666123",
 				"logo" => "/logos/logo.png"
 			];
