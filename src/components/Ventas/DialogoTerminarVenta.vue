@@ -150,6 +150,7 @@ export default {
         payload.simple = this.idMetodo
       } else {
         payload.idMetodo = this.idMetodo
+        payload.origen = this.origen
       }
 
       this.$emit('terminar', payload)

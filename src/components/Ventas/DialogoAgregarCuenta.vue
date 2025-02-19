@@ -18,6 +18,19 @@
             </option>
           </b-select>
 				</b-field>
+        <b-field class="mt-3" label="Método de pago">
+          <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
+            <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
+              {{ metodo }}
+            </option>
+            <option v-for="metodo in metodos" :key="metodo.id" :value="metodo.id">
+              {{ metodo.nombre }}
+            </option>
+          </b-select>
+        </b-field>
+        <b-field label="Origen" v-if="!esSimple && idMetodo">
+          <b-input type="text" name="origen" v-model="origen" placeholder="Origen del pago" required></b-input>
+        </b-field>
         <b-switch v-model="esDelivery" @input="manejarEsDelivery" type="is-info">
           ¿Añadir servicio de delivery?
         </b-switch>
@@ -84,17 +97,19 @@
 </template>
 <script>
 	import BusquedaCliente from '../Clientes/BusquedaCliente'
-  import { DIAS, TIPOS_CLIENTE } from '@/consts'
+  import { DIAS, TIPOS_CLIENTE, TIPOS_PAGO_SIMPLE } from '@/consts'
 
 	export default{
 		name:"DialogoAgregarCuenta",
-		props: ['totalVenta', 'choferes'],
+		props: ['totalVenta', 'choferes', 'metodos'],
 		components: { BusquedaCliente },
 
 		data: () => ({
 			pagado: "",
       dias: "",
 			cliente: {},
+      idMetodo: null,
+      origen: '',
       esDelivery: false,
       nuevoChofer: false,
       delivery: {
@@ -110,6 +125,7 @@
         telefono: null,
       },
       DIAS: DIAS,
+      metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
       tipos: TIPOS_CLIENTE,
 		}),
 
@@ -117,6 +133,9 @@
       porPagar() {
         return parseFloat(this.totalVenta - this.pagado) ?? 0
       },
+      esSimple() {
+        return this.metodosSimples.includes(this.idMetodo)
+      }
     },
 
 		methods: {
@@ -163,7 +182,14 @@
         payload.chofer = this.chofer
       }
 
-				this.$emit("terminar", payload)
+      if (this.esSimple) {
+        payload.simple = this.idMetodo
+      } else {
+        payload.idMetodo = this.idMetodo
+        payload.origen = this.origen
+      }
+
+      this.$emit("terminar", payload)
 			}	
 		
 		}

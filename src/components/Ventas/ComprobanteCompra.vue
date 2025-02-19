@@ -18,15 +18,15 @@
           <tr v-for="(producto, index) in venta.productos" :key="index">
             <td class="ml-2">{{ producto.nombre }}</td>
             <td class="mr-2">${{ producto.precio }} X {{ producto.cantidad }} {{ producto.unidad }}.</td>
-            <td style="text-align: end;">${{ producto.precio * producto.cantidad }}</td>
+            <td style="text-align: end;">${{ f(producto.precio * producto.cantidad) }}</td>
           </tr>
         </tbody>
       </table>
-      <p v-if="venta.delivery"><b>Delivery:</b>${{ venta.delivery.costo }}</p>
-      <p><b>Total:</b>${{ venta.total }}</p>
-      <p v-if="!cotiza"><b>Su pago:</b>${{ venta.pagado }}</p>
-      <p v-if="tipoVenta"><b>Cambio:</b>${{ venta.pagado - venta.total }}</p>
-      <p v-if="cuenta || apartado"><b>Por pagar:</b>${{ venta.porPagar }}</p>
+      <p v-if="venta.delivery"><b>Delivery:</b>${{ f(venta.delivery.costo) }}</p>
+      <p><b>Total:</b>${{ f(venta.total) }}</p>
+      <p v-if="!cotiza"><b>Su pago:</b>${{ f(venta.pagado) }}</p>
+      <p v-if="tipoVenta"><b>Cambio:</b>${{ f(venta.pagado - venta.total) }}</p>
+      <p v-if="cuenta || apartado"><b>Por pagar:</b>${{ f(porPagar) }}</p>
       <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
       <p><b>Gracias por su preferencia</b></p>
       <p>----------------------------</p>
@@ -40,11 +40,9 @@ import AyudanteSesion from '../../Servicios/AyudanteSesion'
 import Utiles from '../../Servicios/Utiles'
 import Printd from "printd";
 
-
-
 export default {
   name: "ComprobanteCompra",
-  props: ["venta", "tipo"],
+  props: ["venta", "tipo", "porPagar"],
 
   data: () => ({
     titulo: "",
@@ -88,16 +86,16 @@ export default {
   },
 
   computed: {
-    cuenta: function () {
+    cuenta() {
       return this.tipo === 'cuenta'
     },
-    apartado: function () {
+    apartado() {
       return this.tipo === 'apartado'
     },
-    cotiza: function () {
+    cotiza() {
       return this.tipo === 'cotiza'
     },
-    tipoVenta: function () {
+    tipoVenta() {
       return this.tipo === 'venta'
     },
   },
@@ -123,6 +121,10 @@ export default {
         default:
           this.titulo = "COMPROBANTE"
       }
+    },
+
+    f(number) {
+      return Number(number).toFixed(2)
     },
 
     obtenerDatosNegocio() {

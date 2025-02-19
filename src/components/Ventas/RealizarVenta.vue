@@ -48,11 +48,11 @@ aria-label="Modal Terminar Venta"
 close-button-aria-label="Close"
 aria-modal>
 <dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-terminar-venta>
-<dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-cuenta>
-<dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado"></dialogo-agregar-apartado>
+<dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-cuenta>
+<dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-apartado>
 <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
 </b-modal>
-<comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante" />
+<comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante" :porPagar="porPagar" />
 </section>
 </template>
 <script>
@@ -86,6 +86,7 @@ aria-modal>
       choferes: [],
       metodos: [],
       total: 0,
+      porPagar: 0,
       costoDelivery: null,
       esDelivery: false,
       deliveryGratis: false,
@@ -146,17 +147,19 @@ aria-modal>
           case 'venta':
           this.ventaRealizada.tipo = 'venta'
           this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.cambio = venta.cambio
           this.ventaRealizada.simple = venta.simple
+          this.ventaRealizada.origen = venta.origen
           this.ventaRealizada.idMetodo = venta.idMetodo
           this.ventaRealizada.delivery = venta.delivery
           this.ventaRealizada.chofer = venta.chofer
           break
-
+          
           case 'cuenta':
           this.ventaRealizada.tipo = 'cuenta'
           this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.porPagar = venta.porPagar
+          this.ventaRealizada.simple = venta.simple
+          this.ventaRealizada.origen = venta.origen
+          this.ventaRealizada.idMetodo = venta.idMetodo
           this.ventaRealizada.dias = venta.dias
           this.ventaRealizada.delivery = venta.delivery
           this.ventaRealizada.chofer = venta.chofer
@@ -165,7 +168,6 @@ aria-modal>
           case 'apartado':
           this.ventaRealizada.tipo = 'apartado'
           this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.porPagar = venta.porPagar
           this.ventaRealizada.dias = venta.dias
           break
 
@@ -188,19 +190,29 @@ aria-modal>
         }
 
         HttpService.registrar('vender.php', datos)
-        .then(registrado => {
-            if (registrado) {
-              this.productos = []
-              this.total = 0
-              this.cargando = false
-              this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
-              this.mostrarDialogo = false
-              this.$buefy.toast.open({
-                type: 'is-info',
-                message: tipo.toUpperCase() + ' registrado con éxito'
+          .then(id => {
+            if (!id) return
+
+            this.productos = []
+            this.total = 0
+            this.cargando = false
+            this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
+            this.mostrarDialogo = false
+            this.$buefy.toast.open({
+              type: 'is-info',
+              message: tipo.toUpperCase() + ' registrado con éxito'
+            })
+
+            if (this.tipoVenta === 'cuenta' || this.tipoVenta === 'apartado') {
+              return HttpService.obtenerConConsultas('vender.php', {
+                accion: 'por_pagar', id,
               })
-              this.mostrarComprobante = true
             }
+
+            this.mostrarComprobante = true
+          }).then(porPagar => {
+            this.porPagar = porPagar
+            this.mostrarComprobante = true
           })
       },
 
@@ -265,7 +277,7 @@ aria-modal>
           this.total = this.calcularTotal()
         },
 
-        onSeleccionado(producto){
+        onSeleccionado(producto) {
           let verificaExistencia = this.verificarExistenciaAlcanzada(producto.existencia, producto.id)
 
           if(verificaExistencia) return
