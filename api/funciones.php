@@ -472,6 +472,27 @@ function montoPorPagarCuentaApartado($id) {
     return selectRegresandoObjeto($sentencia, [$id])->porPagar;
 }
 
+/* Abonos */
+
+function obtenerAbonosPorCuentaApartado($id) {
+	$abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
+        LEFT JOIN metodos ON abonos.idMetodo = metodos.id
+        WHERE abonos.idCuenta = ?", [$id]);
+
+    $cuentaApartado = selectRegresandoObjeto("SELECT cuentas_apartados.*,
+        clientes.nombre AS nombreCliente,
+        SUM(abonos.monto) AS pagado,
+        (total - SUM(abonos.monto)) AS porPagar
+        FROM cuentas_apartados
+        LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
+        LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
+        WHERE cuentas_apartados.id = ?", [$id]);
+
+    if ($abonos === false || $cuentaApartado === false) return false;
+
+    return ['abonos' => $abonos, 'cuentaApartado' => $cuentaApartado];
+}
+
 /*                                                                                                  
  __   __  _______  __   __  _______  ______    ___   _______  _______ 
 |  | |  ||       ||  | |  ||   _   ||    _ |  |   | |       ||       |
@@ -652,7 +673,6 @@ function obtenerChoferes() {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 1
         GROUP BY choferes.id;";
 	return selectQuery($sentencia);
 }
@@ -661,7 +681,6 @@ function obtenerChoferesPorNombre($nombre) {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 1
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
@@ -672,7 +691,6 @@ function obtenerChoferPorId($id) {
 	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        AND deliveries.gratis = 1
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
