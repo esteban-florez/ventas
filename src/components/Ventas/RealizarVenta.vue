@@ -189,7 +189,7 @@ aria-modal>
           datos: this.ventaRealizada
         }
 
-        HttpService.registrar('vender.php', datos)
+        HttpService.registrar('ventas.php', datos)
           .then(id => {
             if (!id) return
 
@@ -204,7 +204,7 @@ aria-modal>
             })
 
             if (this.tipoVenta === 'cuenta' || this.tipoVenta === 'apartado') {
-              return HttpService.obtenerConConsultas('vender.php', {
+              return HttpService.obtenerConConsultas('ventas.php', {
                 accion: 'por_pagar', id,
               })
             }

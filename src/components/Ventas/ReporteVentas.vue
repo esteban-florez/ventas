@@ -131,7 +131,7 @@ export default {
         accion: 'obtener_ventas'
       }
 
-      HttpService.obtenerConConsultas('vender.php', payload)
+      HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.ventas = resultado.ventas
 

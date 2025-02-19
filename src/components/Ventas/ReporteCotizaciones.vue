@@ -138,7 +138,7 @@
                     hasIcon: true,
                     onConfirm: () => {
                         this.cargando = true
-                        HttpService.eliminar('vender.php',{
+                        HttpService.eliminar('ventas.php',{
                             accion: 'eliminar_cotizacion',
                             id:id
                         })
@@ -166,7 +166,7 @@
                     filtros: this.filtros,
                     accion: 'obtener_cotizaciones'
                 }
-                HttpService.obtenerConConsultas('vender.php', payload)
+                HttpService.obtenerConConsultas('ventas.php', payload)
                 .then(resultado => {
                     this.cotizaciones = resultado.cotizaciones
 

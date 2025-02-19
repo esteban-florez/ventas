@@ -55,7 +55,7 @@ export default {
 
     onGenerarComprobante(cuenta) {
       this.cuentaSeleccionada = cuenta
-      HttpService.obtenerConConsultas('vender.php', {
+      HttpService.obtenerConConsultas('ventas.php', {
         accion: 'por_pagar', id: cuenta.id,
       }).then(porPagar => {
         this.porPagar = porPagar
@@ -70,7 +70,7 @@ export default {
         confirmText: 'Liquidar',
         onConfirm: () => {
           this.cargando = true
-          HttpService.registrar('vender.php', {
+          HttpService.registrar('ventas.php', {
             accion: 'abonar',
             total: cuenta.porPagar,
             id: cuenta.id
@@ -101,7 +101,7 @@ export default {
         trapFocus: true,
         onConfirm: (value) => {
           this.cargando = true
-          HttpService.registrar('vender.php', {
+          HttpService.registrar('ventas.php', {
             accion: 'abonar',
             total: value,
             id: cuenta.id
@@ -129,7 +129,7 @@ export default {
         filtros: this.filtros,
         accion: 'obtener_cuentas'
       }
-      HttpService.obtenerConConsultas('vender.php', payload)
+      HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.cuentas = resultado.cuentas
 
