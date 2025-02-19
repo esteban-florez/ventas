@@ -62,6 +62,10 @@ switch ($accion) {
 	case 'abonar':
 		echo json_encode(abonarACuentaApartado($payload->total, $payload->id));
 		break;
+
+    case 'por_pagar':
+        echo json_encode(montoPorPagarCuentaApartado($payload->id));
+        break;
 	
 	default:
 		echo json_encode("No se reconoce");

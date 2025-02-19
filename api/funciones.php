@@ -18,6 +18,7 @@ define('DIRECTORIO', './logos/');
 
 define("PASSWORD_DEFECTO", "Admin123");
 
+date_default_timezone_set('America/Caracas');
 
 function codificar($imagen) {
     $imagen = str_replace('data:image/png;base64,', '', $imagen);
@@ -25,8 +26,6 @@ function codificar($imagen) {
     $imagen = str_replace(' ', '+', $imagen);
     $data = base64_decode($imagen);
     $file = DIRECTORIO. 'logo.png';
-            
-            
     $insertar = file_put_contents($file, $data);
     return $file;
 }
@@ -36,7 +35,7 @@ function obtenerAjustes(){
 	return selectRegresandoObjeto($sentencia);
 }
 
-function registrarAjustes($ajustes){
+function registrarAjustes($ajustes) {
 	$logo = ($ajustes->cambiaLogo) ? codificar($ajustes->logo) : $ajustes->logo;
 	$sentencia = (!obtenerAjustes()) ? 
 	"INSERT INTO configuracion (nombre, telefono, logo) VALUES (?,?,?)" :
@@ -125,34 +124,37 @@ function obtenerTotalesVentasPorMes($anio){
     return selectPrepare($sentencia, [$anio]);
 }
 
-function calcularTotalIngresos(){
-	$sentencia = "SELECT (SELECT SUM(total) FROM ventas) + (SELECT SUM(pagado) FROM cuentas_apartados) AS totalIngresos";
+function calcularTotalIngresos() {
+	$sentencia = "SELECT (SELECT SUM(total) FROM ventas) + (SELECT SUM(monto) FROM abonos) AS totalIngresos";
 	return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularTotalIngresosHoy(){
+function calcularTotalIngresosHoy() {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE DATE(fecha) = CURDATE()) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE DATE(fecha) = CURDATE()) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE()) AS totalIngresos";
 	return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
 function calcularTotalIngresosSemana(){
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE WEEK(fecha) = WEEK(NOW())) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE WEEK(fecha) = WEEK(NOW())) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW())) AS totalIngresos";
 	return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
 function calcularTotalIngresosMes(){
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
 	return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularIngresosPendientes(){
-	$sentencia = "SELECT IFNULL(SUM(porPagar), 0) AS pendientes FROM cuentas_apartados";
+function calcularIngresosPendientes() {
+	$sentencia = "SELECT (
+        (SELECT SUM(total) FROM cuentas_apartados)
+        - (SELECT SUM(monto) FROM abonos)
+    ) as pendientes";
 	return selectRegresandoObjeto($sentencia)->pendientes;
 }
 
@@ -165,7 +167,8 @@ function eliminarCotizacion($id){
 	return $cotizacionEliminada && $productosEliminados;
 }
 
-function abonarACuentaApartado($total, $id){
+function abonarACuentaApartado($total, $id) {
+    // TODO cambiará a registrarAbono
 	$sentencia = "UPDATE cuentas_apartados SET pagado = pagado + ?, porPagar = porPagar - ? WHERE id = ?";
 	$parametros = [$total, $total, $id];
 	$abono = editar($sentencia, $parametros);
@@ -174,6 +177,7 @@ function abonarACuentaApartado($total, $id){
 }
 
 function verificarSiLiquidaApartado($id){
+    // TODO adaptarse a registrarAbono, igual cambiará cuando exista el inventario
 	$sentencia = "SELECT * FROM cuentas_apartados WHERE id = ?";
 	$apartado = selectRegresandoObjeto($sentencia, [$id]);
 	$total = $apartado->porPagar;
@@ -184,60 +188,90 @@ function verificarSiLiquidaApartado($id){
 	}
 }
 
-function obtenerTotalVentas($filtros){
-	$fechaInicio = ($filtros->fechaInicio === "") ? FECHA_HOY : $filtros->fechaInicio;
-	$fechaFin = ($filtros->fechaFin === "") ? FECHA_HOY : $filtros->fechaFin;
-	$sentencia = "SELECT SUM(total) AS totalVentas FROM ventas WHERE DATE(ventas.fecha) >= ? AND  DATE(ventas.fecha) <= ?";
-	$parametros = [$fechaInicio, $fechaFin];
+function obtenerTotalVentas($filtros) {
+	$sentencia = "SELECT SUM(total) AS totalVentas FROM ventas";
+    $parametros = [];
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
+        $parametros = [$filtros->fechaInicio, $filtros->fechaFin];
+    }
+
 	return selectRegresandoObjeto($sentencia, $parametros)->totalVentas;
 }
 
-function obtenerTotalCuentasApartados($filtros, $tipo){
+function obtenerTotalCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT SUM(total) AS total FROM cuentas_apartados WHERE tipo = ?";
 	$parametros = [$tipo];
-	if($filtros->fechaInicio){
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND  DATE(cuentas_apartados.fecha) <= ?)";
+
+	if($filtros->fechaInicio && $filtros->fechaFin) {
+		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
 	return selectRegresandoObjeto($sentencia, $parametros)->total;
 }
 
-function obtenerTotalPorPagarCuentasApartados($filtros, $tipo){
-	$sentencia = "SELECT SUM(porPagar) AS porPagar FROM cuentas_apartados WHERE tipo = ?";
+function obtenerTotalPorPagarCuentasApartados($filtros, $tipo) {
+    $sentencia1 = "SELECT SUM(total) AS positivo FROM cuentas_apartados WHERE tipo = ?";
+    $sentencia2 = "SELECT SUM(monto) AS negativo FROM abonos
+        INNER JOIN cuentas_apartados
+        ON cuentas_apartados.id = abonos.idCuenta
+        AND cuentas_apartados.tipo = ?";
+    
 	$parametros = [$tipo];
 
-	if($filtros->fechaInicio){
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND  DATE(cuentas_apartados.fecha) <= ?)";
+	if($filtros->fechaInicio && $filtros->fechaFin) {
+		$sentenciaFiltros = " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+
+        $sentencia1 .= $sentenciaFiltros;
+        $sentencia2 .= $sentenciaFiltros;
+
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
-	return selectRegresandoObjeto($sentencia, $parametros)->porPagar;
+
+	$positivo = selectRegresandoObjeto($sentencia1, $parametros)->positivo;
+    $negativo = selectRegresandoObjeto($sentencia2, $parametros)->negativo;
+
+    return $positivo - $negativo;
 }
 
 function obtenerPagosCuentasApartados($filtros, $tipo){
-	$sentencia = "SELECT SUM(pagado) AS totalPagos FROM cuentas_apartados WHERE tipo = ?";
+	$sentencia = "SELECT SUM(monto) AS totalPagos FROM abonos
+        INNER JOIN cuentas_apartados
+        ON cuentas_apartados.id = abonos.idCuenta
+        AND cuentas_apartados.tipo = ?";
+
 	$parametros = [$tipo];
-	if($filtros->fechaInicio){
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND  DATE(cuentas_apartados.fecha) <= ?)";
+
+	if ($filtros->fechaInicio && $filtros->fechaFin) {
+		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
+
 	return selectRegresandoObjeto($sentencia, $parametros)->totalPagos;
 }
 
-function obtenerCuentasApartados($filtros, $tipo){
-	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha, cuentas_apartados.total, cuentas_apartados.pagado, cuentas_apartados.porPagar, cuentas_apartados.dias, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+function obtenerCuentasApartados($filtros, $tipo) {
+	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
+        cuentas_apartados.total, SUM(abonos.monto) AS pagado,
+        (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar,
+        cuentas_apartados.dias, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
 		FROM cuentas_apartados
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
+        LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
 		WHERE cuentas_apartados.tipo = ? 
-		ORDER BY cuentas_apartados.id DESC";
+		GROUP BY cuentas_apartados.id
+        ORDER BY cuentas_apartados.id DESC";
 
 	$parametros = [$tipo];
 
-	if($filtros->fechaInicio){
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND  DATE(cuentas_apartados.fecha) <= ?)";
+	if ($filtros->fechaInicio && $filtros->fechaFin) {
+		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
@@ -250,11 +284,11 @@ function obtenerCotizaciones($filtros, $tipo){
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
-		WHERE 1 ";
+		WHERE 1";
 	$parametros = [];
 
 	if($filtros->fechaInicio){
-		$sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND  DATE(cotizaciones.fecha) <= ?)";
+		$sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
@@ -335,7 +369,8 @@ function registrarDelivery($venta, $relacion, $id) {
 
     $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
     $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $delivery->idChofer, $id];
-    return insertar($sentencia, clean($parametros));
+
+    insertar($sentencia, clean($parametros));
 }
 
 function vender($venta) {
@@ -353,30 +388,44 @@ function vender($venta) {
 
 	if (!$productosExito) return false;
 
-    if (!$venta->delivery) return true;
-    return registrarDelivery($venta, 'idVenta', $idVenta);
+    if (!$venta->delivery) return $idVenta;
+    registrarDelivery($venta, 'idVenta', $idVenta);
+
+    return $idVenta;
 }
 
 function agregarCuentaApartado($venta) {
-	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, pagado, porPagar, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?)";
 
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->porPagar, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
+    $ahora = date("Y-m-d H:i:s");
+	$parametros = [$ahora, $venta->total, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
 
 	$registrado = insertar($sentencia, clean($parametros));
 	
 	if(!$registrado) return false;
+    
+    $idCuenta = obtenerUltimoId('cuentas_apartados');
 
-	$idCuentaApartado = obtenerUltimoId('cuentas_apartados');
-	$productosRegistrados = registrarProductosVendidos($venta->productos, $idCuentaApartado, $venta->tipo);
+    if ($venta->pagado) {
+        $sentencia = "INSERT INTO abonos (fecha, monto, origen, `simple`, idMetodo, idCuenta) VALUES (?,?,?,?,?,?)";
+
+        $parametros = [$ahora, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $idCuenta];
+
+        insertar($sentencia, clean($parametros));
+    }
+
+	$productosRegistrados = registrarProductosVendidos($venta->productos, $idCuenta, $venta->tipo);
 	if($venta->tipo === 'cuenta') descontarProductos($venta->productos);
 
 	if(!(count($productosRegistrados) > 0)) return false;
 
-    if (!$venta->delivery) return true;
-    return registrarDelivery($venta, 'idCuenta', $idCuentaApartado);
+    if (!$venta->delivery) return $idCuenta;
+    registrarDelivery($venta, 'idCuenta', $idCuenta);
+
+    return $idCuenta;
 }
 
-function agregarCotizacion($venta){
+function agregarCotizacion($venta) {
 	$sentencia = "INSERT INTO cotizaciones(fecha, total, hasta, idCliente, idUsuario) VALUES (?,?,?,?,?)";
 	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->hasta, $venta->cliente, $venta->usuario];
 
@@ -385,7 +434,7 @@ function agregarCotizacion($venta){
 
 	$productosRegistrados = registrarProductosVendidos($venta->productos, $idCotizacion, $venta->tipo);
 
-	if(count($productosRegistrados) > 0) return true;
+	if(count($productosRegistrados) > 0) return $idCotizacion;
 }
 
 function registrarProductosVendidos($productos, $idReferencia, $tipo){
@@ -404,12 +453,23 @@ function registrarProductosVendidos($productos, $idReferencia, $tipo){
 function descontarProductos($productos){
 	$sentencia = "UPDATE productos SET existencia = existencia - ? WHERE id = ?";
 	$resultados = [];
+
 	foreach ($productos as $producto) {
 		$parametros = [$producto->cantidad, $producto->id];
 		$resultado = editar($sentencia, $parametros);
 		if($resultado) array_push($resultados, 1);
 	}
+
 	return $resultados;
+}
+
+function montoPorPagarCuentaApartado($id) {
+    $sentencia = "SELECT (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar
+        FROM cuentas_apartados
+        LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
+        WHERE cuentas_apartados.id = ?";
+
+    return selectRegresandoObjeto($sentencia, [$id])->porPagar;
 }
 
 /*                                                                                                  
@@ -423,7 +483,7 @@ function descontarProductos($productos){
                                                                     
 */
 
-function obtenerTotalVentasPorMesUsuario($idUsuario, $anio){
+function obtenerTotalVentasPorMesUsuario($idUsuario, $anio) {
 	$sentencia = "SELECT MONTH(fecha) AS mes, SUM(total) AS totalVentas FROM ventas 
         WHERE YEAR(fecha) = ?  AND idUsuario = ?
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
@@ -431,40 +491,41 @@ function obtenerTotalVentasPorMesUsuario($idUsuario, $anio){
     return selectPrepare($sentencia, $parametros);
 }
 
-function calcularTotalIngresosUsuario($idUsuario){
+function calcularTotalIngresosUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE idUsuario = ?) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE idUsuario = ?) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE idUsuario = ?) AS totalIngresos";
 	$parametros = [$idUsuario, $idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosHoyUsuario($idUsuario){
+function calcularTotalIngresosHoyUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) AS totalIngresos";
 	$parametros = [$idUsuario, $idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosSemanaUsuario($idUsuario){
+function calcularTotalIngresosSemanaUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) AS totalIngresos";
 	$parametros = [$idUsuario, $idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosMesUsuario($idUsuario){
+function calcularTotalIngresosMesUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(pagado),0) FROM cuentas_apartados WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) AS totalIngresos";
 	$parametros = [$idUsuario, $idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function obtenerVentasPorUsuario(){
-	$sentencia = "SELECT usuarios.usuario, SUM(ventas.total) AS totalVentas  FROM ventas
+function obtenerVentasPorUsuario() {
+	$sentencia = "SELECT usuarios.usuario, SUM(ventas.total) AS totalVentas
+    FROM ventas
 	INNER JOIN usuarios ON usuarios.id = ventas.idUsuario
 	GROUP BY usuarios.id";
 	return selectQuery($sentencia);
@@ -642,9 +703,10 @@ function obtenerDeliveries() {
 |___|    |___|  |_||_______||______| |_______||_______|  |___|  |_______||_______|
 
 */
-function obtenerProductosMasVendidos($limite){
+function obtenerProductosMasVendidos($limite) {
 	$sentencia = "SELECT SUM(productos_vendidos.cantidad * productos_vendidos.precio) AS total, SUM(productos_vendidos.cantidad) AS unidades,
-	productos.nombre FROM productos_vendidos INNER JOIN productos ON productos.id = productos_vendidos.idProducto
+	productos.nombre
+    FROM productos_vendidos INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	WHERE productos_vendidos.tipo = 'venta'
 	GROUP BY productos_vendidos.idProducto
 	ORDER BY total DESC
