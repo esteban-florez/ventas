@@ -8,6 +8,12 @@ Entrega: 24-25 de febrero
 ## Mid (8 días)
 
 - Crear historial de inventario, con las entradas y las salidas de los productos (1 día)
+  - cambiar la forma en que se maneja actualmente
+  - ventas y fiados, salen de una
+  - en cuanto a apartado, los elementos salen cuanddo se pague toda la deuda
+  - usar tabla "productos_vendidos"
+  - cambiar forma en que ingresan (restocking, además de stock inicial)
+
 - En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)
 - Agregar modulo proveedores, y añadir campo de proveedor al registrar producto (1/2 día)
 

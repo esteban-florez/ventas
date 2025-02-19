@@ -48,8 +48,8 @@ aria-label="Modal Terminar Venta"
 close-button-aria-label="Close"
 aria-modal>
 <dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-terminar-venta>
-<dialogo-agregar-cuenta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-cuenta>
-<dialogo-agregar-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado" :metodos="metodos" :choferes="choferes" @actualizar="actualizar"></dialogo-agregar-apartado>
+<dialogo-agregar-cuenta-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarCuenta" :metodos="metodos" :choferes="choferes" @actualizar="actualizar" tipo="cuenta"></dialogo-agregar-cuenta-apartado>
+<dialogo-agregar-cuenta-apartado :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarAgregarApartado" :metodos="metodos" :choferes="choferes" @actualizar="actualizar" tipo="apartado"></dialogo-agregar-cuenta-apartado>
 <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
 </b-modal>
 <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante" :porPagar="porPagar" />
@@ -59,8 +59,7 @@ aria-modal>
   import BuscarProducto from '../Inventario/BuscarProducto.vue'
   import TablaProductos from './TablaProductos.vue'
   import DialogoTerminarVenta from './DialogoTerminarVenta'
-  import DialogoAgregarCuenta from './DialogoAgregarCuenta'
-  import DialogoAgregarApartado from './DialogoAgregarApartado'
+  import DialogoAgregarCuentaApartado from './DialogoAgregarCuentaApartado.vue'
   import DialogoCotizar from './DialogoCotizar'
   import ComprobanteCompra from './ComprobanteCompra'
   import MensajeInicial from '../Extras/MensajeInicial'
@@ -73,8 +72,7 @@ aria-modal>
       BuscarProducto, 
       TablaProductos, 
       DialogoTerminarVenta, 
-      DialogoAgregarCuenta,
-      DialogoAgregarApartado,
+      DialogoAgregarCuentaApartado,
       DialogoCotizar,
       MensajeInicial,
       ComprobanteCompra
@@ -142,39 +140,31 @@ aria-modal>
         }
 
         let tipo = venta.tipo
+        this.ventaRealizada.tipo = tipo
 
         switch (tipo) {
           case 'venta':
-          this.ventaRealizada.tipo = 'venta'
-          this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.simple = venta.simple
-          this.ventaRealizada.origen = venta.origen
-          this.ventaRealizada.idMetodo = venta.idMetodo
-          this.ventaRealizada.delivery = venta.delivery
-          this.ventaRealizada.chofer = venta.chofer
-          break
-          
-          case 'cuenta':
-          this.ventaRealizada.tipo = 'cuenta'
-          this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.simple = venta.simple
-          this.ventaRealizada.origen = venta.origen
-          this.ventaRealizada.idMetodo = venta.idMetodo
-          this.ventaRealizada.dias = venta.dias
-          this.ventaRealizada.delivery = venta.delivery
-          this.ventaRealizada.chofer = venta.chofer
-          break
-
-          case 'apartado':
-          this.ventaRealizada.tipo = 'apartado'
-          this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.dias = venta.dias
-          break
+            this.ventaRealizada.pagado = venta.pagado
+            this.ventaRealizada.simple = venta.simple
+            this.ventaRealizada.origen = venta.origen
+            this.ventaRealizada.idMetodo = venta.idMetodo
+            this.ventaRealizada.delivery = venta.delivery
+            this.ventaRealizada.chofer = venta.chofer
+            break
 
           case 'cotiza':
-          this.ventaRealizada.tipo = 'cotiza'
-          this.ventaRealizada.hasta = venta.hasta
-          break
+            this.ventaRealizada.hasta = venta.hasta
+            break
+
+          default:
+            this.ventaRealizada.pagado = venta.pagado
+            this.ventaRealizada.simple = venta.simple
+            this.ventaRealizada.origen = venta.origen
+            this.ventaRealizada.idMetodo = venta.idMetodo
+            this.ventaRealizada.delivery = venta.delivery
+            this.ventaRealizada.chofer = venta.chofer
+            this.ventaRealizada.dias = venta.dias
+            break
         }
 
         if (tipo !== 'cotiza' && this.ventaRealizada.pagado === '') {

@@ -1,17 +1,18 @@
 <template>
-	<form action="">
+	<form @submit.prevent="agregarCuentaApartado">
 		<div class="modal-card" style="width: 600px">
-			<header class="modal-card-head has-background-info">
-				<p class="modal-card-title has-text-white">Agregar a cuenta</p>
+			<header class="modal-card-head" :class="clase">
+				<p class="modal-card-title has-text-white">{{ titulo }}</p>
 				<button
 					type="button"
 					class="delete"
-					@click="$emit('close', 'cuenta')"/>
+					@click="$emit('close', tipo)"
+        />
 			</header>
 			<section class="modal-card-body">
-				<busqueda-cliente @seleccionado="onSeleccionado"/>
+				<busqueda-cliente @seleccionado="onSeleccionado" />
 				<b-field class="mt-3" label="Vence en">
-          <b-select class="wide" icon="tag-multiple" v-model="dias">
+          <b-select class="wide" icon="tag-multiple" v-model="dias" required>
             <option value="" disabled>Seleccionar...</option>
             <option v-for="dia in DIAS" :key="dia" :value="dia">
               {{ dia }} días
@@ -74,7 +75,7 @@
           </b-field>
         </div>
         <b-field class="mt-3" label="El cliente paga con">
-          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
+          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado"></b-input>
         </b-field>
 				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
 				<p class="is-size-1 has-text-weight-bold">Por Pagar ${{ porPagar }}</p>
@@ -84,13 +85,14 @@
 					label="Cancelar"
 					icon-left="cancel"
 					size="is-medium"
-					@click="$emit('close', 'cuenta')" />
+					@click="$emit('close', tipo)" />
 				<b-button
 					label="Agregar a cuenta"
 					type="is-info"
 					icon-left="wallet-plus"
 					size="is-medium"
-					@click="agregarCuenta" />
+          native-type="submit"
+        />
 			</footer>
 		</div>
 	</form>
@@ -101,7 +103,7 @@
 
 	export default{
 		name:"DialogoAgregarCuenta",
-		props: ['totalVenta', 'choferes', 'metodos'],
+		props: ['totalVenta', 'choferes', 'metodos', 'tipo'],
 		components: { BusquedaCliente },
 
 		data: () => ({
@@ -112,6 +114,8 @@
       origen: '',
       esDelivery: false,
       nuevoChofer: false,
+      clase: '',
+      titulo: '',
       delivery: {
         costo: null,
         destino: null,
@@ -128,6 +132,11 @@
       metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
       tipos: TIPOS_CLIENTE,
 		}),
+
+    mounted() {
+      this.clase = `has-background-${this.tipo === 'cuenta' ? 'info' : 'dark'}`
+      this.titulo = this.tipo === 'cuenta' ? 'Agregar a cuenta' : 'Realizar apartado'
+    },
 
     computed: {
       porPagar() {
@@ -151,8 +160,7 @@
         this.$emit('actualizar', 'costoDelivery', this.delivery.costo)
       },
 
-
-			agregarCuenta() {
+			agregarCuentaApartado() {
 				if (Object.keys(this.cliente).length === 0) {
 					this.$buefy.toast.open({
             type: 'is-danger',
@@ -170,7 +178,7 @@
         }
 
 				let payload = {
-					tipo: 'cuenta',
+					tipo: this.tipo,
 					pagado: this.pagado,
 					porPagar: this.porPagar,
 					cliente: this.cliente,
@@ -191,7 +199,6 @@
 
       this.$emit("terminar", payload)
 			}	
-		
 		}
 	}
 </script>
