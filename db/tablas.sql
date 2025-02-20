@@ -154,6 +154,22 @@ CREATE TABLE `deliveries` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `entradas`
+--
+
+DROP TABLE IF EXISTS `entradas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `entradas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `fecha` date NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `idProducto` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `marcas`
 --
 
@@ -205,7 +221,6 @@ CREATE TABLE `productos` (
   `precioVenta` decimal(8,2) NOT NULL,
   `precioVenta2` decimal(8,2) NOT NULL,
   `precioVenta3` decimal(8,2) NOT NULL,
-  `existencia` int(11) NOT NULL,
   `vendidoMayoreo` tinyint(1),
   `precioMayoreo` decimal(8,2) DEFAULT NULL,
   `cantidadMayoreo` decimal(8,2) DEFAULT NULL,

@@ -3,16 +3,14 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-- Agregar historial de abonos para cuentas y apartados, en nueva pagina, ponerle método de pago a cada abono (1 día)
-
-## Mid (8 días)
-
-- Crear historial de inventario, con las entradas y las salidas de los productos (1 día)
+- Crear historial de inventario, con las entradas y las salidas de los productos
   - cambiar la forma en que se maneja actualmente
   - ventas y fiados, salen de una
   - en cuanto a apartado, los elementos salen cuanddo se pague toda la deuda
   - usar tabla "productos_vendidos"
   - cambiar forma en que ingresan (restocking, además de stock inicial)
+
+## Mid (8 días)
 
 - En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)
 - Agregar modulo proveedores, y añadir campo de proveedor al registrar producto (1/2 día)
