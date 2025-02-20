@@ -128,6 +128,7 @@ CREATE TABLE `cuentas_apartados` (
   `total` decimal(9,2) NOT NULL,
   `dias` int(11) NOT NULL,
   `tipo` enum('apartado','cuenta') NOT NULL,
+  `entregado` tinyint(1) NOT NULL,
   `idCliente` bigint(20) DEFAULT NULL,
   `idUsuario` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
@@ -243,7 +244,24 @@ CREATE TABLE `productos_vendidos` (
   `precio` decimal(8,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,
   `idReferencia` bigint(20) NOT NULL,
-  `tipo` enum('apartado','cuenta','venta','cotiza') DEFAULT NULL,
+  `tipo` enum('apartado','cuenta','venta') DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `productos_cotizados`
+--
+
+DROP TABLE IF EXISTS `productos_cotizados`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `productos_cotizados` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `cantidad` decimal(5,2) NOT NULL,
+  `precio` decimal(8,2) NOT NULL,
+  `idProducto` bigint(20) NOT NULL,
+  `idCotizacion` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

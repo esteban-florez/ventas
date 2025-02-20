@@ -27,7 +27,7 @@ INSERT INTO `abonos` VALUES
 (1,'2025-02-28 14:48:09',102.00,'04151231234',NULL,1,1),
 (2,'2025-02-28 14:48:09',1000.00,'02001234090012348080',NULL,3,2),
 (3,'2025-02-28 14:48:09',900.00,'zelle123@ejemplo.com',NULL,4,3),
-(4,'2025-02-28 14:48:09',1000.00,'binance123@ejemplo.com',NULL,5,4),
+(4,'2025-02-28 14:48:09',500.00,'binance123@ejemplo.com',NULL,5,4),
 (5,'2025-02-28 14:48:09',22.00,NULL,'Punto de Venta',NULL,5);
 /*!40000 ALTER TABLE `abonos` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -111,11 +111,11 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2022-06-25 17:30:03',1002.00,7,'cuenta',2,1),
-(2,'2022-06-25 17:36:09',1000.00,NULL,'apartado',1,1),
-(3,'2022-06-25 17:53:10',1010.50,10,'cuenta',1,1),
-(4,'2022-06-25 17:53:25',1000.00,NULL,'apartado',2,1),
-(5,'2022-07-03 17:53:15',22.00,15,'cuenta',1,1);
+(1,'2022-06-25 17:30:03',1002.00,7,'cuenta',1,2,1),
+(2,'2022-06-25 17:36:09',1000.00,NULL,'apartado',1,1,1),
+(3,'2022-06-25 17:53:10',1010.50,10,'cuenta',1,1,1),
+(4,'2022-06-25 17:53:25',1000.00,NULL,'apartado',0,2,1),
+(5,'2022-07-03 17:53:15',22.00,15,'cuenta',1,1,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,23 +222,33 @@ INSERT INTO `productos_vendidos` VALUES
 (9,1.00,22.00,2,3,'venta'),
 (10,1.00,10.00,4,3,'venta'),
 (11,1.00,1000.00,1,4,'venta'),
-(12,3.00,22.00,2,1,'cotiza'),
-(13,3.00,10.00,4,1,'cotiza'),
-(14,1.00,1000.00,1,1,'cotiza'),
-(15,3.00,22.00,3,1,'cotiza'),
-(16,100.00,8.00,4,2,'cotiza'),
-(17,1.00,22.00,3,5,'cuenta'),
-(18,4.00,22.00,3,4,'cotiza'),
-(19,3.00,10.00,4,4,'cotiza'),
-(20,3.00,1000.00,1,4,'cotiza'),
-(21,5.00,200.00,7,4,'cotiza'),
-(22,4.00,100.00,6,4,'cotiza'),
-(23,2.00,10.00,4,5,'cotiza'),
-(24,1.00,200.00,7,5,'cotiza'),
-(25,1.00,100.00,6,5,'cotiza'),
-(26,1.00,1000.00,1,5,'cotiza'),
-(27,1.00,22.00,3,5,'cotiza');
+(12,1.00,22.00,3,5,'cuenta');
 /*!40000 ALTER TABLE `productos_vendidos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `productos_cotizados`
+--
+
+LOCK TABLES `productos_cotizados` WRITE;
+/*!40000 ALTER TABLE `productos_cotizados` DISABLE KEYS */;
+INSERT INTO `productos_cotizados` VALUES
+(1,3.00,22.00,2,1),
+(2,3.00,10.00,4,1),
+(3,1.00,1000.00,1,1),
+(4,3.00,22.00,3,1),
+(5,100.00,8.00,4,2),
+(6,4.00,22.00,3,4),
+(7,3.00,10.00,4,4),
+(8,3.00,1000.00,1,4),
+(9,5.00,200.00,7,4),
+(10,4.00,100.00,6,4),
+(11,2.00,10.00,4,5),
+(12,1.00,200.00,7,5),
+(13,1.00,100.00,6,5),
+(14,1.00,1000.00,1,5),
+(15,1.00,22.00,3,5);
+/*!40000 ALTER TABLE `productos_cotizados` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
