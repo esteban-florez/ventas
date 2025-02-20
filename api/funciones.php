@@ -167,27 +167,6 @@ function eliminarCotizacion($id){
 	return $cotizacionEliminada && $productosEliminados;
 }
 
-function abonarACuentaApartado($total, $id) {
-    // TODO cambiará a registrarAbono
-	$sentencia = "UPDATE cuentas_apartados SET pagado = pagado + ?, porPagar = porPagar - ? WHERE id = ?";
-	$parametros = [$total, $total, $id];
-	$abono = editar($sentencia, $parametros);
-	$verificarSiLiquida = verificarSiLiquidaApartado($id);
-	if($abono || $verificarSiLiquida) return true;
-}
-
-function verificarSiLiquidaApartado($id){
-    // TODO adaptarse a registrarAbono, igual cambiará cuando exista el inventario
-	$sentencia = "SELECT * FROM cuentas_apartados WHERE id = ?";
-	$apartado = selectRegresandoObjeto($sentencia, [$id]);
-	$total = $apartado->porPagar;
-	if($total <= 0){
-		$productos  = obtenerProductosVendidos($id, 'apartado');
-		$descontados = descontarProductos($productos);
-		if(count($descontados) > 0) return true;
-	}
-}
-
 function obtenerTotalVentas($filtros) {
 	$sentencia = "SELECT SUM(total) AS totalVentas FROM ventas";
     $parametros = [];
@@ -491,6 +470,35 @@ function obtenerAbonosPorCuentaApartado($id) {
     if ($abonos === false || $cuentaApartado === false) return false;
 
     return ['abonos' => $abonos, 'cuentaApartado' => $cuentaApartado];
+}
+
+function registrarAbono($abono) {
+    $sentencia = "INSERT INTO abonos (fecha, monto, origen, `simple`, idMetodo, idCuenta) VALUES (?,?,?,?,?,?)";
+
+    $parametros = [date('Y-m-d H:i:s'), $abono->monto, $abono->origen, $abono->simple, $abono->idMetodo, $abono->idCuenta];
+
+    insertar($sentencia, clean($parametros));
+
+    $sentencia = "SELECT * FROM cuentas_apartados WHERE id = ?";
+
+    $cuentaApartado = selectRegresandoObjeto($sentencia, [$abono->idCuenta]);
+
+    if ($cuentaApartado->tipo === 'apartado') {
+        verificarSiLiquidaApartado($cuentaApartado->id);
+    }
+
+    return obtenerUltimoId('abonos');
+}
+
+function verificarSiLiquidaApartado($id){
+    // TODO actualizar cuando cambie el sistema de inventario
+	$porPagar = (float) montoPorPagarCuentaApartado($id);
+    $solvente = $porPagar <= 0;
+
+	if (!$solvente) return;
+    dd('ta listo loco');
+    $productos = obtenerProductosVendidos($id, 'apartado');
+    descontarProductos($productos);
 }
 
 /*                                                                                                  

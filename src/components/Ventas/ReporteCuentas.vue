@@ -10,7 +10,7 @@
       :subtitulo="'Aquí aparecerán las cuentas registradas'" v-if="cuentas.length < 1" />
     <div class="mt-2" v-if="cuentas.length > 0">
       <cartas-totales :totales="totalesGenerales" />
-      <tabla-cuentas-apartados :datos="cuentas" @abonar="onAbonar" @liquidar="onLiquidar"
+      <tabla-cuentas-apartados :datos="cuentas"
         @imprimir="onGenerarComprobante" />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
@@ -60,60 +60,6 @@ export default {
       }).then(porPagar => {
         this.porPagar = porPagar
         this.mostrarComprobante = true
-      })
-    },
-
-    onLiquidar(cuenta) {
-      this.$buefy.dialog.confirm({
-        message: '¿Liquidar cuenta? El cliente debe pagar: $' + cuenta.porPagar,
-        cancelText: 'Cancelar',
-        confirmText: 'Liquidar',
-        onConfirm: () => {
-          this.cargando = true
-          HttpService.registrar('ventas.php', {
-            accion: 'abonar',
-            total: cuenta.porPagar,
-            id: cuenta.id
-          })
-            .then(resultado => {
-              if (resultado) {
-                this.cargando = false
-                this.$buefy.toast.open(`Cuenta liquidada`)
-                this.obtenerCuentas()
-              }
-            })
-        }
-      })
-    },
-
-    onAbonar(cuenta) {
-      this.$buefy.dialog.prompt({
-        message: `Escribe el total del abono. Restan: $` + cuenta.porPagar,
-        cancelText: 'Cancelar',
-        confirmText: 'Abonar',
-        inputAttrs: {
-          type: 'number',
-          placeholder: 'Abono',
-          value: '',
-          min: 1,
-          max: cuenta.porPagar
-        },
-        trapFocus: true,
-        onConfirm: (value) => {
-          this.cargando = true
-          HttpService.registrar('ventas.php', {
-            accion: 'abonar',
-            total: value,
-            id: cuenta.id
-          })
-            .then(resultado => {
-              if (resultado) {
-                this.cargando = false
-                this.$buefy.toast.open(`Abono registrado`)
-                this.obtenerCuentas()
-              }
-            })
-        }
       })
     },
 

@@ -11,7 +11,7 @@
       :subtitulo="'Aquí aparecerán los apartados registrados'" v-if="apartados.length < 1" />
     <div class="mt-2" v-if="apartados.length > 0">
       <cartas-totales :totales="totalesGenerales" />
-      <tabla-cuentas-apartados :datos="apartados" @abonar="onAbonar" @liquidar="onLiquidar"
+      <tabla-cuentas-apartados :datos="apartados"
         @imprimir="onGenerarComprobante" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
@@ -61,60 +61,6 @@ export default {
       }).then(porPagar => {
         this.porPagar = porPagar
         this.mostrarComprobante = true
-      })
-    },
-
-    onLiquidar(apartado) {
-      this.$buefy.dialog.confirm({
-        message: '¿Liquidar apartado? El cliente debe pagar: $' + apartado.porPagar,
-        cancelText: 'Cancelar',
-        confirmText: 'Liquidar',
-        onConfirm: () => {
-          this.cargando = true
-          HttpService.registrar('ventas.php', {
-            accion: 'abonar',
-            total: apartado.porPagar,
-            id: apartado.id
-          })
-            .then(resultado => {
-              if (resultado) {
-                this.cargando = false
-                this.$buefy.toast.open(`Apartado liquidado`)
-                this.obtenerApartados()
-              }
-            })
-        }
-      })
-    },
-
-    onAbonar(apartado) {
-      this.$buefy.dialog.prompt({
-        message: `Escribe el total del abono. Restan: $` + apartado.porPagar,
-        cancelText: 'Cancelar',
-        confirmText: 'Abonar',
-        inputAttrs: {
-          type: 'number',
-          placeholder: 'Abono',
-          value: '',
-          min: 1,
-          max: apartado.porPagar
-        },
-        trapFocus: true,
-        onConfirm: (value) => {
-          this.cargando = true
-          HttpService.registrar('ventas.php', {
-            accion: 'abonar',
-            total: value,
-            id: apartado.id
-          })
-            .then(resultado => {
-              if (resultado) {
-                this.cargando = false
-                this.$buefy.toast.open(`Abono registrado`)
-                this.obtenerApartados()
-              }
-            })
-        }
       })
     },
 

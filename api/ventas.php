@@ -71,6 +71,10 @@ switch ($accion) {
         echo json_encode(obtenerAbonosPorCuentaApartado($payload->id));
         break;
 
+    case 'realizar_abono':
+        echo json_encode(registrarAbono($payload->abono));
+        break;
+
 	default:
 		echo json_encode("No se reconoce");
 		break;

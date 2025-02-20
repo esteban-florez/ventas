@@ -64,15 +64,8 @@
       </b-table-column>
 
       <b-table-column field="abonar" label="Abonar" v-slot="props">
-        <b-button type="is-primary" @click="abonar(props.row)" v-if="props.row.porPagar > 0">
+        <b-button type="is-primary" tag="router-link" :to="{ name: 'RealizarAbono', params: { id: props.row.id } }" v-if="props.row.porPagar > 0">
           <b-icon icon="wallet-plus">
-          </b-icon>
-        </b-button>
-      </b-table-column>
-
-      <b-table-column field="liquidar" label="Liquidar" v-slot="props">
-        <b-button type="is-success" @click="liquidar(props.row)" v-if="props.row.porPagar > 0">
-          <b-icon icon="check-underline-circle">
           </b-icon>
         </b-button>
       </b-table-column>
@@ -102,14 +95,6 @@ export default {
     generarComprobante(item) {
       this.$emit("imprimir", item)
     },
-
-    abonar(item) {
-      this.$emit("abonar", item)
-    },
-
-    liquidar(item) {
-      this.$emit("liquidar", item)
-    }
   }
 }
 </script>

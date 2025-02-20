@@ -1,12 +1,19 @@
 <template>
   <section>
-    <nav-component :titulo="'Abonos'" />
+    <nav-component :titulo="'Abonos'" texto="Realizar abono" :link="link"/>
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Abonos</b-breadcrumb-item>
     </b-breadcrumb>
     <mensaje-inicial :titulo="'No se han registrado abonos'" v-if="abonos.length < 1" />
+    <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
+      Datos de {{ this.cuentaApartado.tipo === 'cuenta' ? 'cuenta' : 'apartado' }}
+    </h3>
     <cartas-totales :totales="datosCuentaApartado" />
+    <hr>
+    <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
+      Lista de abonos
+    </h3>
     <b-select v-model="perPage">
         <option value="5">5 por página</option>
         <option value="10">10 por página</option>
@@ -57,15 +64,18 @@ export default {
     perPage: 5,
     cuentaApartado: null,
     datosCuentaApartado: [],
+    link: null,
   }),
 
-  mounted() {
-    this.obtenerAbonos()
+  async mounted() {
+    await this.obtenerAbonos()
+    if (Number(this.cuentaApartado.porPagar) === 0) return
+    this.link = { name: 'RealizarAbono', params: { id: this.$route.params.id } }
   },
 
   methods: {
     generarComprobante(props) {
-      alert('TODO', props)
+      alert('TODO -> imprimir comprobante de abono', props)
     },
 
     async obtenerAbonos() {

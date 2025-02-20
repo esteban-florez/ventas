@@ -26,6 +26,7 @@ import ChoferesComponent from '@/components/Choferes/ChoferesComponent.vue'
 import EditarChofer from '@/components/Choferes/EditarChofer.vue'
 import DeliveriesComponent from '@/components/Deliveries/DeliveriesComponent.vue'
 import AbonosComponent from '@/components/Abonos/AbonosComponent.vue'
+import RealizarAbono from '@/components/Abonos/RealizarAbono.vue'
 
 Vue.use(VueRouter)
 
@@ -136,11 +137,6 @@ const routes = [
     component: MetodosComponent
   },
   {
-    path: '/abonos/:id',
-    name: 'AbonosComponent',
-    component: AbonosComponent,
-  },
-  {
     path: '/agregar-metodo',
     name: 'AgregarMetodo',
     component: AgregarMetodo
@@ -149,6 +145,16 @@ const routes = [
     path: '/editar-metodo/:id',
     name: 'EditarMetodo',
     component: EditarMetodo
+  },
+  {
+    path: '/abonos/:id',
+    name: 'AbonosComponent',
+    component: AbonosComponent,
+  },
+  {
+    path: '/realizar-abono/:id',
+    name: 'RealizarAbono',
+    component: RealizarAbono,
   },
   {
     path: '/perfil',
