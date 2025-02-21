@@ -3,10 +3,6 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-- Crear historial de inventario, con las entradas y las salidas de los productos
-  - ingreso de productos (restocking, además de stock inicial)
-  - pagina de historial de operaciones
-
 ## Mid (8 días)
 
 - En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)

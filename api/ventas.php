@@ -75,6 +75,10 @@ switch ($accion) {
         echo json_encode(registrarAbono($payload->abono));
         break;
 
+    case 'historial':
+        echo json_encode(obtenerHistorialInventario());
+        break;
+
 	default:
 		echo json_encode("No se reconoce");
 		break;

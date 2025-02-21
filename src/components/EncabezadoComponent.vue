@@ -92,6 +92,13 @@
                     <span></span>
                     Choferes
                 </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/historial' }">
+                    <b-icon
+                    icon="clipboard-text-clock">
+                    </b-icon>
+                    <span></span>
+                    Movimientos
+                </b-navbar-item>
                 </b-navbar-dropdown>
             </b-navbar-item>
 

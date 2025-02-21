@@ -162,8 +162,8 @@ DROP TABLE IF EXISTS `entradas`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `entradas` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `fecha` date NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `cantidad` decimal(5,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
@@ -239,6 +239,7 @@ DROP TABLE IF EXISTS `productos_vendidos`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `productos_vendidos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `fecha` datetime NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
   `precio` decimal(8,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,

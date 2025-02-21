@@ -27,6 +27,7 @@ import EditarChofer from '@/components/Choferes/EditarChofer.vue'
 import DeliveriesComponent from '@/components/Deliveries/DeliveriesComponent.vue'
 import AbonosComponent from '@/components/Abonos/AbonosComponent.vue'
 import RealizarAbono from '@/components/Abonos/RealizarAbono.vue'
+import HistorialComponent from '@/components/Inventario/HistorialComponent.vue'
 
 Vue.use(VueRouter)
 
@@ -155,6 +156,11 @@ const routes = [
     path: '/realizar-abono/:id',
     name: 'RealizarAbono',
     component: RealizarAbono,
+  },
+  {
+    path: '/historial',
+    name: 'HistorialComponent',
+    component: HistorialComponent,
   },
   {
     path: '/perfil',

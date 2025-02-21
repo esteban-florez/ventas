@@ -47,10 +47,6 @@ switch ($accion) {
 		echo json_encode(agregarExistenciaProducto($payload->cantidad, $payload->id));
 		break;
 	
-	case 'restar_existencia':
-		echo json_encode(restarExistenciaProducto($payload->cantidad, $payload->id));
-		break;
-	
 	default:
 		echo json_encode("No se reconoce");
 		break;

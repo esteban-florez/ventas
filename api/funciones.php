@@ -749,6 +749,26 @@ function agregarExistenciaProducto($cantidad, $id) {
 	return editar($sentencia, $parametros);
 }
 
+function obtenerHistorialInventario() {
+    $sentencia1 = "SELECT e.fecha, e.cantidad,
+        CONCAT('+') as tipo, p.nombre AS nombreProducto
+        FROM entradas AS e
+        LEFT JOIN productos AS p ON p.id = e.idProducto;";
+
+    $sentencia2 = "SELECT v.fecha, v.cantidad,
+        CONCAT('-') AS tipo, p.nombre AS nombreProducto
+        FROM productos_vendidos AS v
+        LEFT JOIN productos AS p ON p.id = v.idProducto;";
+
+    $entradas = selectQuery($sentencia1);
+    $salidas = selectQuery($sentencia2);
+
+    $movimientos = array_merge($entradas, $salidas);
+
+    dd($movimientos);
+    return $movimientos;
+}
+
 function calcularGananciaInventario() {
     $productos = obtenerExistencia();
 
