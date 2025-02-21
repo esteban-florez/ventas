@@ -4,11 +4,8 @@
 Entrega: 24-25 de febrero
 
 - Crear historial de inventario, con las entradas y las salidas de los productos
-  - cambiar la forma en que se maneja actualmente
-  - ventas y fiados, salen de una
-  - en cuanto a apartado, los elementos salen cuanddo se pague toda la deuda
-  - usar tabla "productos_vendidos"
-  - cambiar forma en que ingresan (restocking, además de stock inicial)
+  - ingreso de productos (restocking, además de stock inicial)
+  - pagina de historial de operaciones
 
 ## Mid (8 días)
 
@@ -29,6 +26,10 @@ Entrega: 24-25 de febrero
 6 días:
 - Cuando transcurran los días de vencimiento de las cuentas/apartados sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
 - Envíar documentos de facturas por WhatsApp, de los mismos reportes que aparecen arriba
+
+## Bugs
+
+- Cáculos "incorrectos" en estadísticas de ventas (ver TODO en funciones.php)
 
 ## Después
 

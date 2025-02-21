@@ -198,10 +198,11 @@ aria-modal>
                 accion: 'por_pagar', id,
               })
             }
-
-            this.mostrarComprobante = true
           }).then(porPagar => {
-            this.porPagar = porPagar
+            if (porPagar) {
+              this.porPagar = porPagar
+            }
+
             this.mostrarComprobante = true
           })
       },

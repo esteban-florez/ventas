@@ -36,7 +36,7 @@
         <b>${{ props.row.total }}</b>
       </b-table-column>
 
-      <b-table-column field="dias" label="Duración" sortable v-slot="props">
+      <b-table-column field="dias" label="Duración" sortable v-slot="props" v-if="datos[0].tipo === 'cuenta'">
         {{ props.row.dias }} días
       </b-table-column>
 

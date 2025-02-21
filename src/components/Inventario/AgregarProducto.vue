@@ -8,7 +8,7 @@
             <b-breadcrumb-item tag='router-link' to="/inventario">Inventario</b-breadcrumb-item>
             <b-breadcrumb-item  active>Agregar producto</b-breadcrumb-item>
         </b-breadcrumb>     
-        <form-producto @registrado="onRegistrado" :productoProp="producto"/>
+        <form-producto @registrado="onRegistrado" :productoProp="producto" :editar="false" />
         <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
     </section>
 </template>

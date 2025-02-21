@@ -60,7 +60,7 @@ switch ($accion) {
 		break;
 
 	case 'abonar':
-		echo json_encode(abonarACuentaApartado($payload->total, $payload->id));
+		echo json_encode(registrarAbono($payload->total, $payload->id));
 		break;
 
     case 'por_pagar':
