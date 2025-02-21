@@ -111,11 +111,11 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2022-06-25 17:30:03',1002.00,7,'cuenta',1,2,1),
-(2,'2022-06-25 17:36:09',1000.00,NULL,'apartado',1,1,1),
-(3,'2022-06-25 17:53:10',1010.50,10,'cuenta',1,1,1),
-(4,'2022-06-25 17:53:25',1000.00,NULL,'apartado',0,2,1),
-(5,'2022-07-03 17:53:15',22.00,15,'cuenta',1,1,1);
+(1,'2022-06-25 17:30:03',1002.00,7,'cuenta',2,1),
+(2,'2022-06-25 17:36:09',1000.00,NULL,'apartado',1,1),
+(3,'2022-06-25 17:53:10',1010.50,10,'cuenta',1,1),
+(4,'2022-06-25 17:53:25',1000.00,NULL,'apartado',2,1),
+(5,'2022-07-03 17:53:15',22.00,15,'cuenta',1,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
 UNLOCK TABLES;
 
