@@ -706,6 +706,30 @@ function obtenerDeliveries() {
 	return selectQuery($sentencia);
 }
 
+/* PROVEEDORES */
+
+function obtenerProveedores() {
+	$sentencia = "SELECT * FROM proveedores;";
+	return selectQuery($sentencia);
+}
+
+function obtenerProveedorPorId($id) {
+	$sentencia = "SELECT * FROM proveedores WHERE id = ?;";
+	return selectRegresandoObjeto($sentencia, [$id]);
+}
+
+function registrarProveedor($datos) {
+	$sentencia = "INSERT INTO proveedores (nombre, telefono, rif, direccion) VALUES (?,?,?,?);";
+    $parametros = [$datos->nombre, $datos->telefono, $datos->rif, $datos->direccion];
+	return insertar($sentencia, $parametros);
+}
+
+function editarProveedor($datos) {
+	$sentencia = "UPDATE proveedores SET nombre = ?, telefono = ?, rif = ?, direccion = ? WHERE id = ?";
+	$parametros = [$datos->nombre, $datos->telefono, $datos->rif, $datos->direccion, $datos->id];
+	return editar($sentencia, $parametros);
+}
+
 /*
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 
