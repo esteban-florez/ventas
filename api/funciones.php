@@ -420,11 +420,11 @@ function agregarCotizacion($venta) {
 }
 
 function registrarProductosVendidos($productos, $idReferencia, $tipo) {
-	$sentencia = "INSERT INTO productos_vendidos (cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?)";
+	$sentencia = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
 	$resultados = [];
 
 	foreach ($productos as $producto) {
-		$parametros = [$producto->cantidad, $producto->precio, $producto->id, $idReferencia, $tipo];
+		$parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->precio, $producto->id, $idReferencia, $tipo];
 		$productoRegistrado = insertar($sentencia, $parametros);
 		if($productoRegistrado) array_push($resultados, 1);
 	}
@@ -745,7 +745,7 @@ function obtenerExistencia($id = null) {
 
 function agregarExistenciaProducto($cantidad, $id) {
 	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto) VALUES (?,?,?)";
-	$parametros = [date('Y-m-d'), $cantidad, $id];
+	$parametros = [date('Y-m-d H:i:s'), $cantidad, $id];
 	return editar($sentencia, $parametros);
 }
 

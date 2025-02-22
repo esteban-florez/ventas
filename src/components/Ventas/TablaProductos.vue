@@ -10,7 +10,14 @@
 			</b-table-column>
 
 			<b-table-column field="precio" label="Precio" v-slot="props">
-				${{ props.row.precio }}
+        <span v-if="props.row.mayoreoAplicado">
+          ${{ props.row.precio }}
+        </span>
+        <b-select class="wide" icon="tag-multiple" v-model="props.row.precio" required @input="$emit('precioCambiado')" v-if="!props.row.mayoreoAplicado">
+          <option v-for="precio in precios(props.row)" :key="precio" :value="precio">
+            {{ precio }}
+          </option>
+        </b-select>
 			</b-table-column>
 
 			<b-table-column field="cantidad" label="Cantidad" v-slot="props">
@@ -50,13 +57,19 @@ import { UNIDADES } from '@/consts';
 		}),
 
 		methods: {
-			quitar(id){
+			quitar(id) {
 				this.$emit("quitar", id)
 			},
 
-			aumentar(producto){
+			aumentar(producto) {
 				this.$emit("aumentar", producto)
-			}
+			},
+
+      precios(producto) {
+        const { precioVenta, precioVenta2, precioVenta3 } = producto
+        return [precioVenta, precioVenta2, precioVenta3]
+          .filter(precio => !!Number(precio))
+      },
 		}
 	}
 </script>
