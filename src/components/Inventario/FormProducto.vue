@@ -77,6 +77,14 @@
           </option>
         </b-select>
       </b-field>
+
+      <b-field label="Selecciona un proveedor">
+        <b-select placeholder="Proveedor" icon="factory" v-model="producto.proveedor">
+          <option v-for="proveedor in proveedores" :key="proveedor.id" :value="proveedor.id">
+            {{ proveedor.nombre }}
+          </option>
+        </b-select>
+      </b-field>
     </b-field>
     <br>
     <div class="buttons has-text-centered">
@@ -99,6 +107,7 @@ export default {
   data: () => ({
     categorias: [],
     marcas: [],
+    proveedores: [],
     producto: {
       codigo: "",
       nombre: "",
@@ -111,8 +120,9 @@ export default {
       vendidoMayoreo: false,
       precioMayoreo: "",
       cantidadMayoreo: 0,
-      categoria: "",
-      marca: "",
+      categoria: null,
+      marca: null,
+      proveedor: null,
     },
     mensajesError: [],
     unidades: Object.entries(UNIDADES),
@@ -121,6 +131,7 @@ export default {
   mounted() {
     this.obtenerCategorias()
     this.obtenerMarcas()
+    this.obtenerProveedores()
     this.producto = this.productoProp
     this.producto.vendidoMayoreo = (this.productoProp.vendidoMayoreo === 1) ? true : false
     this.producto.cantidadMayoreo = parseInt(this.productoProp.cantidadMayoreo)
@@ -133,6 +144,7 @@ export default {
         "Nombre": this.producto.nombre,
         "Precio compra": this.producto.precioCompra,
         "Precio venta": this.producto.precioVenta,
+        "Proveedor": this.producto.proveedor,
       }
 
       if (this.editar) {
@@ -182,7 +194,17 @@ export default {
         .then(categorias => {
           this.categorias = categorias
         })
-    }
+    },
+
+    obtenerProveedores() {
+      let payload = {
+        accion: 'obtener'
+      }
+      HttpService.obtenerConConsultas('proveedores.php', payload)
+        .then(proveedores => {
+          this.proveedores = proveedores
+        })
+    },
   }
 
 }

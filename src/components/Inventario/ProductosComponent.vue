@@ -72,6 +72,10 @@
           {{ props.row.nombreCategoria }}
         </b-table-column>
 
+        <b-table-column field="nombreProveedor" label="Proveedor" sortable searchable v-slot="props">
+          {{ props.row.nombreProveedor }}
+        </b-table-column>
+
         <b-table-column field="eliminar" label="Eliminar" v-slot="props">
           <b-button type="is-danger" @click="eliminar(props.row.id)">
             <b-icon icon="delete" />

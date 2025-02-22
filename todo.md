@@ -3,10 +3,6 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-## Mid (8 días)
-
-- Añadir campo de proveedor al registrar producto
-
 ## Hard (10 días)
 
 4 días:

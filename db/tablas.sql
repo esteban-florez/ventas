@@ -226,6 +226,7 @@ CREATE TABLE `productos` (
   `cantidadMayoreo` decimal(8,2) DEFAULT NULL,
   `marca` bigint(20) unsigned DEFAULT NULL,
   `categoria` bigint(20) unsigned DEFAULT NULL,
+  `proveedor` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
