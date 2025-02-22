@@ -3,7 +3,7 @@
     <h1 class="title is-1">Editar chofer</h1>
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
-      <b-breadcrumb-item tag='router-link' to="/chofers">Choferes</b-breadcrumb-item>
+      <b-breadcrumb-item tag='router-link' to="/choferes">Choferes</b-breadcrumb-item>
       <b-breadcrumb-item active>Editar chofer</b-breadcrumb-item>
     </b-breadcrumb>
     <form-chofer :chofer="datosChofer" @registrar="onEditar" v-if="datosChofer" />

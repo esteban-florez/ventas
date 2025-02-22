@@ -28,6 +28,9 @@ import DeliveriesComponent from '@/components/Deliveries/DeliveriesComponent.vue
 import AbonosComponent from '@/components/Abonos/AbonosComponent.vue'
 import RealizarAbono from '@/components/Abonos/RealizarAbono.vue'
 import HistorialComponent from '@/components/Inventario/HistorialComponent.vue'
+import ProveedoresComponent from '@/components/Proveedores/ProveedoresComponent.vue'
+import EditarProveedor from '@/components/Proveedores/EditarProveedor.vue'
+import AgregarProveedor from '@/components/Proveedores/AgregarProveedor.vue'
 
 Vue.use(VueRouter)
 
@@ -96,6 +99,21 @@ const routes = [
     path: '/editar-chofer/:id',
     name: 'EditarChofer',
     component: EditarChofer,
+  },
+  {
+    path: '/proveedores',
+    name: 'ProveedoresComponent',
+    component: ProveedoresComponent,
+  },
+  {
+    path: '/agregar-proveedor',
+    name: 'AgregarProveedor',
+    component: AgregarProveedor,
+  },
+  {
+    path: '/editar-proveedor/:id',
+    name: 'EditarProveedor',
+    component: EditarProveedor,
   },
   {
     path: '/clientes',

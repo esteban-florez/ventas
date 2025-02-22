@@ -99,6 +99,13 @@
                     <span></span>
                     Movimientos
                 </b-navbar-item>
+                <b-navbar-item tag="router-link" :to="{ path: '/proveedores' }">
+                    <b-icon
+                    icon="factory">
+                    </b-icon>
+                    <span></span>
+                    Proveedores
+                </b-navbar-item>
                 </b-navbar-dropdown>
             </b-navbar-item>
 
