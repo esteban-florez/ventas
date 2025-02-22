@@ -252,6 +252,21 @@ INSERT INTO `productos_cotizados` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `proveedores`
+--
+
+LOCK TABLES `proveedores` WRITE;
+/*!40000 ALTER TABLE `proveedores` DISABLE KEYS */;
+INSERT INTO `proveedores` VALUES
+(1,'Inversiones DAX','04153940124','304689714','Edificio 25, Maracay'),
+(2,'Soluciones ADV','04157584900','155920506','Calle 23, Local 10, Caracas'),
+(3,'Repuestos VA','04150988907','182912932','Calle 30, Local 15, Valencia'),
+(4,'Ferretería KLC','04151234123','314248981','Edificio 3, Local 2, Santa Cruz'),
+(5,'Fabricantes MPDM','04153941234','144893917','Calle 10, Local 4, Puerto Cabello');
+/*!40000 ALTER TABLE `proveedores` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `usuarios`
 --
 

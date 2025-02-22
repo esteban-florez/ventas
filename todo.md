@@ -5,19 +5,18 @@ Entrega: 24-25 de febrero
 
 ## Mid (8 días)
 
-- En la página de Vender, se debe seleccionar uno de los 3 precios según el caso (1/2 día)
-- Agregar modulo proveedores, y añadir campo de proveedor al registrar producto (1/2 día)
+- Añadir campo de proveedor al registrar producto
 
 ## Hard (10 días)
 
 4 días:
-- Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
 - Crear formato tamaño carta de los siguientes reportes, ya existe formato tamaño tiquera, al momento de imprimir se selecciona el tipo de tamaño:
   - Venta
   - Cotización
   - Apartado
   - Cuenta
-  - Comprobante de Abono (cuanto se pago, cuanto resta, nombre de persona que abono, la firma de ambas partes)
+- Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
+- Crear formato de: Comprobante de Abono (cuanto se pago, cuanto resta, nombre de persona que abono, la firma de ambas partes)
 
 6 días:
 - Cuando transcurran los días de vencimiento de las cuentas/apartados sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
