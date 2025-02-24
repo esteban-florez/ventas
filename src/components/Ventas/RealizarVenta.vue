@@ -59,7 +59,7 @@
         v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
     </b-modal>
     <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
-      :porPagar="porPagar" />
+      :porPagar="porPagar" :tamaño="tamaño" />
   </section>
 </template>
 <script>
@@ -87,6 +87,7 @@ export default {
 
   data: () => ({
     cargando: false,
+    tamaño: 'tiquera',
     productos: [],
     choferes: [],
     metodos: [],
@@ -210,7 +211,20 @@ export default {
             this.porPagar = porPagar
           }
 
-          this.mostrarComprobante = true
+          this.$buefy.dialog.confirm({
+            message: 'Selecciona el tamaño a imprimir',
+            cancelText: 'Carta',
+            confirmText: 'Tiquera',
+            trapFocus: true,
+            onConfirm: () => {
+              this.tamaño = 'tiquera'
+              this.mostrarComprobante = true
+            },
+            onCancel: () => {
+              this.tamaño = 'carta'
+              this.mostrarComprobante = true
+            },
+          })
         })
     },
 

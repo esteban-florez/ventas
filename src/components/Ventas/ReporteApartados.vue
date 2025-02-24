@@ -15,7 +15,7 @@
         @imprimir="onGenerarComprobante" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
-      v-if="mostrarComprobante" :porPagar="porPagar" />
+      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -37,6 +37,7 @@ export default {
       fechaInicio: "",
       fechaFin: ""
     },
+    tamaño: 'tiquera',
     porPagar: 0,
     cargando: false,
     apartados: [],
@@ -54,13 +55,28 @@ export default {
       this.mostrarComprobante = resultado
     },
 
-    onGenerarComprobante(apartado) {
+    async onGenerarComprobante(apartado) {
       this.apartadoSeleccionado = apartado
-      HttpService.obtenerConConsultas('ventas.php', {
+
+      const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
         accion: 'por_pagar', id: apartado.id,
-      }).then(porPagar => {
-        this.porPagar = porPagar
-        this.mostrarComprobante = true
+      })
+
+      this.porPagar = porPagar
+
+      this.$buefy.dialog.confirm({
+        message: 'Selecciona el tamaño a imprimir',
+        cancelText: 'Carta',
+        confirmText: 'Tiquera',
+        trapFocus: true,
+        onConfirm: () => {
+          this.tamaño = 'tiquera'
+          this.mostrarComprobante = true
+        },
+        onCancel: () => {
+          this.tamaño = 'carta'
+          this.mostrarComprobante = true
+        },
       })
     },
 

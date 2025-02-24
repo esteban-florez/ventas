@@ -65,7 +65,7 @@
       </b-table>
     </div>
     <comprobante-compra :venta="this.ventaSeleccionada" :tipo="'venta'" v-if="mostrarComprobante"
-      @impreso="onImpreso" />
+      @impreso="onImpreso" :tamaño="tamaño" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -87,6 +87,7 @@ export default {
       fechaInicio: "",
       fechaFin: ""
     },
+    tamaño: 'tiquera',
     cargando: false,
     ventas: [],
     isPaginated: true,
@@ -113,8 +114,46 @@ export default {
     },
 
     generarComprobante(venta) {
-      this.mostrarComprobante = true
       this.ventaSeleccionada = venta
+
+      this.$buefy.dialog.confirm({
+        message: 'Selecciona el tamaño a imprimir',
+        cancelText: 'Carta',
+        confirmText: 'Tiquera',
+        trapFocus: true,
+        onConfirm: () => {
+          this.tamaño = 'tiquera'
+          this.mostrarComprobante = true
+        },
+        onCancel: () => {
+          this.tamaño = 'carta'
+          this.mostrarComprobante = true
+        },
+      })
+    },
+
+    async onGenerarComprobante(cuenta) {
+      this.cuentaSeleccionada = cuenta
+      const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
+        accion: 'por_pagar', id: cuenta.id,
+      })
+
+      this.porPagar = porPagar
+
+      this.$buefy.dialog.confirm({
+        message: 'Selecciona el tamaño a imprimir',
+        cancelText: 'Carta',
+        confirmText: 'Tiquera',
+        trapFocus: true,
+        onConfirm: () => {
+          this.tamaño = 'tiquera'
+          this.mostrarComprobante = true
+        },
+        onCancel: () => {
+          this.tamaño = 'carta'
+          this.mostrarComprobante = true
+        },
+      })
     },
 
     onBusquedaEnFecha(fechas) {
