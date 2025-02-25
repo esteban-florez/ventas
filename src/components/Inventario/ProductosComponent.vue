@@ -10,12 +10,21 @@
 
     <div v-if="productos.length > 0">
       <cartas-totales :totales="cartasTotales" />
-      <b-select v-model="perPage">
-        <option value="5">5 por página</option>
-        <option value="10">10 por página</option>
-        <option value="15">15 por página</option>
-        <option value="20">20 por página</option>
-      </b-select>
+      <div class="columns">
+        <div class="column">
+          <b-select v-model="perPage">
+            <option value="5">5 por página</option>
+            <option value="10">10 por página</option>
+            <option value="15">15 por página</option>
+            <option value="20">20 por página</option>
+          </b-select>
+        </div>
+        <div class="column is-flex is-justify-content-end">
+          <b-button type="is-primary" tag="a" href="#/pdf/productos" target="__blank" rel="noopener noreferrer">
+            Imprimir
+          </b-button>
+        </div>
+      </div>
 
       <b-table class="box" :data="productos" :paginated="isPaginated" :per-page="perPage"
         :current-page.sync="currentPage" :pagination-simple="isPaginationSimple"
