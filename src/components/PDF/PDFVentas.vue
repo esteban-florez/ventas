@@ -1,8 +1,8 @@
 <template>
   <section id="pdf">
-    <h1>Reporte de Cotizaciones</h1>
-    <div v-if="cotizaciones.length > 0">
-      <b-table class="box" :data="cotizaciones">
+    <h1>Reporte de Ventas</h1>
+    <div v-if="ventas.length > 0">
+      <b-table class="box" :data="ventas">
         <b-table-column field="fecha" label="Fecha" v-slot="props">
           {{ props.row.fecha }}
         </b-table-column>
@@ -15,12 +15,24 @@
           {{ props.row.nombreUsuario }}
         </b-table-column>
 
-        <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" v-slot="props">
-          {{ props.row.hasta }}
+        <b-table-column field="pagado" label="Pago" v-slot="props">
+          ${{ props.row.pagado }}
+        </b-table-column>
+
+        <b-table-column field="Cambio" label="Cambio" v-slot="props">
+          ${{ props.row.pagado - props.row.total }}
         </b-table-column>
 
         <b-table-column field="total" label="Total" v-slot="props">
           <b>${{ props.row.total }}</b>
+        </b-table-column>
+
+        <b-table-column field="metodo" label="Método de pago" v-slot="props">
+          {{ props.row.simple || props.row.nombreMetodo }}
+        </b-table-column>
+
+        <b-table-column field="origen" label="Origen" v-slot="props">
+          {{ props.row.origen || 'N/A' }}
         </b-table-column>
 
         <b-table-column field="productos" label="Productos" v-slot="props">
@@ -28,8 +40,8 @@
         </b-table-column>
       </b-table>
     </div>
-    <div v-if="cotizaciones.length < 1">
-      <p>No existen cotizaciones en el sistema.</p>
+    <div v-if="ventas.length < 1">
+      <p>No existen ventas en el sistema.</p>
     </div>
   </section>
 </template>
@@ -40,20 +52,20 @@ import TablaProductosVendidos from '../Ventas/TablaProductosVendidos.vue';
 import HttpService from '@/Servicios/HttpService';
 
 export default {
-  name: 'PDFCotizaciones',
+  name: 'PDFVentas',
   components: { TablaProductosVendidos },
 
   data: () => ({
-    cotizaciones: [],
+    ventas: [],
   }),
 
   mounted() {
     document.body.style.opacity = '0'
-    const accion = 'obtener_cotizaciones'
+    const accion = 'obtener_ventas'
 
     HttpService.obtenerConConsultas('ventas.php', { accion })
       .then(resultado => {
-        this.cotizaciones = resultado.cotizaciones
+        this.ventas = resultado.ventas
         return new Promise(res => setTimeout(res, 100))
       }).then(() => {
         const d = new Printd()

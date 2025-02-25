@@ -4,15 +4,12 @@
 Entrega: 24-25 de febrero
 
 - Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
-  - Ventas
   - Cuentas
   - Apartados
   - Inventario (productos)
   - Clientes
-  - Deliveries
   - Choferes
   - Movimientos (historial de inventario)
-  - Proveedores
   - Abonos (por cuenta o por apartado)
 
 ## Hard (10 días)

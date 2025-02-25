@@ -279,8 +279,9 @@ function obtenerCotizaciones($filtros, $tipo) {
 
 
 function obtenerVentas($filtros) {
-	$fechaInicio = ($filtros->fechaInicio === "") ? FECHA_HOY : $filtros->fechaInicio;
-	$fechaFin = ($filtros->fechaFin === "") ? FECHA_HOY : $filtros->fechaFin;
+	$fechaInicio = !$filtros->fechaInicio ? '1950-01-01' : $filtros->fechaInicio;
+	$fechaFin = !$filtros->fechaFin ? '3000-12-31' : $filtros->fechaFin;
+
 	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
@@ -289,6 +290,7 @@ function obtenerVentas($filtros) {
 		WHERE DATE(ventas.fecha) >= ? AND  DATE(ventas.fecha) <= ?
 		ORDER BY ventas.id DESC";
 	$parametros = [$fechaInicio, $fechaFin];
+    // si este sistema dura más de 975 años activo, va a fallar XD
 	$ventas =  selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($ventas, 'venta');
 }

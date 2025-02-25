@@ -32,6 +32,7 @@ import ProveedoresComponent from '@/components/Proveedores/ProveedoresComponent.
 import EditarProveedor from '@/components/Proveedores/EditarProveedor.vue'
 import AgregarProveedor from '@/components/Proveedores/AgregarProveedor.vue'
 import PDFCotizaciones from '@/components/PDF/PDFCotizaciones.vue'
+import PDFVentas from '@/components/PDF/PDFVentas.vue'
 
 Vue.use(VueRouter)
 
@@ -180,6 +181,11 @@ const routes = [
     path: '/pdf/cotizaciones',
     name: 'PDFContizaciones',
     component: PDFCotizaciones,
+  },
+  {
+    path: '/pdf/ventas',
+    name: 'PDFVentas',
+    component: PDFVentas,
   },
   {
     path: '/historial',

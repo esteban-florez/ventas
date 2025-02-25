@@ -126,11 +126,11 @@ UNLOCK TABLES;
 LOCK TABLES `deliveries` WRITE;
 /*!40000 ALTER TABLE `deliveries` DISABLE KEYS */;
 INSERT INTO `deliveries` VALUES
-(1,4.0,'Calle 25, Casa 10, Barrio Ejemplo, Valencia, Carabobo', 1, 1, 1, NULL),
-(2,2.0,'Calle 50, Casa 42, Barrio Ejemplo, Maracay, Aragua', 1, 2, NULL, 1),
-(3,1.5,'Calle 61, Casa 84, Barrio Ejemplo, Caracas, Dtto Capital', 0, 3, 2, NULL),
-(4,10.5,'Calle 22, Casa 63, Barrio Ejemplo, Maracaibo, Zulia', 0, 4, NULL, 3),
-(5,9.5,'Calle 40, Casa 37, Barrio Ejemplo, Cagua, Aragua', 1, 5, 3, NULL);
+(1,4.0,'Calle 25, Casa 10, Barrio Ejemplo, Valencia, Carabobo',1,1,1,NULL),
+(2,2.0,'Calle 50, Casa 42, Barrio Ejemplo, Maracay, Aragua',1,2,NULL,1),
+(3,1.5,'Calle 61, Casa 84, Barrio Ejemplo, Caracas, Dtto Capital',0,3,2,NULL),
+(4,10.5,'Calle 22, Casa 63, Barrio Ejemplo, Maracaibo, Zulia',0,4,NULL,3),
+(5,9.5,'Calle 40, Casa 37, Barrio Ejemplo, Cagua, Aragua',1,5,3,NULL);
 /*!40000 ALTER TABLE `deliveries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,7 +222,8 @@ INSERT INTO `productos_vendidos` VALUES
 (9,'2025-01-02 12:00:00',1.00,22.00,2,3,'venta'),
 (10,'2025-01-02 12:00:00',1.00,10.00,4,3,'venta'),
 (11,'2025-01-03 12:00:00',1.00,1000.00,1,4,'venta'),
-(12,'2025-01-02 12:00:00',1.00,22.00,3,5,'cuenta');
+(12,'2025-01-02 12:00:00',1.00,22.00,3,5,'cuenta'),
+(13,'2025-01-03 12:00:00',3.00,10.00,4,5,'venta');
 /*!40000 ALTER TABLE `productos_vendidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
