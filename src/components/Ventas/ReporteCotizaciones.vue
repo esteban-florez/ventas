@@ -9,13 +9,21 @@
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado cotizaciones :('"
       :subtitulo="'Aquí aparecerán las cotizaciones registradas'" v-if="cotizaciones.length < 1" />
     <div class="mt-2" v-if="cotizaciones.length > 0">
-      <cartas-totales :totales="totalesGenerales" />
-      <b-select v-model="perPage">
-        <option value="5">5 por página</option>
-        <option value="10">10 por página</option>
-        <option value="15">15 por página</option>
-        <option value="20">20 por página</option>
-      </b-select>
+      <div class="columns">
+        <div class="column">
+          <b-select v-model="perPage">
+            <option value="5">5 por página</option>
+            <option value="10">10 por página</option>
+            <option value="15">15 por página</option>
+            <option value="20">20 por página</option>
+          </b-select>
+        </div>
+        <div class="column is-flex is-justify-content-end">
+          <b-button type="is-primary" tag="a" href="#/pdf/cotizaciones" target="__blank" rel="noopener noreferrer">
+            Imprimir
+          </b-button>
+        </div>
+      </div>
 
       <b-table class="box" :data="cotizaciones" :paginated="isPaginated" :per-page="perPage"
         :current-page.sync="currentPage" :pagination-simple="isPaginationSimple"
@@ -70,14 +78,13 @@
 <script>
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
-import CartasTotales from '../Extras/CartasTotales'
 import TablaProductosVendidos from './TablaProductosVendidos'
 import ComprobanteCompra from './ComprobanteCompra'
 import HttpService from '../../Servicios/HttpService'
 
 export default {
   name: "ReporteCotizaciones",
-  components: { BusquedaEnFecha, MensajeInicial, CartasTotales, TablaProductosVendidos, ComprobanteCompra },
+  components: { BusquedaEnFecha, MensajeInicial, TablaProductosVendidos, ComprobanteCompra },
 
   data: () => ({
     filtros: {
@@ -87,7 +94,6 @@ export default {
     tamaño: 'tiquera',
     cargando: false,
     cotizaciones: [],
-    totalesGenerales: [],
     isPaginated: true,
     isPaginationSimple: false,
     isPaginationRounded: true,
@@ -170,10 +176,6 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.cotizaciones = resultado.cotizaciones
-
-          this.totalesGenerales = [
-            { nombre: "Cotizaciones registradas", total: this.cotizaciones.length, icono: "ticket-outline", clase: "has-text-primary" },
-          ]
           this.cargando = false
         })
     }

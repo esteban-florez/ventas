@@ -31,6 +31,7 @@ import HistorialComponent from '@/components/Inventario/HistorialComponent.vue'
 import ProveedoresComponent from '@/components/Proveedores/ProveedoresComponent.vue'
 import EditarProveedor from '@/components/Proveedores/EditarProveedor.vue'
 import AgregarProveedor from '@/components/Proveedores/AgregarProveedor.vue'
+import PDFCotizaciones from '@/components/PDF/PDFCotizaciones.vue'
 
 Vue.use(VueRouter)
 
@@ -174,6 +175,11 @@ const routes = [
     path: '/realizar-abono/:id',
     name: 'RealizarAbono',
     component: RealizarAbono,
+  },
+  {
+    path: '/pdf/cotizaciones',
+    name: 'PDFContizaciones',
+    component: PDFCotizaciones,
   },
   {
     path: '/historial',

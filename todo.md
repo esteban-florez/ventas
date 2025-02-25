@@ -3,10 +3,21 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
+- Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
+  - Ventas
+  - Cuentas
+  - Apartados
+  - Inventario (productos)
+  - Clientes
+  - Deliveries
+  - Choferes
+  - Movimientos (historial de inventario)
+  - Proveedores
+  - Abonos (por cuenta o por apartado)
+
 ## Hard (10 días)
 
 - Crear formato de: Comprobante de Abono (cuanto se pago, cuanto resta, la firma de ambas partes)
-- Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
 - Cuando transcurran los días de vencimiento de las cuentas/apartados sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
 - Envíar documentos de facturas por WhatsApp, de los mismos reportes que aparecen arriba
 
