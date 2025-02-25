@@ -37,6 +37,7 @@ import PDFCuentas from '@/components/PDF/PDFCuentas.vue'
 import PDFApartados from '@/components/PDF/PDFApartados.vue'
 import PDFProductos from '@/components/PDF/PDFProductos.vue'
 import PDFClientes from '@/components/PDF/PDFClientes.vue'
+import PDFChoferes from '@/components/PDF/PDFChoferes.vue'
 
 Vue.use(VueRouter)
 
@@ -210,6 +211,11 @@ const routes = [
     path: '/pdf/clientes',
     name: 'PDFClientes',
     component: PDFClientes,
+  },
+  {
+    path: '/pdf/choferes',
+    name: 'PDFChoferes',
+    component: PDFChoferes,
   },
   {
     path: '/historial',

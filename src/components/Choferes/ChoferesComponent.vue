@@ -5,6 +5,11 @@
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Choferes</b-breadcrumb-item> 
     </b-breadcrumb>
+    <div class="column is-flex is-justify-content-end">
+      <b-button type="is-primary" tag="a" href="#/pdf/choferes" target="__blank" rel="noopener noreferrer">
+        Imprimir
+      </b-button>
+    </div>
     <b-table :data="choferes">
       <b-table-column field="nombre" label="Nombre del chofer" sortable searchable v-slot="props">
         {{ props.row.nombre }}

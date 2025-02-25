@@ -4,7 +4,6 @@
 Entrega: 24-25 de febrero
 
 - Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
-  - Choferes
   - Movimientos (historial de inventario)
   - Abonos (por cuenta o por apartado)
 
