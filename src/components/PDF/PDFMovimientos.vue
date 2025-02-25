@@ -1,0 +1,58 @@
+<template>
+  <section id="pdf">
+    <h1>Reporte de Movimientos</h1>
+    <div v-if="movimientos.length > 0">
+      <b-table class="box" :data="movimientos">
+        <b-table-column field="nombreProducto" label="Producto" v-slot="props">
+          {{ props.row.nombreProducto }}
+        </b-table-column>
+
+        <b-table-column field="cantidad" label="Cantidad" v-slot="props">
+          <span class="has-text-weight-bold" :class="props.row.tipo === '+' ? 'has-text-success' : 'has-text-danger'">
+            {{ props.row.tipo }}{{ props.row.cantidad }}
+          </span>
+        </b-table-column>
+
+        <b-table-column field="fecha" label="Fecha" v-slot="props">
+          {{ props.row.fecha }}
+        </b-table-column>
+      </b-table>
+    </div>
+    <div v-if="movimientos.length < 1">
+      <p>No existen movimientos en el sistema.</p>
+    </div>
+  </section>
+</template>
+
+<script>
+import Printd from 'printd'
+import HttpService from '@/Servicios/HttpService';
+
+export default {
+  name: 'PDFMovimientos',
+
+  data: () => ({
+    movimientos: [],
+  }),
+
+  mounted() {
+    document.body.style.opacity = '0'
+    const accion = 'historial'
+
+    HttpService.obtenerConConsultas('ventas.php', { accion })
+      .then(resultado => {
+        resultado.sort(
+          (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+        )
+        this.movimientos = resultado
+        return new Promise(res => setTimeout(res, 100))
+      }).then(() => {
+        const d = new Printd()
+        const table = document.querySelector('#pdf')
+
+        d.onAfterPrint(() => window.close())
+        d.print(table, ['/pdf.css'])
+      })
+  },
+}
+</script>

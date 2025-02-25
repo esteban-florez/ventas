@@ -3,16 +3,25 @@
     <nav-component :titulo="'Historial de Inventario'" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
-      <b-breadcrumb-item active>Historial de Inventario</b-breadcrumb-item> 
+      <b-breadcrumb-item active>Historial de Inventario</b-breadcrumb-item>
     </b-breadcrumb>
-    <b-select v-model="perPage">
-        <option value="5">5 por página</option>
-        <option value="10">10 por página</option>
-        <option value="15">15 por página</option>
-        <option value="20">20 por página</option>
-      </b-select>
-    <b-table class="box" :data="movimientos" :per-page="perPage" :paginated="true" :pagination-simple="false" :pagination-position="'bottom'"
-    :default-sort-direction="'asc'" :pagination-rounded="true">
+    <div class="columns">
+      <div class="column">
+        <b-select v-model="perPage">
+          <option value="5">5 por página</option>
+          <option value="10">10 por página</option>
+          <option value="15">15 por página</option>
+          <option value="20">20 por página</option>
+        </b-select>
+      </div>
+      <div class="column is-flex is-justify-content-end">
+        <b-button type="is-primary" tag="a" href="#/pdf/movimientos" target="__blank" rel="noopener noreferrer">
+          Imprimir
+        </b-button>
+      </div>
+    </div>
+    <b-table class="box" :data="movimientos" :per-page="perPage" :paginated="true" :pagination-simple="false"
+      :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
       <b-table-column field="nombreProducto" label="Producto" sortable searchable v-slot="props">
         {{ props.row.nombreProducto }}
       </b-table-column>
@@ -22,7 +31,7 @@
           {{ props.row.tipo }}{{ props.row.cantidad }}
         </span>
       </b-table-column>
-      
+
       <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
         {{ props.row.fecha }}
       </b-table-column>
