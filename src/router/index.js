@@ -39,6 +39,7 @@ import PDFProductos from '@/components/PDF/PDFProductos.vue'
 import PDFClientes from '@/components/PDF/PDFClientes.vue'
 import PDFChoferes from '@/components/PDF/PDFChoferes.vue'
 import PDFMovimientos from '@/components/PDF/PDFMovimientos.vue'
+import PDFAbonos from '@/components/PDF/PDFAbonos.vue'
 
 Vue.use(VueRouter)
 
@@ -222,6 +223,11 @@ const routes = [
     path: '/pdf/movimientos',
     name: 'PDFMovimientos',
     component: PDFMovimientos,
+  },
+  {
+    path: '/pdf/abonos/:id',
+    name: 'PDFAbonos',
+    component: PDFAbonos,
   },
   {
     path: '/historial',

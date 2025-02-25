@@ -3,10 +3,6 @@
 21 días / 3 semanas aprox.
 Entrega: 24-25 de febrero
 
-- Añadir impresión de las tablas importantes del sistema (no categorías ni marcas)
-  - Movimientos (historial de inventario)
-  - Abonos (por cuenta o por apartado)
-
 ## Hard (10 días)
 
 - Crear formato de: Comprobante de Abono (cuanto se pago, cuanto resta, la firma de ambas partes)
