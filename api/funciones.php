@@ -294,6 +294,14 @@ function obtenerVentas($filtros) {
 }
 
 function agregarProductosVendidos($arreglo, $tipo) {
+    if ($tipo === 'cotiza') {
+        foreach ($arreglo as $item) {
+            $item->productos = obtenerProductosCotizados($item->id);
+        }
+        return $arreglo;
+    }
+
+
 	foreach ($arreglo as $item) {
 		$item->productos = obtenerProductosVendidos($item->id, $tipo);
 	}
@@ -306,6 +314,15 @@ function obtenerProductosVendidos($id, $tipo) {
 	LEFT JOIN productos ON productos.id =  productos_vendidos.idProducto
 	WHERE productos_vendidos.idReferencia = ? AND productos_vendidos.tipo = ?";
 	$parametros = [$id, $tipo];
+	return selectPrepare($sentencia, $parametros);
+}
+
+function obtenerProductosCotizados($id) {
+	$sentencia = "SELECT productos_cotizados.cantidad, productos_cotizados.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad
+	FROM productos_cotizados
+	LEFT JOIN productos ON productos.id =  productos_cotizados.idProducto
+	WHERE productos_cotizados.idCotizacion = ?";
+	$parametros = [$id];
 	return selectPrepare($sentencia, $parametros);
 }
 
