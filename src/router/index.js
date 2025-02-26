@@ -40,6 +40,7 @@ import PDFClientes from '@/components/PDF/PDFClientes.vue'
 import PDFChoferes from '@/components/PDF/PDFChoferes.vue'
 import PDFMovimientos from '@/components/PDF/PDFMovimientos.vue'
 import PDFAbonos from '@/components/PDF/PDFAbonos.vue'
+import PDFAbono from '@/components/PDF/PDFAbono.vue'
 
 Vue.use(VueRouter)
 
@@ -228,6 +229,11 @@ const routes = [
     path: '/pdf/abonos/:id',
     name: 'PDFAbonos',
     component: PDFAbonos,
+  },
+  {
+    path: '/pdf/comprobante-abono',
+    name: 'PDFAbono',
+    component: PDFAbono,
   },
   {
     path: '/historial',

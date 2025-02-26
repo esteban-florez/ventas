@@ -7,7 +7,7 @@
     </b-breadcrumb>
     <mensaje-inicial :titulo="'No se han registrado abonos'" v-if="abonos.length < 1" />
     <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
-      Datos de {{ this.cuentaApartado.tipo === 'cuenta' ? 'cuenta' : 'apartado' }}
+      Datos de {{ this.cuentaApartado && this.cuentaApartado.tipo === 'cuenta' ? 'cuenta' : 'apartado' }}
     </h3>
     <cartas-totales :totales="datosCuentaApartado" />
     <hr>
@@ -24,7 +24,7 @@
           </b-select>
         </div>
         <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" :href="`#/pdf/abonos/${cuentaApartado.id}`" target="__blank" rel="noopener noreferrer">
+          <b-button type="is-primary" tag="a" :href="`#/pdf/abonos/${cuentaApartado && cuentaApartado.id}`" target="__blank" rel="noopener noreferrer">
             Imprimir
           </b-button>
         </div>
@@ -83,8 +83,11 @@ export default {
   },
 
   methods: {
-    generarComprobante(props) {
-      alert('TODO -> imprimir comprobante de abono', props)
+    generarComprobante({ row }) {
+      const datos = { abono: row, cuenta: this.cuentaApartado }
+      localStorage.setItem('comprobante-abono', JSON.stringify(datos))
+      const ruta = this.$router.resolve({ name: 'PDFAbono' })
+      window.open(ruta.href, '_blank')
     },
 
     async obtenerAbonos() {

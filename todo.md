@@ -5,8 +5,7 @@ Entrega: 24-25 de febrero
 
 ## Hard (10 días)
 
-- Crear formato de: Comprobante de Abono (cuanto se pago, cuanto resta, la firma de ambas partes)
-- Cuando transcurran los días de vencimiento de las cuentas/apartados sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
+- Cuando transcurran los días de vencimiento de las cuentas sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
 - Envíar documentos de facturas por WhatsApp, de los mismos reportes que aparecen arriba
 
 ## Bugs
