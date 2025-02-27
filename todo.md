@@ -5,7 +5,6 @@ Entrega: 24-25 de febrero
 
 ## Hard (10 días)
 
-- Cuando transcurran los días de vencimiento de las cuentas sin cancelar se debe enviar notificación de deuda al cliente y dueños (WhatsApp, notificación del sistema)
 - Envíar documentos de facturas por WhatsApp, de los mismos reportes que aparecen arriba
 
 ## Bugs

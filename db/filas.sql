@@ -55,11 +55,11 @@ UNLOCK TABLES;
 LOCK TABLES `choferes` WRITE;
 /*!40000 ALTER TABLE `choferes` DISABLE KEYS */;
 INSERT INTO `choferes` VALUES
-(1,'Adrían Díaz','04153940124', 'Venezolano', '22147159'),
-(2,'María Pérez','04157584900', 'Venezolano', '15592050'),
-(3,'Juan González', '04150988907', 'Venezolano', '18291293'),
-(4,'Luisa Medina','04151234123', 'Venezolano', '31424898'),
-(5,'Pedro Vargas','04153941234', 'Venezolano', '14489391');
+(1,'Adrían Díaz','04153940124','Venezolano','22147159'),
+(2,'María Pérez','04157584900','Venezolano','15592050'),
+(3,'Juan González','04150988907','Venezolano','18291293'),
+(4,'Luisa Medina','04151234123','Venezolano','31424898'),
+(5,'Pedro Vargas','04153941234','Venezolano','14489391');
 /*!40000 ALTER TABLE `choferes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -70,11 +70,11 @@ UNLOCK TABLES;
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
 INSERT INTO `clientes` VALUES
-(1,'paco rivera bernabe','2311459874', 'Venezolano', '24145159'),
-(2,'canela perez','2311469874', 'Venezolano', '17592050'),
-(3,'ejemplo de cliente', '', 'Venezolano', '8241293'),
-(4,'ejemplo de otro cliente','231213456987', 'Venezolano', '19424098'),
-(5,'otrooooo clienteee','', 'Venezolano', '10482391');
+(1,'paco rivera bernabe','04128970019','Venezolano','24145159'),
+(2,'David Gonzalez','04120187337','Venezolano','17592050'),
+(3,'ejemplo de cliente','','Venezolano','8241293'),
+(4,'ejemplo de otro cliente','04128970019','Venezolano','19424098'),
+(5,'otrooooo clienteee','','Venezolano','10482391');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,11 +111,11 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2022-06-25 17:30:03',1002.00,7,'cuenta',2,1),
-(2,'2022-06-25 17:36:09',1000.00,NULL,'apartado',1,1),
-(3,'2022-06-25 17:53:10',1010.50,10,'cuenta',1,1),
-(4,'2022-06-25 17:53:25',1000.00,NULL,'apartado',2,1),
-(5,'2022-07-03 17:53:15',22.00,15,'cuenta',1,1);
+(1,'2025-02-18 17:30:03',1002.00,7,'cuenta',NULL,2,1),
+(2,'2025-02-19 17:36:09',1000.00,NULL,'apartado',NULL,1,1),
+(3,'2025-02-19 17:53:10',1010.50,10,'cuenta',NULL,1,1),
+(4,'2025-02-19 17:53:25',1000.00,NULL,'apartado',NULL,2,1),
+(5,'2025-02-19 17:53:15',22.00,15,'cuenta',NULL,1,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,13 +193,13 @@ UNLOCK TABLES;
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
 INSERT INTO `productos` VALUES
-(1,'1321355155','Bocina','uds',500.00,1000.00,900.00,1100.00,0,NULL,NULL,NULL,NULL,1),
+(1,'1321355155','Bocina','unid',500.00,1000.00,900.00,1100.00,0,NULL,NULL,NULL,NULL,1),
 (2,'12123146556415','Thinner','lt',15.00,22.00,NULL,NULL,0,NULL,NULL,1,1,2),
-(3,'113241564546','Cuadernocosido','uds',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
-(4,'1321354564','Lapizbonito','uds',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
-(5,'12131212545454','Mouseinalámbrico','uds',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
-(6,'11321345495','Tecladoinálambrico','uds',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
-(7,'1213221','Calculadora','uds',25.00,28.00,20.00,NULL,0,NULL,NULL,NULL,NULL,1),
+(3,'113241564546','Cuadernocosido','unid',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
+(4,'1321354564','Lapizbonito','unid',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
+(5,'12131212545454','Mouseinalámbrico','unid',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
+(6,'11321345495','Tecladoinálambrico','unid',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
+(7,'1213221','Calculadora','unid',25.00,28.00,20.00,NULL,0,NULL,NULL,NULL,NULL,1),
 (8,'123135135487487','Mecate','mt',1.54,4.00,NULL,NULL,1,3.00,20,4,NULL,2);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -223,7 +223,8 @@ INSERT INTO `productos_vendidos` VALUES
 (10,'2025-01-02 12:00:00',1.00,10.00,4,3,'venta'),
 (11,'2025-01-03 12:00:00',1.00,1000.00,1,4,'venta'),
 (12,'2025-01-03 12:00:00',1.00,22.00,3,5,'cuenta'),
-(13,'2025-01-03 12:00:00',3.00,10.00,4,5,'venta');
+(13,'2025-01-03 12:00:00',3.00,10.00,4,5,'venta'),
+(14,'2025-01-03 12:00:00',5.00,22.00,4,1,'cuenta');
 /*!40000 ALTER TABLE `productos_vendidos` ENABLE KEYS */;
 UNLOCK TABLES;
 

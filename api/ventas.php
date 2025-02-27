@@ -79,6 +79,10 @@ switch ($accion) {
         echo json_encode(obtenerHistorialInventario());
         break;
 
+    case 'marcar_notificado':
+        echo json_encode(marcarCuentaNotificada($payload->id));
+        break;
+
 	default:
 		echo json_encode("No se reconoce");
 		break;

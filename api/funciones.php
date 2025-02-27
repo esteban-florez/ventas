@@ -235,10 +235,11 @@ function obtenerPagosCuentasApartados($filtros, $tipo) {
 
 function obtenerCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
-        cuentas_apartados.tipo, cuentas_apartados.total,
+        cuentas_apartados.tipo, cuentas_apartados.total, cuentas_apartados.notificado,
          cuentas_apartados.dias, SUM(abonos.monto) AS pagado,
         (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+        IFNULL(clientes.telefono, '') AS telefonoCliente,
         IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
 		FROM cuentas_apartados
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
@@ -255,8 +256,16 @@ function obtenerCuentasApartados($filtros, $tipo) {
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
-	$cuentas =  selectPrepare($sentencia, $parametros);
+	$cuentas = selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($cuentas, $tipo);
+}
+
+function marcarCuentaNotificada($id) {
+    $ahora = date('Y-m-d H:i:s');
+
+    return editar("UPDATE cuentas_apartados SET notificado = ? WHERE id = ?", [
+        $ahora, $id
+    ]);
 }
 
 function obtenerCotizaciones($filtros, $tipo) {
