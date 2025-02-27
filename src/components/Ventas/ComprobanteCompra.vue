@@ -36,13 +36,14 @@
   </section>
 </template>
 <script>
-import Printd from 'printd';
+import Printd from 'printd'
+import html2pdf from 'html2pdf.js'
 import AyudanteSesion from '../../Servicios/AyudanteSesion'
 import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'ComprobanteCompra',
-  props: ['venta', 'tipo', 'porPagar', 'tamaño'],
+  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'realizarVenta'],
 
   data: () => ({
     titulo: '',
@@ -131,7 +132,7 @@ export default {
           this.titulo = 'COMPROBANTE DE COMPRA'
           break
 
-          case 'cuenta':
+        case 'cuenta':
           this.titulo = 'COMPROBANTE DE CUENTA'
           break
 
@@ -158,10 +159,54 @@ export default {
       this.datosNegocio.logo = Utiles.regresarRuta() + this.datosNegocio.logo
     },
 
-    imprimir() {
-      let zona = document.getElementById('comprobante');
-      setTimeout(() => this.d.print(zona, [this.cssText]), 10);
-      this.$emit('impreso', false);
+    async imprimir() {
+      let zona = document.getElementById('comprobante')
+
+      const options = {
+        margin: 5,
+        filename: 'Comprobante.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      }
+
+      setTimeout(async () => {
+        this.d.onAfterPrint(async () => {
+          if (!this.realizarVenta) return
+          const comprobante = html.querySelector('#comprobante')
+          if (this.tamaño === 'tiquera') {
+            comprobante.classList.remove('tiquera')
+            comprobante.classList.add('carta')
+          }
+
+          const pdf = await html2pdf()
+            .from(html)
+            .set(options)
+            .outputPdf('blob')
+
+          if (this.tamaño === 'tiquera') {
+            comprobante.classList.add('tiquera')
+            comprobante.classList.remove('carta')
+          }
+
+          const formData = new FormData()
+          formData.set('pdf', pdf)
+
+          if (this.venta.telefonoCliente) {
+            const url = `http://localhost:3000/pdf?numero=${this.venta.telefonoCliente}`
+            await fetch(url, { method: 'POST', body: formData })
+          }
+        })
+
+        this.d.print(zona, [this.cssText])
+
+        const iframe = this.d.getIFrame()
+        const { contentDocument } = iframe
+        const html = contentDocument.querySelector('html')
+
+        this.$emit('impreso', false)
+      }, 10)
+
     },
   }
 }

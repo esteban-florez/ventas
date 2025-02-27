@@ -71,7 +71,7 @@ LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
 INSERT INTO `clientes` VALUES
 (1,'paco rivera bernabe','04128970019','Venezolano','24145159'),
-(2,'David Gonzalez','04120187337','Venezolano','17592050'),
+(2,'David Gonzalez','04128970019','Venezolano','17592050'),
 (3,'ejemplo de cliente','','Venezolano','8241293'),
 (4,'ejemplo de otro cliente','04128970019','Venezolano','19424098'),
 (5,'otrooooo clienteee','','Venezolano','10482391');

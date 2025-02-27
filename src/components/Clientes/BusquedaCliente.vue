@@ -26,7 +26,7 @@
 	export default{
 		name: "BusquedaCliente",
 
-		data:()=>({
+		data: () => ({
 			cliente: "",
 			clientesEncontrados: [],
 			clienteSeleccionado: null

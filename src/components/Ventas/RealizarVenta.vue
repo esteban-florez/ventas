@@ -59,7 +59,7 @@
         v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
     </b-modal>
     <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
-      :porPagar="porPagar" :tamaño="tamaño" />
+      :porPagar="porPagar" :tamaño="tamaño" :realizarVenta="true" />
   </section>
 </template>
 <script>
@@ -74,7 +74,7 @@ import AyudanteSesion from '../../Servicios/AyudanteSesion'
 import HttpService from '../../Servicios/HttpService'
 
 export default {
-  name: "RealizarVenta",
+  name: 'RealizarVenta',
   components: {
     BuscarProducto,
     TablaProductos,
@@ -144,6 +144,7 @@ export default {
         usuario: AyudanteSesion.obtenerDatosSesion().id,
         nombreCliente: (venta.cliente.nombre) ? venta.cliente.nombre : 'MOSTRADOR',
         nombreUsuario: AyudanteSesion.obtenerDatosSesion().usuario,
+        telefonoCliente: venta.cliente.telefono,
         fecha: new Date().toJSON().slice(0, 10).replace(/-/g, '/')
       }
 

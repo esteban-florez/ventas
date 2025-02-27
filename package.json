@@ -6,8 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "cron": "node notifs/cuentas.mjs",
-    "files": "node notifs/pdfs.mjs"
+    "cron": "node notifs/cron.mjs",
+    "files": "node notifs/files.mjs"
   },
   "dependencies": {
     "@mdi/font": "^6.7.96",
@@ -15,6 +15,9 @@
     "buefy": "^0.9.21",
     "chart.js": "^2.9.4",
     "core-js": "^3.8.3",
+    "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
+    "html2pdf.js": "^0.10.3",
     "node-cron": "^3.0.3",
     "printd": "^1.6.0",
     "qrcode": "^1.5.4",
