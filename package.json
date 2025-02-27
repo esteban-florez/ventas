@@ -2,11 +2,12 @@
   "name": "pos",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "cron": "node notifs/cuentas.mjs",
+    "files": "node notifs/pdfs.mjs"
   },
   "dependencies": {
     "@mdi/font": "^6.7.96",

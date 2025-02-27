@@ -1,4 +1,4 @@
-import { WhatsApp } from './socket.js'
+import { WhatsApp } from './socket.mjs'
 import cron from 'node-cron'
 
 process.env.TZ = 'America/Caracas'
@@ -60,6 +60,8 @@ cron.schedule(DIARIO_12_PM, async () => {
       const telefono = telefonoCliente.slice(1)
       await WhatsApp.message(telefono, mensaje)
       await WhatsApp.message(TELEFONO_DUEÑO, mensaje)
+
+      console.log('Cuenta notificada: ', cuenta.id)
     })
   } catch (error) {
     console.error(error)

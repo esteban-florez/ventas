@@ -12,7 +12,7 @@ async function init() {
 
   socket.ev.on('creds.update', saveCreds)
 
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     socket.ev.on('connection.update', (update) => {
       const { connection } = update
   
@@ -25,7 +25,6 @@ async function init() {
       if (connection === 'close') {
         console.log('Desconectado...')
         this.socket = null
-        reject()
       }
     })
   })
@@ -41,10 +40,11 @@ async function sendMessage(chatId, message) {
   }
 }
 
-const WhatsApp = { socket: null }
-
-WhatsApp.connect = init.bind(WhatsApp),
-WhatsApp.message = sendMessage.bind(WhatsApp)
+const WhatsApp = {
+  socket: null,
+  connect: init,
+  message: sendMessage
+}
 
 export { WhatsApp }
 
