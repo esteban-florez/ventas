@@ -1,7 +1,7 @@
 export const TIPOS_CLIENTE = ['Venezolano', 'Extranjero', 'Jurídico']
 
 export const UNIDADES = {
-  uds: 'Unidades',
+  unid: 'Unidades',
   cm: 'Centímetros',
   mt: 'Metros',
   km: 'Kilómetros',

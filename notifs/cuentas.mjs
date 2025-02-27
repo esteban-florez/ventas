@@ -4,7 +4,7 @@ import cron from 'node-cron'
 process.env.TZ = 'America/Caracas'
 
 const API_URL = 'http://localhost/api/ventas.php'
-const TELEFONO_DUEÑO = '4120187337'
+const TELEFONO_DUEÑO = '4128970019'
 const DIARIO_12_PM = '0 12 * * *'
 
 cron.schedule(DIARIO_12_PM, async () => {

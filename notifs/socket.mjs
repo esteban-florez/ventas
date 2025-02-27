@@ -23,7 +23,7 @@ async function init() {
       }
   
       if (connection === 'close') {
-        console.log('Desconectado...')
+        console.log('Desconectado. Reconectando...')
         this.socket = null
       }
     })
@@ -48,3 +48,6 @@ const WhatsApp = {
 
 export { WhatsApp }
 
+if (process.argv[2] === 'init') {
+  init.call(WhatsApp)
+}
