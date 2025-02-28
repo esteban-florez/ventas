@@ -5,9 +5,9 @@ process.env.TZ = 'America/Caracas'
 
 const API_URL = 'http://localhost/api/ventas.php'
 const TELEFONO_DUEÑO = '4128970019'
-const DIARIO_12_PM = '52 22 * * *'
+const TRES_VECES_AL_DIA = '0 8,13,18 * * *'
 
-cron.schedule(DIARIO_12_PM, async () => {
+cron.schedule(TRES_VECES_AL_DIA, async () => {
   console.log('Revisando cuentas vencidas...')
 
   try {
