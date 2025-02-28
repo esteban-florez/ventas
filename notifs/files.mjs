@@ -1,6 +1,6 @@
+import { parentPort } from 'node:worker_threads'
 import express from 'express'
 import fileUpload from 'express-fileupload'
-import { WhatsApp } from './socket.mjs'
 
 const app = express()
 const port = 3000
@@ -15,11 +15,13 @@ app.post('/pdf', async (req, res) => {
     return res.status(400).send('Falta archivo o numero de telefono.')
   }
 
-  await WhatsApp.connect()
-
-  await WhatsApp.file(numero, archivo.data)
-
-  console.log('archivo enviado?')
+  try {
+    const array = new Uint8Array(archivo.data)
+    parentPort.postMessage({ phone: numero, file: array })
+    console.log('Reporte PDF enviado...')
+  } catch (error) {
+    console.error(error.message)
+  }
 
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080')
   res.status(200).json({

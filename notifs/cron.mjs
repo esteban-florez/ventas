@@ -1,16 +1,16 @@
-import { WhatsApp } from './socket.mjs'
+import { parentPort } from 'node:worker_threads'
 import cron from 'node-cron'
 
 process.env.TZ = 'America/Caracas'
 
 const API_URL = 'http://localhost/api/ventas.php'
 const TELEFONO_DUEÑO = '4128970019'
-const DIARIO_12_PM = '0 12 * * *'
+const DIARIO_12_PM = '52 22 * * *'
 
 cron.schedule(DIARIO_12_PM, async () => {
-  try {
-    await WhatsApp.connect()
+  console.log('Revisando cuentas vencidas...')
 
+  try {
     const respuesta = await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify({ accion: 'obtener_cuentas' })
@@ -58,8 +58,9 @@ cron.schedule(DIARIO_12_PM, async () => {
       const mensaje = `*NOMBRE DE EMPRESA C.A.*\n\nEstimado/a *${nombreCliente}*, le notificamos que su cuenta pendiente desde el día *${formato(fecha)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productos.map(producto => `- ${producto.nombre} (${producto.cantidad} ${producto.unidad}.)`).join('\n    ')}`
 
       const telefono = telefonoCliente.slice(1)
-      await WhatsApp.message(telefono, mensaje)
-      await WhatsApp.message(TELEFONO_DUEÑO, mensaje)
+
+      parentPort.postMessage({ phone: telefono, text: mensaje })
+      parentPort.postMessage({ phone: TELEFONO_DUEÑO, text: mensaje })
 
       console.log('Cuenta notificada: ', cuenta.id)
     })
@@ -68,3 +69,4 @@ cron.schedule(DIARIO_12_PM, async () => {
   }
 })
 
+console.log('La tarea programada de cuentas vencidas ha sido activada.')

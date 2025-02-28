@@ -6,8 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "cron": "node notifs/cron.mjs",
-    "files": "node notifs/files.mjs"
+    "notif": "node notifs/index.mjs"
   },
   "dependencies": {
     "@mdi/font": "^6.7.96",

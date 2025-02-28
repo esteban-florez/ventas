@@ -1,10 +1,17 @@
 import { makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys'
 
-const isInit = process.argv[2] === 'init'
+const WhatsApp = {
+  socket: null,
+  message: sendMessage,
+  file: sendFile,
+}
 
-async function init() {
-  if (this.socket !== null) return
-  
+/**
+ * @returns {Promise<WhatsApp>}
+ */
+export async function connect() {
+  if (WhatsApp.socket !== null) return
+
   console.log('-----------------filling socket-----------------')
 
   const { state, saveCreds } = await useMultiFileAuthState('./baileys_auth')
@@ -22,19 +29,24 @@ async function init() {
   
       if (connection === 'open') {
         console.log('¡Conexión establecida con WhatsApp!')
-        this.socket = socket
-        resolve()
+        WhatsApp.socket = socket
+        resolve(WhatsApp)
       }
   
       if (connection === 'close') {
-        this.socket = null
+        WhatsApp.socket = null
         console.log('Desconectado...')
-        init()
+        connect()
       }
     })
   })
 }
 
+/**
+ * Enviar un mensaje mediante WhatsApp
+ * @param {string} chatId El número receptor
+ * @param {string} message El texto del mensaje
+ */
 async function sendMessage(chatId, message) {
   try {
     const id = `58${chatId}@s.whatsapp.net`
@@ -45,6 +57,11 @@ async function sendMessage(chatId, message) {
   }
 }
 
+/**
+ * Enviar un archivo PDF mediante WhatsApp
+ * @param {string} chatId El número receptor
+ * @param {Buffer} message Buffer del archivo PDF
+ */
 async function sendFile(chatId, buffer) {
   try {
     const id = `58${chatId}@s.whatsapp.net`
@@ -59,24 +76,3 @@ async function sendFile(chatId, buffer) {
   }
 }
 
-async function close() {
-  try {
-    this.socket.ws.close()
-  } catch (error) {
-    console.log('Disconnect: ', error)
-  }
-}
-
-const WhatsApp = {
-  socket: null,
-  connect: init,
-  message: sendMessage,
-  file: sendFile,
-  disconnect: close,
-}
-
-export { WhatsApp }
-
-if (isInit) {
-  init.call(WhatsApp)
-}
