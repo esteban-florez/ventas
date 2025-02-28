@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Worker } from 'node:worker_threads'
 import { connect } from './whatsapp.mjs'
 import { dirname, join } from 'node:path'
@@ -5,10 +6,10 @@ import { fileURLToPath } from 'node:url'
 
 const WhatsApp = await connect()
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const filePath = fileURLToPath(import.meta.url)
+const folder = dirname(filePath)
 
-const filesWorker = new Worker(join(__dirname, 'files.mjs'))
+const filesWorker = new Worker(join(folder, 'files.mjs'))
 
 filesWorker.on('message', (data) => {
   const { file, phone } = data
@@ -16,7 +17,7 @@ filesWorker.on('message', (data) => {
   WhatsApp.file(phone, buffer)
 })
 
-const cronWorker = new Worker(join(__dirname, 'cron.mjs'))
+const cronWorker = new Worker(join(folder, 'cron.mjs'))
 
 cronWorker.on('message', (data) => {
   const { text, phone } = data

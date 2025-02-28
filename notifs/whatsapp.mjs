@@ -7,12 +7,15 @@ const WhatsApp = {
 }
 
 /**
- * @returns {Promise<WhatsApp>}
+ * @returns {Promise<typeof WhatsApp>}
  */
 export async function connect() {
-  if (WhatsApp.socket !== null) return
+  if (WhatsApp.socket !== null) {
+    console.log('Reusando conexión...')
+    return
+  }
 
-  console.log('-----------------filling socket-----------------')
+  console.log('Creando nuevo socket...')
 
   const { state, saveCreds } = await useMultiFileAuthState('./baileys_auth')
   const socket = makeWASocket({
@@ -43,9 +46,8 @@ export async function connect() {
 }
 
 /**
- * Enviar un mensaje mediante WhatsApp
- * @param {string} chatId El número receptor
- * @param {string} message El texto del mensaje
+ * @param {string} chatId
+ * @param {string} message
  */
 async function sendMessage(chatId, message) {
   try {
@@ -58,9 +60,8 @@ async function sendMessage(chatId, message) {
 }
 
 /**
- * Enviar un archivo PDF mediante WhatsApp
- * @param {string} chatId El número receptor
- * @param {Buffer} message Buffer del archivo PDF
+ * @param {string} chatId
+ * @param {Buffer} buffer
  */
 async function sendFile(chatId, buffer) {
   try {
