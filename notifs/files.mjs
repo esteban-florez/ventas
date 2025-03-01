@@ -1,6 +1,7 @@
 import { parentPort } from 'node:worker_threads'
 import express from 'express'
 import fileUpload from 'express-fileupload'
+import { log } from './logger.mjs'
 
 const app = express()
 const { FILES_PORT, FILES_HOST, WEB_URL } = process.env
@@ -15,13 +16,8 @@ app.post('/pdf', async (req, res) => {
     return res.status(400).send('Falta archivo o numero de telefono.')
   }
 
-  try {
-    const array = new Uint8Array(file.data)
-    parentPort.postMessage({ phone, file: array })
-    console.log('Reporte PDF enviado...')
-  } catch (error) {
-    console.error(error.message)
-  }
+  const array = new Uint8Array(file.data)
+  parentPort.postMessage({ phone, file: array })
 
   res.setHeader('Access-Control-Allow-Origin', WEB_URL)
   res.status(200).json({
@@ -30,5 +26,5 @@ app.post('/pdf', async (req, res) => {
 })
 
 app.listen(FILES_PORT, FILES_HOST, () => {
-  console.log(`API de archivos escuchando en: http://${FILES_HOST}:${FILES_PORT}`)
+  log.info(`API de archivos escuchando en: http://${FILES_HOST}:${FILES_PORT}`)
 })

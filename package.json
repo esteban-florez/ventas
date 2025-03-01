@@ -19,6 +19,8 @@
     "express-fileupload": "^1.5.1",
     "html2pdf.js": "^0.10.3",
     "node-cron": "^3.0.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
     "printd": "^1.6.0",
     "qrcode": "^1.5.4",
     "vue": "^2.6.14",

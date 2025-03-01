@@ -1,4 +1,8 @@
+import pino from 'pino'
 import { makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import { log, options } from './logger.mjs'
+
+let reconnections = 0
 
 const WhatsApp = {
   socket: null,
@@ -11,17 +15,23 @@ const WhatsApp = {
  */
 export async function connect() {
   if (WhatsApp.socket !== null) {
-    console.log('Reusando conexión...')
+    log.info('Conectando a WhatsApp, reusando socket...')
     return
   }
 
-  console.log('Creando nuevo socket...')
+  if (reconnections >= 20) {
+    throw new Error('Mas de 20 reconexiones a WhatsApp')
+  }
+
+  reconnections++
+  log.info('Conectando a WhatsApp, creando nuevo socket...')
 
   const { state, saveCreds } = await useMultiFileAuthState('./baileys_auth')
   const socket = makeWASocket({
     auth: state,
     printQRInTerminal: true,
     keepAliveIntervalMs: 10000,
+    logger: pino({ ...options, level: 'error' }),
   })
 
   socket.ev.on('creds.update', saveCreds)
@@ -31,14 +41,14 @@ export async function connect() {
       const { connection } = update
   
       if (connection === 'open') {
-        console.log('¡Conexión establecida con WhatsApp!')
+        log.info('Conexión establecida con WhatsApp')
         WhatsApp.socket = socket
         resolve(WhatsApp)
       }
   
       if (connection === 'close') {
         WhatsApp.socket = null
-        console.log('Desconectado...')
+        log.info('Conexion cerrada. Reconectando a WhatsApp...')
         connect()
       }
     })
@@ -54,8 +64,8 @@ async function sendMessage(chatId, message) {
     const id = `58${chatId}@s.whatsapp.net`
     await this.socket.sendMessage(id, { text: message })
   } catch (error) {
-    console.error('Error al enviar mensaje:', error)
-    throw error
+    log.error('Error al enviar mensaje')
+    log.error(error)
   }
 }
 
@@ -72,8 +82,7 @@ async function sendFile(chatId, buffer) {
       fileName: 'Comprobante.pdf',
     })
   } catch (error) {
-    console.error('Error al enviar mensaje:', error)
-    throw error
+    log.error('Error al enviar el archivo')
+    log.error(error)
   }
 }
-

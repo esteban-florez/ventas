@@ -1,5 +1,6 @@
 import { parentPort } from 'node:worker_threads'
 import cron from 'node-cron'
+import { log } from './logger.mjs'
 
 process.env.TZ = 'America/Caracas'
 
@@ -9,7 +10,7 @@ const THREE_TIMES_A_DAY = '0 8,13,18 * * *'
 const endpoint = `${API_URL}/ventas.php`
 
 cron.schedule(THREE_TIMES_A_DAY, async () => {
-  console.log('Revisando cuentas vencidas...')
+  log.info('Ejecutando cron de cuentas vencidas...')
 
   try {
     const response = await fetch(endpoint, {
@@ -20,11 +21,12 @@ cron.schedule(THREE_TIMES_A_DAY, async () => {
     const { cuentas } = await response.json()
     cuentas.forEach(checkOutdatedDebt)
   } catch (error) {
-    console.error(error)
+    log.error('Error al obtener cuentas de la API')
+    log.error(error)
   }
 })
 
-console.log('La tarea programada de cuentas vencidas ha sido activada.')
+log.info('La tarea programada de cuentas vencidas ha sido activada.')
 
 async function checkOutdatedDebt(cuenta) {
   const { dias, porPagar, telefonoCliente, notificado, fecha } = cuenta
@@ -44,8 +46,7 @@ async function checkOutdatedDebt(cuenta) {
   parentPort.postMessage({ phone: OWNER_PHONE, text: message })
 
   await markAsNotified(cuenta.id)
-
-  console.log('Cuenta notificada: ', cuenta.id)
+  log.info(`Cuenta notificada: ${cuenta.id}`)
 }
 
 function isOutdated(date, days) {
@@ -83,18 +84,19 @@ async function markAsNotified(id) {
       method: 'POST',
       body: JSON.stringify({
         accion: 'marcar_notificado',
-        id: cuenta.id,
+        id,
       })
     })
 
     const result = await responseNotified.json()
 
     if (!result) {
-      console.log('No se pudo marcar como notificado...', cuenta.id)
+      log.info(`No se pudo marcar como notificado... cliente sin telefono: ${id}`)
       return
     }
   
   } catch (error) {
-    console.log(error)
+    log.error(`Error al marcar cuenta como notificada ${cuenta.id}`)
+    log.error(error)
   }
 }
