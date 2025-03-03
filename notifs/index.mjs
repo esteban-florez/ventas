@@ -3,7 +3,9 @@ import { Worker } from 'node:worker_threads'
 import { connect } from './whatsapp.mjs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { log } from './logger.mjs'
+import { logger } from './logger.mjs'
+
+const log = logger()
 
 async function run() {
   try {
@@ -20,7 +22,7 @@ async function run() {
       WhatsApp.file(phone, buffer)
     })
     
-    const cronWorker = new Worker(join(folder, 'cron.mjs'))
+    const cronWorker = new Worker(join(folder, 'cron.mjs'), { argv: process.argv })
     
     cronWorker.on('message', (data) => {
       const { text, phone } = data
@@ -33,4 +35,7 @@ async function run() {
   }
 }
 
-run()
+run().catch(err => {
+  log.error('Unhandled error')
+  log.error(err)
+})
