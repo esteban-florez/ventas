@@ -1,12 +1,13 @@
 import { parentPort } from 'node:worker_threads'
 import cron from 'node-cron'
 import { logger } from './logger.mjs'
+import fetch from 'node-fetch'
 
 const log = logger()
 
 process.env.TZ = 'America/Caracas'
 
-const { API_URL, OWNER_PHONE } = process.env
+const { API_URL, OWNER_PHONE, OWNER_NAME } = process.env
 const THREE_TIMES_A_DAY = '* 9,13,18 * * *'
 const EVERY_MINUTE = '* * * * *'
 
@@ -79,7 +80,7 @@ function formatMessage(cuenta, date) {
     .map(producto => `- ${producto.nombre} (${producto.cantidad} ${producto.unidad}.)`)
     .join('\n    ')
 
-  return `*NOMBRE DE EMPRESA C.A.*\n\nEstimado/a *${nombreCliente}*, le notificamos que su cuenta pendiente desde el día *${localeDate(date)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productList}`
+  return `*${OWNER_NAME}*\n\nEstimado/a *${nombreCliente}*, le notificamos que su cuenta pendiente desde el día *${localeDate(date)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productList}`
 }
 
 async function markAsNotified(id) {

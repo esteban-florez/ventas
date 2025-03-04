@@ -20,6 +20,7 @@
     "express-fileupload": "^1.5.1",
     "html2pdf.js": "^0.10.3",
     "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "printd": "^1.6.0",
