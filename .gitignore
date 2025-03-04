@@ -25,3 +25,5 @@ pnpm-debug.log*
 baileys_auth
 .env
 notifs.log
+
+/vendor/

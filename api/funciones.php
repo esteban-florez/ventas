@@ -12,11 +12,9 @@
 
 */
 
-define("FECHA_HOY",date("Y-m-d") );
+define("FECHA_HOY", date("Y-m-d"));
 
 define('DIRECTORIO', './logos/');
-
-define("PASSWORD_DEFECTO", "Admin123");
 
 date_default_timezone_set('America/Caracas');
 
@@ -1068,11 +1066,11 @@ function selectPrepare($sentencia, $parametros) {
 }
 
 function conectarBD() {
- 	$host = "localhost";
-	$db   = "ventas";
-	$user = "root";
-	$pass = "pass123";
-	$charset = 'utf8mb4';
+ 	$host = $_ENV['DB_HOST'];
+	$db   = $_ENV['DB_NAME'];
+	$user = $_ENV['DB_USER'];
+	$pass = $_ENV['DB_PASSWORD'];
+	$charset = $_ENV['DB_CHARSET'];
 
 	$options = [
 	    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
