@@ -32,8 +32,16 @@
         </span>
       </b-table-column>
 
+      <b-table-column field="tipo" label="Tipo" sortable searchable v-slot="props">
+        {{ tipo(props.row) }}
+      </b-table-column>
+
       <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
         {{ props.row.fecha }}
+      </b-table-column>
+
+      <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
+        {{ props.row.nombreUsuario }}
       </b-table-column>
     </b-table>
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
@@ -70,7 +78,13 @@ export default {
           this.movimientos = movimientos
           this.cargando = false
         })
+    },
+
+    tipo(row) {
+      if (row.tipo === '-') return 'Salida'
+
+      return row.primero ? 'Registro' : 'Reposición'
     }
-  }
+  },
 }
 </script>

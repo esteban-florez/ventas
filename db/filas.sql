@@ -70,11 +70,11 @@ UNLOCK TABLES;
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
 INSERT INTO `clientes` VALUES
-(1,'paco rivera bernabe','04128970019','Venezolano','24145159'),
+(1,'Carlos Rivera','04128970019','Venezolano','24145159'),
 (2,'David Gonzalez','04128970019','Venezolano','17592050'),
-(3,'ejemplo de cliente','','Venezolano','8241293'),
-(4,'ejemplo de otro cliente','04128970019','Venezolano','19424098'),
-(5,'otrooooo clienteee','','Venezolano','10482391');
+(3,'Allan Primera','','Venezolano','8241293'),
+(4,'Sebastian Laya','04128970019','Venezolano','19424098'),
+(5,'Myriam Hernandez','','Venezolano','10482391');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,7 +85,7 @@ UNLOCK TABLES;
 LOCK TABLES `configuracion` WRITE;
 /*!40000 ALTER TABLE `configuracion` DISABLE KEYS */;
 INSERT INTO `configuracion` VALUES
-('Super Mercado','777666123','./logos/logo.png');
+('Super Mercado','04120001324','./logos/logo.png');
 /*!40000 ALTER TABLE `configuracion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,14 +141,15 @@ UNLOCK TABLES;
 LOCK TABLES `entradas` WRITE;
 /*!40000 ALTER TABLE `entradas` DISABLE KEYS */;
 INSERT INTO `entradas` VALUES
-(1,'2025-01-02 11:00:00',25,1),
-(2,'2025-01-01 11:00:00',99,2),
-(3,'2025-01-03 11:00:00',66,3),
-(4,'2025-01-01 11:00:00',453,4),
-(5,'2025-01-01 11:00:00',96,5),
-(6,'2025-01-03 11:00:00',496,6),
-(7,'2025-01-01 11:00:00',11,7),
-(8,'2025-01-02 11:00:00',3,8);
+(1,'2025-01-02 11:00:00',25,1,1),
+(2,'2025-01-01 11:00:00',99,2,1),
+(3,'2025-01-03 11:00:00',66,3,1),
+(4,'2025-01-01 11:00:00',453,4,1),
+(5,'2025-01-01 11:00:00',96,5,1),
+(6,'2025-01-03 11:00:00',496,6,1),
+(7,'2025-01-01 11:00:00',11,7,1),
+(8,'2025-01-02 11:00:00',3,8,1),
+(9,'2025-01-03 13:00:00',30,1,1);
 /*!40000 ALTER TABLE `entradas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,7 +276,7 @@ UNLOCK TABLES;
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
 INSERT INTO `usuarios` VALUES
-(1,'Admin','Luis Pérez','23112314523125','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2');
+(1,'Admin','Luis Pérez','0415010123','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 

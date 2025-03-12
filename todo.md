@@ -1,6 +1,5 @@
 # Tareas
 
-- Añadir más columnas a la tabla de abonos.
 - Pagos de deudas a choferes.
 - Agregar columna de quien realizó (usuario) y tipo de operación (registro nuevo, o carga).
 - Roles y permisos.

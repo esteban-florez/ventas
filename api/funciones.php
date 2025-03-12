@@ -787,29 +787,34 @@ function obtenerExistencia($id = null) {
     return selectRegresandoObjeto("$sentencia WHERE productos.id = ?;", [$id]);
 }
 
-function agregarExistenciaProducto($cantidad, $id) {
-	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto) VALUES (?,?,?)";
-	$parametros = [date('Y-m-d H:i:s'), $cantidad, $id];
+function agregarExistenciaProducto($entrada) {
+	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
+	$parametros = [date('Y-m-d H:i:s'), $entrada->cantidad, $entrada->id, $entrada->usuario];
 	return editar($sentencia, $parametros);
 }
 
 function obtenerHistorialInventario() {
     $sentencia1 = "SELECT e.fecha, e.cantidad,
-        CONCAT('+') as tipo, p.nombre AS nombreProducto
+        CONCAT('+') as tipo, p.nombre AS nombreProducto,
+        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, true, false) AS primero, u.usuario AS nombreUsuario
         FROM entradas AS e
-        LEFT JOIN productos AS p ON p.id = e.idProducto;";
+        LEFT JOIN productos AS p ON p.id = e.idProducto
+        LEFT JOIN usuarios AS u ON e.idUsuario = u.id;";
 
     $sentencia2 = "SELECT v.fecha, v.cantidad,
-        CONCAT('-') AS tipo, p.nombre AS nombreProducto
+        CONCAT('-') AS tipo, p.nombre AS nombreProducto,
+        u.usuario AS nombreUsuario
         FROM productos_vendidos AS v
-        LEFT JOIN productos AS p ON p.id = v.idProducto;";
+        LEFT JOIN productos AS p ON p.id = v.idProducto
+        LEFT JOIN cuentas_apartados AS ca ON v.idReferencia = ca.id
+        LEFT JOIN ventas AS ve ON v.idReferencia = ve.id
+        LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id;";
 
     $entradas = selectQuery($sentencia1);
     $salidas = selectQuery($sentencia2);
 
     $movimientos = array_merge($entradas, $salidas);
 
-    dd($movimientos);
     return $movimientos;
 }
 

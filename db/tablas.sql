@@ -165,6 +165,7 @@ CREATE TABLE `entradas` (
   `fecha` datetime NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,
+  `idUsuario` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

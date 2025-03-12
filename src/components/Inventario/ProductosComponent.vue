@@ -112,6 +112,7 @@ import HttpService from '../../Servicios/HttpService'
 import NavComponent from '../Extras/NavComponent'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
+import AyudanteSesion from '../../Servicios/AyudanteSesion'
 
 export default {
   name: 'ProductosComponent',
@@ -153,8 +154,11 @@ export default {
           this.cargando = true
           HttpService.registrar('productos.php', {
             accion: 'agregar_existencia',
-            cantidad: value,
-            id: producto.id
+            entrada: {
+              cantidad: value,
+              id: producto.id,
+              usuario: AyudanteSesion.obtenerDatosSesion().id,
+            },
           })
             .then(registrado => {
               if (registrado) {

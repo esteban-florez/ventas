@@ -44,7 +44,7 @@ switch ($accion) {
 		break;
 
 	case 'agregar_existencia':
-		echo json_encode(agregarExistenciaProducto($payload->cantidad, $payload->id));
+		echo json_encode(agregarExistenciaProducto($payload->entrada));
 		break;
 	
 	default:
