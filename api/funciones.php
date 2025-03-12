@@ -18,6 +18,8 @@ define('DIRECTORIO', './logos/');
 
 date_default_timezone_set('America/Caracas');
 
+error_reporting(0);
+
 function codificar($imagen) {
     $imagen = str_replace('data:image/png;base64,', '', $imagen);
     $imagen = str_replace('data:image/jpeg;base64,', '', $imagen);
@@ -233,7 +235,7 @@ function obtenerPagosCuentasApartados($filtros, $tipo) {
 
 function obtenerCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
-        cuentas_apartados.tipo, cuentas_apartados.total, cuentas_apartados.notificado,
+        cuentas_apartados.tipo, cuentas_apartados.total,
          cuentas_apartados.dias, SUM(abonos.monto) AS pagado,
         (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
@@ -256,14 +258,6 @@ function obtenerCuentasApartados($filtros, $tipo) {
 	}
 	$cuentas = selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($cuentas, $tipo);
-}
-
-function marcarCuentaNotificada($id) {
-    $ahora = date('Y-m-d H:i:s');
-
-    return editar("UPDATE cuentas_apartados SET notificado = ? WHERE id = ?", [
-        $ahora, $id
-    ]);
 }
 
 function obtenerCotizaciones($filtros, $tipo) {

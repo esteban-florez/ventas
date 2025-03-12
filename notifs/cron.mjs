@@ -1,18 +1,17 @@
 import { parentPort } from 'node:worker_threads'
 import cron from 'node-cron'
 import { logger } from './logger.mjs'
-import fetch from 'node-fetch'
 
 const log = logger()
 
 process.env.TZ = 'America/Caracas'
 
 const { API_URL, OWNER_PHONE, OWNER_NAME } = process.env
-const THREE_TIMES_A_DAY = '* 9,13,18 * * *'
+const DAILY = '0 12 * * *'
 const EVERY_MINUTE = '* * * * *'
 
 const endpoint = `${API_URL}/ventas.php`
-const schedule = process.argv[4] === '--dev' ? EVERY_MINUTE : THREE_TIMES_A_DAY
+const schedule = process.argv[4] === '--dev' ? EVERY_MINUTE : DAILY
 
 cron.schedule(schedule, async () => {
   log.status('Ejecutando cron de cuentas vencidas...')
@@ -34,7 +33,7 @@ cron.schedule(schedule, async () => {
 log.status('La tarea programada de cuentas vencidas ha sido activada.')
 
 async function checkOutdatedDebt(cuenta) {
-  const { dias, porPagar, telefonoCliente, notificado, fecha } = cuenta
+  const { dias, porPagar, telefonoCliente, fecha } = cuenta
 
   if (telefonoCliente === '') return
 
@@ -42,7 +41,7 @@ async function checkOutdatedDebt(cuenta) {
   const outdated = isOutdated(date, dias)
   const debt = Number(porPagar) > 0
 
-  if (!outdated || !debt || notificado) return
+  if (!outdated || !debt) return
 
   const phone = telefonoCliente.slice(1)
   const message = formatMessage(cuenta, date)
@@ -50,7 +49,6 @@ async function checkOutdatedDebt(cuenta) {
   parentPort.postMessage({ phone, text: message })
   parentPort.postMessage({ phone: OWNER_PHONE, text: message })
 
-  await markAsNotified(cuenta.id)
   log.status(`Cuenta notificada: ${cuenta.id}`)
 }
 
@@ -81,27 +79,4 @@ function formatMessage(cuenta, date) {
     .join('\n    ')
 
   return `*${OWNER_NAME}*\n\nEstimado/a *${nombreCliente}*, le notificamos que su cuenta pendiente desde el día *${localeDate(date)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productList}`
-}
-
-async function markAsNotified(id) {
-  try {
-    const responseNotified = await fetch(endpoint, {
-      method: 'POST',
-      body: JSON.stringify({
-        accion: 'marcar_notificado',
-        id,
-      })
-    })
-
-    const result = await responseNotified.json()
-
-    if (!result) {
-      log.status(`No se pudo marcar como notificado... cliente sin telefono: ${id}`)
-      return
-    }
-  
-  } catch (error) {
-    log.error(`Error al marcar cuenta como notificada ${cuenta.id}`)
-    log.error(error)
-  }
 }

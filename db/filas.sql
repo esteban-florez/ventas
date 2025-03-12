@@ -1,4 +1,4 @@
-/*M!999999\- enable the sandbox mode */ 
+-- /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-11.6.2-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: ventas
@@ -111,11 +111,11 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2025-02-18 17:30:03',1002.00,7,'cuenta',NULL,2,1),
-(2,'2025-02-19 17:36:09',1000.00,NULL,'apartado',NULL,1,1),
-(3,'2025-02-19 17:53:10',1010.50,10,'cuenta',NULL,1,1),
-(4,'2025-02-19 17:53:25',1000.00,NULL,'apartado',NULL,2,1),
-(5,'2025-02-19 17:53:15',22.00,15,'cuenta',NULL,1,1);
+(1,'2025-02-18 17:30:03',1002.00,7,'cuenta',2,1),
+(2,'2025-02-19 17:36:09',1000.00,NULL,'apartado',1,1),
+(3,'2025-02-19 17:53:10',1010.50,10,'cuenta',1,1),
+(4,'2025-02-19 17:53:25',1000.00,NULL,'apartado',2,1),
+(5,'2025-02-19 17:53:15',22.00,15,'cuenta',1,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
 UNLOCK TABLES;
 
