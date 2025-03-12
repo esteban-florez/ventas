@@ -1,7 +1,13 @@
 # Tareas
 
-21 días / 3 semanas aprox.
-Entrega: 24-25 de febrero
+- Enviar notificaciones de deudas diariamente hasta que la cuenta sea liquidada.
+- Arreglar bug de unidades (kilometros, kilogramos).
+- Añadir más columnas a la tabla de abonos.
+- Pagos de deudas a choferes.
+- Agregar columna de quien realizó (usuario) y tipo de operación (registro nuevo, o carga).
+- Roles y permisos.
+- Deudas con proveedores, y historial de pagos.
+- Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (preguntar precios).
 
 ## Bugs
 
