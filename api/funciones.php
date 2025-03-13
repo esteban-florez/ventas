@@ -684,9 +684,10 @@ function eliminarCliente($id) {
 
 
 /* Choferes */
-
 function obtenerChoferes() {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         GROUP BY choferes.id;";
@@ -694,9 +695,12 @@ function obtenerChoferes() {
 }
 
 function obtenerChoferesPorNombre($nombre) {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        LEFT JOIN pagos ON pagos.idChofer = choferes.id
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
@@ -704,9 +708,12 @@ function obtenerChoferesPorNombre($nombre) {
 }
 
 function obtenerChoferPorId($id) {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        LEFT JOIN pagos ON pagos.idChofer = choferes.id
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
@@ -716,6 +723,12 @@ function editarChofer($chofer) {
 	$sentencia = "UPDATE choferes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
 	$parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci, $chofer->id];
 	return editar($sentencia, $parametros);
+}
+
+function registrarPagoChofer($pago) {
+    $sentencia = "INSERT INTO pagos (monto, idChofer) VALUES (?,?)";
+    $parametros = [$pago->monto, $pago->idChofer];
+    return insertar($sentencia, $parametros);
 }
 
 function obtenerDeliveries() {

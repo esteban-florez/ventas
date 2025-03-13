@@ -188,6 +188,18 @@ INSERT INTO `metodos` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `pagos`
+--
+
+LOCK TABLES `pagos` WRITE;
+/*!40000 ALTER TABLE `pagos` DISABLE KEYS */;
+INSERT INTO `pagos` VALUES
+(1,2.0,1),
+(2,5.0,4);
+/*!40000 ALTER TABLE `pagos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `productos`
 --
 
