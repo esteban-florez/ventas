@@ -27,13 +27,13 @@
       </b-table-column>
 
       <b-table-column field="cantidad" label="Cantidad" sortable searchable v-slot="props">
-        <span class="has-text-weight-bold" :class="props.row.tipo === '+' ? 'has-text-success' : 'has-text-danger'">
-          {{ props.row.tipo }}{{ props.row.cantidad }}
+        <span class="has-text-weight-bold" :class="props.row.signo === '+' ? 'has-text-success' : 'has-text-danger'">
+          {{ props.row.signo }}{{ props.row.cantidad }}
         </span>
       </b-table-column>
 
       <b-table-column field="tipo" label="Tipo" sortable searchable v-slot="props">
-        {{ tipo(props.row) }}
+        {{ props.row.tipo }}
       </b-table-column>
 
       <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
@@ -42,6 +42,10 @@
 
       <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
         {{ props.row.nombreUsuario }}
+      </b-table-column>
+
+      <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
+        {{ props.row.nombreCliente || 'N/A' }}
       </b-table-column>
     </b-table>
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
@@ -79,12 +83,6 @@ export default {
           this.cargando = false
         })
     },
-
-    tipo(row) {
-      if (row.tipo === '-') return 'Salida'
-
-      return row.primero ? 'Registro' : 'Reposición'
-    }
   },
 }
 </script>

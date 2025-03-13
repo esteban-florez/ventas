@@ -1,6 +1,5 @@
 # Tareas
 
-- Añadir cliente que compro a tabla de movimientos, y añadir motivo de eliminación.
 - Roles y permisos.
 - Deudas con proveedores, y historial de pagos.
 - Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (preguntar precios).

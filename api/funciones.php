@@ -816,25 +816,27 @@ function removerExistenciaProducto($producto) {
 
 function obtenerHistorialInventario() {
     $sentencia1 = "SELECT e.fecha, e.cantidad,
-        p.nombre AS nombreProducto, u.usuario AS nombreUsuario
-        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, 'Registro', 'Reposición') AS tipo
+        p.nombre AS nombreProducto, u.usuario AS nombreUsuario,
+        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, 'Registro', 'Reposición') AS tipo, '+' AS signo
         FROM entradas AS e
         LEFT JOIN productos AS p ON p.id = e.idProducto
         LEFT JOIN usuarios AS u ON e.idUsuario = u.id;";
 
     $sentencia2 = "SELECT v.fecha, v.cantidad,
         'Venta' AS tipo, p.nombre AS nombreProducto,
-        u.usuario AS nombreUsuario
+        u.usuario AS nombreUsuario, '-' AS signo,
+        c.nombre AS nombreCliente
         FROM productos_vendidos AS v
         LEFT JOIN productos AS p ON p.id = v.idProducto
         LEFT JOIN cuentas_apartados AS ca ON v.idReferencia = ca.id
         LEFT JOIN ventas AS ve ON v.idReferencia = ve.id
-        LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id;";
+        LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id
+        LEFT JOIN clientes AS c ON ca.idCliente = c.id OR ve.idCliente = c.id;";
 
     $sentencia3 = "SELECT r.fecha, r.cantidad,
         'Retiro' as tipo, p.nombre AS nombreProducto,
-        u.usuario AS nombreUsuario
-        FROM productos_removidos AS e
+        u.usuario AS nombreUsuario, '-' AS signo
+        FROM productos_removidos AS r
         LEFT JOIN productos AS p ON p.id = r.idProducto
         LEFT JOIN usuarios AS u ON r.idUsuario = u.id;";
 
