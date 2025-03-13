@@ -248,6 +248,23 @@ CREATE TABLE `productos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `productos_cotizados`
+--
+
+DROP TABLE IF EXISTS `productos_cotizados`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `productos_cotizados` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `cantidad` decimal(5,2) NOT NULL,
+  `precio` decimal(8,2) NOT NULL,
+  `idProducto` bigint(20) NOT NULL,
+  `idCotizacion` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `productos_vendidos`
 --
 
@@ -267,18 +284,18 @@ CREATE TABLE `productos_vendidos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `productos_cotizados`
+-- Table structure for table `productos_removidos`
 --
 
-DROP TABLE IF EXISTS `productos_cotizados`;
+DROP TABLE IF EXISTS `productos_removidos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `productos_cotizados` (
+CREATE TABLE `productos_removidos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `fecha` datetime NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
-  `precio` decimal(8,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,
-  `idCotizacion` bigint(20) NOT NULL,
+  `idUsuario` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

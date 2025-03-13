@@ -788,9 +788,11 @@ function obtenerProductosMasVendidos($limite) {
 function obtenerExistencia($id = null) {
     $salidas = "SELECT COALESCE(SUM(productos_vendidos.cantidad), 0) FROM productos_vendidos WHERE productos_vendidos.idProducto = productos.id";
 
+    $removidos = "SELECT COALESCE(SUM(productos_removidos.cantidad), 0) FROM productos_removidos WHERE productos_removidos.idProducto = productos.id";
+
     $entradas = "SELECT COALESCE(SUM(entradas.cantidad), 0) FROM entradas WHERE entradas.idProducto = productos.id";
 
-    $sentencia = "SELECT productos.id AS id, productos.nombre AS nombre, productos.precioVenta AS precioVenta, productos.precioCompra AS precioCompra, (($entradas) - ($salidas)) AS existencia
+    $sentencia = "SELECT productos.id AS id, productos.nombre AS nombre, productos.precioVenta AS precioVenta, productos.precioCompra AS precioCompra, (($entradas) - ($removidos) - ($salidas)) AS existencia
     FROM productos";
 
     if (!$id) {
@@ -803,19 +805,25 @@ function obtenerExistencia($id = null) {
 function agregarExistenciaProducto($entrada) {
 	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
 	$parametros = [date('Y-m-d H:i:s'), $entrada->cantidad, $entrada->id, $entrada->usuario];
-	return editar($sentencia, $parametros);
+	return insertar($sentencia, $parametros);
+}
+
+function removerExistenciaProducto($producto) {
+	$sentencia = "INSERT INTO productos_removidos (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
+	$parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->id, $producto->usuario];
+	return insertar($sentencia, $parametros);
 }
 
 function obtenerHistorialInventario() {
     $sentencia1 = "SELECT e.fecha, e.cantidad,
-        CONCAT('+') as tipo, p.nombre AS nombreProducto,
-        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, true, false) AS primero, u.usuario AS nombreUsuario
+        p.nombre AS nombreProducto, u.usuario AS nombreUsuario
+        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, 'Registro', 'Reposición') AS tipo
         FROM entradas AS e
         LEFT JOIN productos AS p ON p.id = e.idProducto
         LEFT JOIN usuarios AS u ON e.idUsuario = u.id;";
 
     $sentencia2 = "SELECT v.fecha, v.cantidad,
-        CONCAT('-') AS tipo, p.nombre AS nombreProducto,
+        'Venta' AS tipo, p.nombre AS nombreProducto,
         u.usuario AS nombreUsuario
         FROM productos_vendidos AS v
         LEFT JOIN productos AS p ON p.id = v.idProducto
@@ -823,10 +831,18 @@ function obtenerHistorialInventario() {
         LEFT JOIN ventas AS ve ON v.idReferencia = ve.id
         LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id;";
 
+    $sentencia3 = "SELECT r.fecha, r.cantidad,
+        'Retiro' as tipo, p.nombre AS nombreProducto,
+        u.usuario AS nombreUsuario
+        FROM productos_removidos AS e
+        LEFT JOIN productos AS p ON p.id = r.idProducto
+        LEFT JOIN usuarios AS u ON r.idUsuario = u.id;";
+
     $entradas = selectQuery($sentencia1);
     $salidas = selectQuery($sentencia2);
+    $removidos = selectQuery($sentencia3);
 
-    $movimientos = array_merge($entradas, $salidas);
+    $movimientos = array_merge($entradas, $salidas, $removidos);
 
     return $movimientos;
 }

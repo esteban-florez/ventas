@@ -85,9 +85,15 @@
           {{ props.row.nombreProveedor }}
         </b-table-column>
 
-        <b-table-column field="eliminar" label="Eliminar" v-slot="props">
-          <b-button type="is-danger" @click="eliminar(props.row.id)">
-            <b-icon icon="delete" />
+        <b-table-column field="agregar" label="Agregar" v-slot="props">
+          <b-button type="is-primary" @click="agregarExistencia(props.row)">
+            <b-icon icon="plus" />
+          </b-button>
+        </b-table-column>
+
+        <b-table-column field="remover" label="Retirar" v-slot="props">
+          <b-button type="is-warning" @click="removerExistencia(props.row)">
+            <b-icon icon="minus" />
           </b-button>
         </b-table-column>
 
@@ -97,9 +103,9 @@
           </b-button>
         </b-table-column>
 
-        <b-table-column field="editar" label="Agregar" v-slot="props">
-          <b-button type="is-primary" @click="agregarExistencia(props.row)">
-            <b-icon icon="plus" />
+        <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+          <b-button type="is-danger" @click="eliminar(props.row.id)">
+            <b-icon icon="delete" />
           </b-button>
         </b-table-column>
       </b-table>
@@ -164,6 +170,42 @@ export default {
               if (registrado) {
                 this.cargando = false
                 this.$buefy.toast.open(value + ' Productos agregados a ' + producto.nombre)
+                this.obtenerProductos()
+              }
+            })
+
+        }
+      })
+    },
+
+    removerExistencia(producto) {
+      this.$buefy.dialog.prompt({
+        message: '¿Cuántas unidades (' + producto.unidad + ') vas a retirar de ' + producto.nombre + '?',
+        cancelText: 'Cancelar',
+        confirmText: 'Retirar',
+        inputAttrs: {
+          type: 'number',
+          placeholder: 'Escribe la cantidad de productos',
+          value: '',
+          min: 1,
+          step: 1,
+          max: producto.existencia,
+        },
+        trapFocus: true,
+        onConfirm: (value) => {
+          this.cargando = true
+          HttpService.registrar('productos.php', {
+            accion: 'remover_existencia',
+            producto: {
+              cantidad: value,
+              id: producto.id,
+              usuario: AyudanteSesion.obtenerDatosSesion().id,
+            },
+          })
+            .then(registrado => {
+              if (registrado) {
+                this.cargando = false
+                this.$buefy.toast.open(value + ' Productos retirados a ' + producto.nombre)
                 this.obtenerProductos()
               }
             })

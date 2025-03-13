@@ -47,6 +47,10 @@ switch ($accion) {
 		echo json_encode(agregarExistenciaProducto($payload->entrada));
 		break;
 	
+    case 'remover_existencia':
+        echo json_encode(removerExistenciaProducto($payload->producto));
+        break;
+
 	default:
 		echo json_encode("No se reconoce");
 		break;

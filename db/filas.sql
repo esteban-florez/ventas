@@ -39,12 +39,12 @@ UNLOCK TABLES;
 LOCK TABLES `categorias` WRITE;
 /*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
 INSERT INTO `categorias` VALUES
-(1,'LIBRETAS'),
-(2,'LAPICES'),
-(3,'COLORES DE MADERA'),
-(4,'PLUMONES'),
-(5,'CRAYOLAS'),
-(8,'ARTICULOS DE OFICINA');
+(1,'Libretas'),
+(2,'Lapices'),
+(3,'Colores'),
+(4,'Plumones'),
+(5,'Crayolas'),
+(8,'Artículos de Oficina');
 /*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,15 +160,15 @@ UNLOCK TABLES;
 LOCK TABLES `marcas` WRITE;
 /*!40000 ALTER TABLE `marcas` DISABLE KEYS */;
 INSERT INTO `marcas` VALUES
-(1,'NORMA'),
-(2,'SCRIBE'),
-(3,'MAPED'),
-(4,'PELIKAN'),
-(5,'BIC'),
-(6,'PAPER MATE'),
-(7,'KIUT'),
-(10,'SHARPIE'),
-(11,'ESTRELLA');
+(1,'Norma'),
+(2,'Scribe'),
+(3,'Maped'),
+(4,'Pelikan'),
+(5,'Bic'),
+(6,'Paper Mate'),
+(7,'Kiut'),
+(10,'Sharpie'),
+(11,'Estrella');
 /*!40000 ALTER TABLE `marcas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,13 +208,38 @@ LOCK TABLES `productos` WRITE;
 INSERT INTO `productos` VALUES
 (1,'1321355155','Bocina','unid',500.00,1000.00,900.00,1100.00,0,NULL,NULL,NULL,NULL,1),
 (2,'12123146556415','Thinner','lt',15.00,22.00,NULL,NULL,0,NULL,NULL,1,1,2),
-(3,'113241564546','Cuadernocosido','unid',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
-(4,'1321354564','Lapizbonito','unid',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
-(5,'12131212545454','Mouseinalámbrico','unid',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
-(6,'11321345495','Tecladoinálambrico','unid',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
+(3,'113241564546','Cuaderno','unid',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
+(4,'1321354564','Lapiz','unid',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
+(5,'12131212545454','Mouse','unid',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
+(6,'11321345495','Teclado','unid',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
 (7,'1213221','Calculadora','unid',25.00,28.00,20.00,NULL,0,NULL,NULL,NULL,NULL,1),
 (8,'123135135487487','Mecate','mt',1.54,4.00,NULL,NULL,1,3.00,20,4,NULL,2);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `productos_cotizados`
+--
+
+LOCK TABLES `productos_cotizados` WRITE;
+/*!40000 ALTER TABLE `productos_cotizados` DISABLE KEYS */;
+INSERT INTO `productos_cotizados` VALUES
+(1,3.00,22.00,2,1),
+(2,3.00,10.00,4,1),
+(3,1.00,1000.00,1,1),
+(4,3.00,22.00,3,1),
+(5,100.00,8.00,4,2),
+(6,4.00,22.00,3,4),
+(7,3.00,10.00,4,4),
+(8,3.00,1000.00,1,4),
+(9,5.00,200.00,7,4),
+(10,4.00,100.00,6,4),
+(11,2.00,10.00,4,5),
+(12,1.00,200.00,7,5),
+(13,1.00,100.00,6,5),
+(14,1.00,1000.00,1,5),
+(15,1.00,22.00,3,5);
+/*!40000 ALTER TABLE `productos_cotizados` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -242,28 +267,14 @@ INSERT INTO `productos_vendidos` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `productos_cotizados`
+-- Dumping data for table `productos_removidos`
 --
 
-LOCK TABLES `productos_cotizados` WRITE;
-/*!40000 ALTER TABLE `productos_cotizados` DISABLE KEYS */;
-INSERT INTO `productos_cotizados` VALUES
-(1,3.00,22.00,2,1),
-(2,3.00,10.00,4,1),
-(3,1.00,1000.00,1,1),
-(4,3.00,22.00,3,1),
-(5,100.00,8.00,4,2),
-(6,4.00,22.00,3,4),
-(7,3.00,10.00,4,4),
-(8,3.00,1000.00,1,4),
-(9,5.00,200.00,7,4),
-(10,4.00,100.00,6,4),
-(11,2.00,10.00,4,5),
-(12,1.00,200.00,7,5),
-(13,1.00,100.00,6,5),
-(14,1.00,1000.00,1,5),
-(15,1.00,22.00,3,5);
-/*!40000 ALTER TABLE `productos_cotizados` ENABLE KEYS */;
+LOCK TABLES `productos_removidos` WRITE;
+/*!40000 ALTER TABLE `productos_removidos` DISABLE KEYS */;
+INSERT INTO `productos_removidos` VALUES
+(1,'2025-01-02 12:00:00',3.00,2,1);
+/*!40000 ALTER TABLE `productos_removidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

@@ -1,6 +1,5 @@
 # Tareas
 
-- Funcionalidad de remover cierta cantidad de productos del inventario.
 - Añadir cliente que compro a tabla de movimientos, y añadir motivo de eliminación.
 - Roles y permisos.
 - Deudas con proveedores, y historial de pagos.
