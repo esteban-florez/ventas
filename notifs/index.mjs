@@ -9,7 +9,8 @@ const log = logger()
 
 async function run() {
   try {
-    const WhatsApp = await connect()
+    const login = process.argv[2] === '--login'
+    const WhatsApp = await connect(login)
 
     const filePath = fileURLToPath(import.meta.url)
     const folder = dirname(filePath)

@@ -76,11 +76,7 @@ switch ($accion) {
         break;
 
     case 'historial':
-        echo json_encode(obtenerHistorialInventario());
-        break;
-
-    case 'marcar_notificado':
-        echo json_encode(marcarCuentaNotificada($payload->id));
+        echo json_encode(obtenerHistorialInventario($payload->proveedor));
         break;
 
 	default:

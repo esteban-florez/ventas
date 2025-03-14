@@ -39,7 +39,7 @@ export default {
     document.body.style.opacity = '0'
     const accion = 'historial'
 
-    HttpService.obtenerConConsultas('ventas.php', { accion })
+    HttpService.obtenerConConsultas('ventas.php', { accion, proveedor: null })
       .then(resultado => {
         resultado.sort(
           (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()

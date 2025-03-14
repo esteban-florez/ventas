@@ -28,6 +28,10 @@ switch ($accion) {
 		echo json_encode(editarChofer($payload->chofer));
 		break;
 	
+    case 'pagar_chofer':
+        echo json_encode(registrarPagoChofer($payload->pago));
+        break;
+
 	default:
 		echo json_encode("No se reconoce");
 		break;

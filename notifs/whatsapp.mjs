@@ -17,7 +17,7 @@ setInterval(close, HOURLY)
 /**
  * @returns {Promise<typeof WhatsApp>}
  */
-export async function connect() {
+export async function connect(login = false) {
   if (WhatsApp.socket !== null) {
     log.status('Conectando a WhatsApp, reusando socket...')
     return
@@ -38,16 +38,29 @@ export async function connect() {
   return new Promise(resolve => {
     socket.ev.on('connection.update', (update) => {
       const { connection } = update
-  
+
       if (connection === 'open') {
         log.status('Conexion establecida con WhatsApp')
         WhatsApp.socket = socket
         resolve(WhatsApp)
+
+        if (login) {
+          log.status('Guardando sesión...')
+          setTimeout(() => {
+            log.status('Sesión guardada, cerrando...')
+            process.exit(0)
+          }, 5000)
+        }
       }
   
       if (connection === 'close') {
         WhatsApp.socket = null
         log.status('Conexion cerrada. Reconexion programada en 5 minutos...')
+
+        if (login) {
+          log.status('Iniciando sesión...')
+          connect()
+        }
 
         setTimeout(() => {
           log.status('Reconectando...')

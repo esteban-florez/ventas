@@ -1,4 +1,4 @@
-/*M!999999\- enable the sandbox mode */ 
+-- /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-11.6.2-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: ventas
@@ -39,12 +39,12 @@ UNLOCK TABLES;
 LOCK TABLES `categorias` WRITE;
 /*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
 INSERT INTO `categorias` VALUES
-(1,'LIBRETAS'),
-(2,'LAPICES'),
-(3,'COLORES DE MADERA'),
-(4,'PLUMONES'),
-(5,'CRAYOLAS'),
-(8,'ARTICULOS DE OFICINA');
+(1,'Libretas'),
+(2,'Lapices'),
+(3,'Colores'),
+(4,'Plumones'),
+(5,'Crayolas'),
+(8,'Artículos de Oficina');
 /*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -70,11 +70,11 @@ UNLOCK TABLES;
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
 INSERT INTO `clientes` VALUES
-(1,'paco rivera bernabe','04128970019','Venezolano','24145159'),
+(1,'Carlos Rivera','04128970019','Venezolano','24145159'),
 (2,'David Gonzalez','04128970019','Venezolano','17592050'),
-(3,'ejemplo de cliente','','Venezolano','8241293'),
-(4,'ejemplo de otro cliente','04128970019','Venezolano','19424098'),
-(5,'otrooooo clienteee','','Venezolano','10482391');
+(3,'Allan Primera','','Venezolano','8241293'),
+(4,'Sebastian Laya','04128970019','Venezolano','19424098'),
+(5,'Myriam Hernandez','','Venezolano','10482391');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,7 +85,7 @@ UNLOCK TABLES;
 LOCK TABLES `configuracion` WRITE;
 /*!40000 ALTER TABLE `configuracion` DISABLE KEYS */;
 INSERT INTO `configuracion` VALUES
-('Super Mercado','777666123','./logos/logo.png');
+('Super Mercado','04120001324','./logos/logo.png');
 /*!40000 ALTER TABLE `configuracion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,11 +111,11 @@ UNLOCK TABLES;
 LOCK TABLES `cuentas_apartados` WRITE;
 /*!40000 ALTER TABLE `cuentas_apartados` DISABLE KEYS */;
 INSERT INTO `cuentas_apartados` VALUES
-(1,'2025-02-18 17:30:03',1002.00,7,'cuenta',NULL,2,1),
-(2,'2025-02-19 17:36:09',1000.00,NULL,'apartado',NULL,1,1),
-(3,'2025-02-19 17:53:10',1010.50,10,'cuenta',NULL,1,1),
-(4,'2025-02-19 17:53:25',1000.00,NULL,'apartado',NULL,2,1),
-(5,'2025-02-19 17:53:15',22.00,15,'cuenta',NULL,1,1);
+(1,'2025-02-18 17:30:03',1002.00,7,'cuenta',2,1),
+(2,'2025-02-19 17:36:09',1000.00,NULL,'apartado',1,1),
+(3,'2025-02-19 17:53:10',1010.50,10,'cuenta',1,1),
+(4,'2025-02-19 17:53:25',1000.00,NULL,'apartado',2,1),
+(5,'2025-02-19 17:53:15',22.00,15,'cuenta',1,1);
 /*!40000 ALTER TABLE `cuentas_apartados` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -135,20 +135,21 @@ INSERT INTO `deliveries` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `deliveries`
+-- Dumping data for table `entradas`
 --
 
 LOCK TABLES `entradas` WRITE;
 /*!40000 ALTER TABLE `entradas` DISABLE KEYS */;
 INSERT INTO `entradas` VALUES
-(1,'2025-01-02 11:00:00',25,1),
-(2,'2025-01-01 11:00:00',99,2),
-(3,'2025-01-03 11:00:00',66,3),
-(4,'2025-01-01 11:00:00',453,4),
-(5,'2025-01-01 11:00:00',96,5),
-(6,'2025-01-03 11:00:00',496,6),
-(7,'2025-01-01 11:00:00',11,7),
-(8,'2025-01-02 11:00:00',3,8);
+(1,'2025-01-02 11:00:00',12500.00,25,1,1),
+(2,'2025-01-01 11:00:00',1485.00,99,2,1),
+(3,'2025-01-03 11:00:00',990.00,66,3,1),
+(4,'2025-01-01 11:00:00',2265.00,453,4,1),
+(5,'2025-01-01 11:00:00',4800.00,96,5,1),
+(6,'2025-01-03 11:00:00',52080.00,496,6,1),
+(7,'2025-01-01 11:00:00',275.00,11,7,1),
+(8,'2025-01-02 11:00:00',4.62,3,8,1),
+(9,'2025-01-03 13:00:00',15000.00,30,1,1);
 /*!40000 ALTER TABLE `entradas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,15 +160,15 @@ UNLOCK TABLES;
 LOCK TABLES `marcas` WRITE;
 /*!40000 ALTER TABLE `marcas` DISABLE KEYS */;
 INSERT INTO `marcas` VALUES
-(1,'NORMA'),
-(2,'SCRIBE'),
-(3,'MAPED'),
-(4,'PELIKAN'),
-(5,'BIC'),
-(6,'PAPER MATE'),
-(7,'KIUT'),
-(10,'SHARPIE'),
-(11,'ESTRELLA');
+(1,'Norma'),
+(2,'Scribe'),
+(3,'Maped'),
+(4,'Pelikan'),
+(5,'Bic'),
+(6,'Paper Mate'),
+(7,'Kiut'),
+(10,'Sharpie'),
+(11,'Estrella');
 /*!40000 ALTER TABLE `marcas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -187,6 +188,18 @@ INSERT INTO `metodos` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `pagos_choferes`
+--
+
+LOCK TABLES `pagos_choferes` WRITE;
+/*!40000 ALTER TABLE `pagos_choferes` DISABLE KEYS */;
+INSERT INTO `pagos_choferes` VALUES
+(1,2.0,1),
+(2,5.0,4);
+/*!40000 ALTER TABLE `pagos_choferes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `productos`
 --
 
@@ -195,37 +208,13 @@ LOCK TABLES `productos` WRITE;
 INSERT INTO `productos` VALUES
 (1,'1321355155','Bocina','unid',500.00,1000.00,900.00,1100.00,0,NULL,NULL,NULL,NULL,1),
 (2,'12123146556415','Thinner','lt',15.00,22.00,NULL,NULL,0,NULL,NULL,1,1,2),
-(3,'113241564546','Cuadernocosido','unid',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
-(4,'1321354564','Lapizbonito','unid',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
-(5,'12131212545454','Mouseinalámbrico','unid',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
-(6,'11321345495','Tecladoinálambrico','unid',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
+(3,'113241564546','Cuaderno','unid',15.00,22.00,20.00,NULL,1,13.00,10,2,1,3),
+(4,'1321354564','Lapiz','unid',5.00,10.00,8.00,15.00,1,8.00,20,3,2,4),
+(5,'12131212545454','Mouse','unid',50.00,100.00,NULL,NULL,0,NULL,NULL,NULL,NULL,5),
+(6,'11321345495','Teclado','unid',105.00,200.00,250.00,NULL,0,NULL,NULL,NULL,NULL,3),
 (7,'1213221','Calculadora','unid',25.00,28.00,20.00,NULL,0,NULL,NULL,NULL,NULL,1),
 (8,'123135135487487','Mecate','mt',1.54,4.00,NULL,NULL,1,3.00,20,4,NULL,2);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping data for table `productos_vendidos`
---
-
-LOCK TABLES `productos_vendidos` WRITE;
-/*!40000 ALTER TABLE `productos_vendidos` DISABLE KEYS */;
-INSERT INTO `productos_vendidos` VALUES
-(1,'2025-01-03 12:00:00',1.00,1000.00,1,1,'cuenta'),
-(2,'2025-01-03 12:00:00',1.00,20.00,3,1,'venta'),
-(3,'2025-01-02 12:00:00',1.00,22.00,2,1,'venta'),
-(4,'2025-01-03 12:00:00',1.00,1000.00,1,2,'apartado'),
-(5,'2025-01-02 12:00:00',1.00,22.00,2,2,'venta'),
-(6,'2025-01-02 12:00:00',1.00,10.00,4,2,'venta'),
-(7,'2025-01-03 12:00:00',1.00,1000.00,1,3,'cuenta'),
-(8,'2025-01-03 12:00:00',1.00,1000.00,1,4,'apartado'),
-(9,'2025-01-02 12:00:00',1.00,22.00,2,3,'venta'),
-(10,'2025-01-02 12:00:00',1.00,10.00,4,3,'venta'),
-(11,'2025-01-03 12:00:00',1.00,1000.00,1,4,'venta'),
-(12,'2025-01-03 12:00:00',1.00,22.00,3,5,'cuenta'),
-(13,'2025-01-03 12:00:00',3.00,10.00,4,5,'venta'),
-(14,'2025-01-03 12:00:00',5.00,22.00,4,1,'cuenta');
-/*!40000 ALTER TABLE `productos_vendidos` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -254,6 +243,41 @@ INSERT INTO `productos_cotizados` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `productos_vendidos`
+--
+
+LOCK TABLES `productos_vendidos` WRITE;
+/*!40000 ALTER TABLE `productos_vendidos` DISABLE KEYS */;
+INSERT INTO `productos_vendidos` VALUES
+(1,'2025-01-03 12:00:00',1.00,1000.00,1,1,'cuenta'),
+(2,'2025-01-03 12:00:00',1.00,20.00,3,1,'venta'),
+(3,'2025-01-02 12:00:00',1.00,22.00,2,1,'venta'),
+(4,'2025-01-03 12:00:00',1.00,1000.00,1,2,'apartado'),
+(5,'2025-01-02 12:00:00',1.00,22.00,2,2,'venta'),
+(6,'2025-01-02 12:00:00',1.00,10.00,4,2,'venta'),
+(7,'2025-01-03 12:00:00',1.00,1000.00,1,3,'cuenta'),
+(8,'2025-01-03 12:00:00',1.00,1000.00,1,4,'apartado'),
+(9,'2025-01-02 12:00:00',1.00,22.00,2,3,'venta'),
+(10,'2025-01-02 12:00:00',1.00,10.00,4,3,'venta'),
+(11,'2025-01-03 12:00:00',1.00,1000.00,1,4,'venta'),
+(12,'2025-01-03 12:00:00',1.00,22.00,3,5,'cuenta'),
+(13,'2025-01-03 12:00:00',3.00,10.00,4,5,'venta'),
+(14,'2025-01-03 12:00:00',5.00,22.00,4,1,'cuenta');
+/*!40000 ALTER TABLE `productos_vendidos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping data for table `productos_removidos`
+--
+
+LOCK TABLES `productos_removidos` WRITE;
+/*!40000 ALTER TABLE `productos_removidos` DISABLE KEYS */;
+INSERT INTO `productos_removidos` VALUES
+(1,'2025-01-02 12:00:00',3.00,2,1);
+/*!40000 ALTER TABLE `productos_removidos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `proveedores`
 --
 
@@ -275,7 +299,7 @@ UNLOCK TABLES;
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
 INSERT INTO `usuarios` VALUES
-(1,'Admin','Luis Pérez','23112314523125','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2');
+(1,'Admin','Luis Pérez','0415010123','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 

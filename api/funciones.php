@@ -18,6 +18,8 @@ define('DIRECTORIO', './logos/');
 
 date_default_timezone_set('America/Caracas');
 
+error_reporting(0);
+
 function codificar($imagen) {
     $imagen = str_replace('data:image/png;base64,', '', $imagen);
     $imagen = str_replace('data:image/jpeg;base64,', '', $imagen);
@@ -233,7 +235,7 @@ function obtenerPagosCuentasApartados($filtros, $tipo) {
 
 function obtenerCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
-        cuentas_apartados.tipo, cuentas_apartados.total, cuentas_apartados.notificado,
+        cuentas_apartados.tipo, cuentas_apartados.total,
          cuentas_apartados.dias, SUM(abonos.monto) AS pagado,
         (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
@@ -256,14 +258,6 @@ function obtenerCuentasApartados($filtros, $tipo) {
 	}
 	$cuentas = selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($cuentas, $tipo);
-}
-
-function marcarCuentaNotificada($id) {
-    $ahora = date('Y-m-d H:i:s');
-
-    return editar("UPDATE cuentas_apartados SET notificado = ? WHERE id = ?", [
-        $ahora, $id
-    ]);
 }
 
 function obtenerCotizaciones($filtros, $tipo) {
@@ -690,9 +684,10 @@ function eliminarCliente($id) {
 
 
 /* Choferes */
-
 function obtenerChoferes() {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         GROUP BY choferes.id;";
@@ -700,9 +695,12 @@ function obtenerChoferes() {
 }
 
 function obtenerChoferesPorNombre($nombre) {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
@@ -710,9 +708,12 @@ function obtenerChoferesPorNombre($nombre) {
 }
 
 function obtenerChoferPorId($id) {
-	$sentencia = "SELECT choferes.*, SUM(deliveries.costo) as deuda
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
+	$sentencia = "SELECT choferes.*,
+        (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
+        LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
@@ -722,6 +723,12 @@ function editarChofer($chofer) {
 	$sentencia = "UPDATE choferes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
 	$parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci, $chofer->id];
 	return editar($sentencia, $parametros);
+}
+
+function registrarPagoChofer($pago) {
+    $sentencia = "INSERT INTO pagos_choferes (monto, idChofer) VALUES (?,?)";
+    $parametros = [$pago->monto, $pago->idChofer];
+    return insertar($sentencia, $parametros);
 }
 
 function obtenerDeliveries() {
@@ -781,9 +788,11 @@ function obtenerProductosMasVendidos($limite) {
 function obtenerExistencia($id = null) {
     $salidas = "SELECT COALESCE(SUM(productos_vendidos.cantidad), 0) FROM productos_vendidos WHERE productos_vendidos.idProducto = productos.id";
 
+    $removidos = "SELECT COALESCE(SUM(productos_removidos.cantidad), 0) FROM productos_removidos WHERE productos_removidos.idProducto = productos.id";
+
     $entradas = "SELECT COALESCE(SUM(entradas.cantidad), 0) FROM entradas WHERE entradas.idProducto = productos.id";
 
-    $sentencia = "SELECT productos.id AS id, productos.nombre AS nombre, productos.precioVenta AS precioVenta, productos.precioCompra AS precioCompra, (($entradas) - ($salidas)) AS existencia
+    $sentencia = "SELECT productos.id AS id, productos.nombre AS nombre, productos.precioVenta AS precioVenta, productos.precioCompra AS precioCompra, (($entradas) - ($removidos) - ($salidas)) AS existencia
     FROM productos";
 
     if (!$id) {
@@ -793,29 +802,59 @@ function obtenerExistencia($id = null) {
     return selectRegresandoObjeto("$sentencia WHERE productos.id = ?;", [$id]);
 }
 
-function agregarExistenciaProducto($cantidad, $id) {
-	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto) VALUES (?,?,?)";
-	$parametros = [date('Y-m-d H:i:s'), $cantidad, $id];
-	return editar($sentencia, $parametros);
+function agregarExistenciaProducto($entrada) {
+	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
+	$parametros = [date('Y-m-d H:i:s'), $entrada->cantidad, $entrada->id, $entrada->usuario];
+	return insertar($sentencia, $parametros);
 }
 
-function obtenerHistorialInventario() {
+function removerExistenciaProducto($producto) {
+	$sentencia = "INSERT INTO productos_removidos (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
+	$parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->id, $producto->usuario];
+	return insertar($sentencia, $parametros);
+}
+
+function obtenerHistorialInventario($proveedor) {
+    $antiguo = "SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto";
+
     $sentencia1 = "SELECT e.fecha, e.cantidad,
-        CONCAT('+') as tipo, p.nombre AS nombreProducto
+        p.nombre AS nombreProducto, u.usuario AS nombreUsuario,
+         '+' AS signo, pr.nombre AS nombreProveedor,
+        IF(($antiguo) = e.fecha, 'Registro', 'Reposición') AS tipo
         FROM entradas AS e
-        LEFT JOIN productos AS p ON p.id = e.idProducto;";
+        LEFT JOIN productos AS p ON p.id = e.idProducto
+        LEFT JOIN usuarios AS u ON e.idUsuario = u.id
+        INNER JOIN proveedores AS pr ON p.proveedor = pr.id";
+
+    if ($proveedor) {
+        $sentencia1 .= " AND pr.id = ?";
+        return selectPrepare($sentencia1, [$proveedor]);
+    }
 
     $sentencia2 = "SELECT v.fecha, v.cantidad,
-        CONCAT('-') AS tipo, p.nombre AS nombreProducto
+        'Venta' AS tipo, p.nombre AS nombreProducto,
+        u.usuario AS nombreUsuario, '-' AS signo,
+        c.nombre AS nombreCliente
         FROM productos_vendidos AS v
-        LEFT JOIN productos AS p ON p.id = v.idProducto;";
+        LEFT JOIN productos AS p ON p.id = v.idProducto
+        LEFT JOIN cuentas_apartados AS ca ON v.idReferencia = ca.id
+        LEFT JOIN ventas AS ve ON v.idReferencia = ve.id
+        LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id
+        LEFT JOIN clientes AS c ON ca.idCliente = c.id OR ve.idCliente = c.id;";
+
+    $sentencia3 = "SELECT r.fecha, r.cantidad,
+        'Retiro' as tipo, p.nombre AS nombreProducto,
+        u.usuario AS nombreUsuario, '-' AS signo
+        FROM productos_removidos AS r
+        LEFT JOIN productos AS p ON p.id = r.idProducto
+        LEFT JOIN usuarios AS u ON r.idUsuario = u.id;";
 
     $entradas = selectQuery($sentencia1);
     $salidas = selectQuery($sentencia2);
+    $removidos = selectQuery($sentencia3);
 
-    $movimientos = array_merge($entradas, $salidas);
+    $movimientos = array_merge($entradas, $salidas, $removidos);
 
-    dd($movimientos);
     return $movimientos;
 }
 

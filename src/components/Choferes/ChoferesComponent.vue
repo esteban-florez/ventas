@@ -5,12 +5,23 @@
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Choferes</b-breadcrumb-item> 
     </b-breadcrumb>
-    <div class="column is-flex is-justify-content-end">
-      <b-button type="is-primary" tag="a" href="#/pdf/choferes" target="__blank" rel="noopener noreferrer">
-        Imprimir
-      </b-button>
+    <div class="columns">
+      <div class="column">
+        <b-select v-model="perPage">
+          <option value="5">5 por página</option>
+          <option value="10">10 por página</option>
+          <option value="15">15 por página</option>
+          <option value="20">20 por página</option>
+        </b-select>
+      </div>
+      <div class="column is-flex is-justify-content-end">
+        <b-button type="is-primary" tag="a" href="#/pdf/choferes" target="__blank" rel="noopener noreferrer">
+          Imprimir
+        </b-button>
+      </div>
     </div>
-    <b-table :data="choferes">
+    <b-table class="box" :data="choferes" :per-page="perPage" :paginated="true" :pagination-simple="false"
+    :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
       <b-table-column field="nombre" label="Nombre del chofer" sortable searchable v-slot="props">
         {{ props.row.nombre }}
       </b-table-column>
@@ -31,10 +42,15 @@
         ${{ Number(props.row.deuda).toFixed(2) || 0..toFixed(2) }}
       </b-table-column>
 
-      <b-table-column field="editar" label="Editar" v-slot="props">
-        <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarChofer', params: { id: props.row.id } }">
-          Editar
-        </b-button>
+      <b-table-column field="acciones" label="Acciones" v-slot="props">
+        <div class="is-flex">
+          <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarChofer', params: { id: props.row.id } }">
+            Editar
+          </b-button>
+          <b-button v-if="tieneDeuda(props.row)" class="ml-1" type="is-success" icon-left="plus" @click="pagar(props.row)">
+            Pagar
+          </b-button>
+        </div>
       </b-table-column>
     </b-table>
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
@@ -50,6 +66,7 @@ export default {
 
   data: () => ({
     cargando: false,
+    perPage: 5,
     choferes: []
   }),
 
@@ -69,7 +86,46 @@ export default {
           this.choferes = choferes
           this.cargando = false
         })
-    }
-  }
+    },
+
+    tieneDeuda(chofer) {
+      return Number(chofer.deuda) > 0;
+    },
+
+    pagar(chofer) {
+      this.$buefy.dialog.prompt({
+        message: '¿Cual es el monto del pago que vas a registrar?',
+        cancelText: 'Cancelar',
+        confirmText: 'Registrar',
+        inputAttrs: {
+          type: 'number',
+          placeholder: 'Escribe el monto del pago a registrar',
+          value: '',
+          min: 0.01,
+          max: Number(chofer.deuda),
+          step: 0.01,
+        },
+        trapFocus: true,
+        onConfirm: (value) => {
+          this.cargando = true
+          HttpService.registrar('choferes.php', {
+            accion: 'pagar_chofer',
+            pago: {
+              monto: value,
+              idChofer: chofer.id,
+            },
+          })
+            .then(registrado => {
+              if (registrado) {
+                this.cargando = false
+                this.$buefy.toast.open('Pago registrado con éxito.')
+                this.obtenerChoferes()
+              }
+            })
+
+        }
+      })
+    },
+  },
 }
 </script>
