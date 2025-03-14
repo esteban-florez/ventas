@@ -1,5 +1,6 @@
 <template>
   <section>
+    <img src="../../assets/ofertacaracas.jpg">
     <div class="comprobante" :class="tamaño" id="comprobante" v-if="datosNegocio">
       <div class="header">
         <p><b>{{ titulo }}</b></p>
@@ -31,7 +32,6 @@
       <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
       <p><b>Gracias por su preferencia</b></p>
       <p>----------------------------</p>
-      <img :src="datosNegocio.logo" alt="Aqui el logo" width="120">
     </div>
   </section>
 </template>
