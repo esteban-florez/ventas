@@ -3,7 +3,7 @@
 - Mostrar deuda en tabla de proveedores.
 - Crear página de historial de pagos a proveedores.
 - Actualizar PDF de movimientos con campos nuevos.
-- Roles y permisos.
+- Roles y permisos, cambiar registro de usuarios para que tengan passwords reales.
 - Botón para volver a enviar comprobantes a clientes por WhatsApp.
 - Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (preguntar precios).
 

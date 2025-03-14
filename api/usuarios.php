@@ -13,7 +13,7 @@ $accion = $payload->accion;
 
 switch ($accion) {
 	case 'registrar':
-		$password = password_hash($_ENV['PASSWORD_DEFECTO'], PASSWORD_DEFAULT);
+		$password = password_hash($_ENV['OWNER_PASSWORD'], PASSWORD_DEFAULT);
 		$usuario = $payload->usuario;
 		$usuario->password = $password;
 		echo json_encode(registrarUsuario($usuario));
