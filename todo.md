@@ -1,6 +1,5 @@
 # Tareas
 
-- Añadir campo de dirección a clientes.
 - Mostrar deuda en tabla de proveedores.
 - Crear página de historial de pagos a proveedores.
 - Actualizar PDF de movimientos con campos nuevos.

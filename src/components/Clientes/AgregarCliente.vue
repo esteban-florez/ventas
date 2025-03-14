@@ -27,6 +27,7 @@
                 telefono: "",
                 tipo: "",
                 ci: "",
+                direccion: "",
             }
         }),
 

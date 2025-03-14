@@ -16,6 +16,9 @@
     <b-field label="Cédula/RIF">
       <b-input type="number" placeholder="Ej. 30000000" v-model="datosCliente.ci"></b-input>
     </b-field>
+    <b-field label="Dirección">
+      <b-input type="text" placeholder="Ej. Calle 25, Casa 10, Ciudad, Estado" v-model="datosCliente.direccion"></b-input>
+    </b-field>
     <div class="buttons has-text-centered mt-3">
       <b-button type="is-primary" size="is-large" icon-left="check" @click="registrar">Registrar</b-button>
       <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/clientes">Cancelar</b-button>
@@ -39,6 +42,7 @@
 				telefono: "",
         tipo: "",
         ci: "",
+        direccion: "",
 			},
 			mensajesError: [],
       tipos: TIPOS_CLIENTE,
@@ -58,6 +62,7 @@
 					telefono: "",
           tipo: "",
           ci: "",
+          direccion: "",
 				}
 			}
 		}

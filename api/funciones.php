@@ -661,8 +661,8 @@ function obtenerClientes() {
 }
 
 function registrarCliente($cliente) {
-	$sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci];
+	$sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci, direccion) VALUES (?,?,?,?,?)";
+	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion];
 	return insertar($sentencia, clean($parametros));
 }
 
@@ -672,8 +672,8 @@ function obtenerClientePorId($id) {
 }
 
 function editarCliente($cliente) {
-	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->id];
+	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ?, direccion = ? WHERE id = ?";
+	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion, $cliente->id];
 	return editar($sentencia, $parametros);
 }
 

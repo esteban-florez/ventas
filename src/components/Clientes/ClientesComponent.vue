@@ -23,6 +23,10 @@
         {{ props.row.telefono }}
       </b-table-column>
 
+      <b-table-column field="direccion" label="Dirección" sortable searchable v-slot="props">
+        {{ props.row.direccion }}
+      </b-table-column>
+
       <b-table-column field="eliminar" label="Eliminar" v-slot="props">
         <b-button type="is-danger" icon-left="delete" @click="eliminar(props.row.id)">Eliminar</b-button>
       </b-table-column>

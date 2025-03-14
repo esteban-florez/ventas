@@ -70,11 +70,11 @@ UNLOCK TABLES;
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
 INSERT INTO `clientes` VALUES
-(1,'Carlos Rivera','04128970019','Venezolano','24145159'),
-(2,'David Gonzalez','04128970019','Venezolano','17592050'),
-(3,'Allan Primera','','Venezolano','8241293'),
-(4,'Sebastian Laya','04128970019','Venezolano','19424098'),
-(5,'Myriam Hernandez','','Venezolano','10482391');
+(1,'Carlos Rivera','04128970019','Venezolano','24145159','Calle 23, Casa 12, Maracay'),
+(2,'David Gonzalez','04128970019','Venezolano','17592050','Calle 27, Casa 40, Caracas'),
+(3,'Allan Primera','','Venezolano','8241293','Calle 45, Casa 70, Valencia'),
+(4,'Sebastian Laya','04128970019','Venezolano','19424098','Calle 58, Casa 14, Santa Cruz'),
+(5,'Myriam Hernandez','','Venezolano','10482391','Calle 12, Casa 25, Cagua');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
