@@ -685,7 +685,7 @@ function eliminarCliente($id) {
 
 /* Choferes */
 function obtenerChoferes() {
-    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
 	$sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado) as deuda
         FROM choferes
@@ -695,12 +695,12 @@ function obtenerChoferes() {
 }
 
 function obtenerChoferesPorNombre($nombre) {
-    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
 	$sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        LEFT JOIN pagos ON pagos.idChofer = choferes.id
+        LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
 	$parametros = ["%".$nombre."%"];
@@ -708,12 +708,12 @@ function obtenerChoferesPorNombre($nombre) {
 }
 
 function obtenerChoferPorId($id) {
-    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos WHERE pagos.idChofer = choferes.id)";
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
 	$sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
-        LEFT JOIN pagos ON pagos.idChofer = choferes.id
+        LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
 	return selectRegresandoObjeto($sentencia, [$id]);
@@ -726,7 +726,7 @@ function editarChofer($chofer) {
 }
 
 function registrarPagoChofer($pago) {
-    $sentencia = "INSERT INTO pagos (monto, idChofer) VALUES (?,?)";
+    $sentencia = "INSERT INTO pagos_choferes (monto, idChofer) VALUES (?,?)";
     $parametros = [$pago->monto, $pago->idChofer];
     return insertar($sentencia, $parametros);
 }
@@ -814,13 +814,22 @@ function removerExistenciaProducto($producto) {
 	return insertar($sentencia, $parametros);
 }
 
-function obtenerHistorialInventario() {
+function obtenerHistorialInventario($proveedor) {
+    $antiguo = "SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto";
+
     $sentencia1 = "SELECT e.fecha, e.cantidad,
         p.nombre AS nombreProducto, u.usuario AS nombreUsuario,
-        IF((SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto) = e.fecha, 'Registro', 'Reposición') AS tipo, '+' AS signo
+         '+' AS signo, pr.nombre AS nombreProveedor,
+        IF(($antiguo) = e.fecha, 'Registro', 'Reposición') AS tipo
         FROM entradas AS e
         LEFT JOIN productos AS p ON p.id = e.idProducto
-        LEFT JOIN usuarios AS u ON e.idUsuario = u.id;";
+        LEFT JOIN usuarios AS u ON e.idUsuario = u.id
+        INNER JOIN proveedores AS pr ON p.proveedor = pr.id";
+
+    if ($proveedor) {
+        $sentencia1 .= " AND pr.id = ?";
+        return selectPrepare($sentencia1, [$proveedor]);
+    }
 
     $sentencia2 = "SELECT v.fecha, v.cantidad,
         'Venta' AS tipo, p.nombre AS nombreProducto,

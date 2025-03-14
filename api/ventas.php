@@ -76,7 +76,7 @@ switch ($accion) {
         break;
 
     case 'historial':
-        echo json_encode(obtenerHistorialInventario());
+        echo json_encode(obtenerHistorialInventario($payload->proveedor));
         break;
 
 	default:

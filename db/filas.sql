@@ -135,21 +135,21 @@ INSERT INTO `deliveries` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `deliveries`
+-- Dumping data for table `entradas`
 --
 
 LOCK TABLES `entradas` WRITE;
 /*!40000 ALTER TABLE `entradas` DISABLE KEYS */;
 INSERT INTO `entradas` VALUES
-(1,'2025-01-02 11:00:00',25,1,1),
-(2,'2025-01-01 11:00:00',99,2,1),
-(3,'2025-01-03 11:00:00',66,3,1),
-(4,'2025-01-01 11:00:00',453,4,1),
-(5,'2025-01-01 11:00:00',96,5,1),
-(6,'2025-01-03 11:00:00',496,6,1),
-(7,'2025-01-01 11:00:00',11,7,1),
-(8,'2025-01-02 11:00:00',3,8,1),
-(9,'2025-01-03 13:00:00',30,1,1);
+(1,'2025-01-02 11:00:00',12500.00,25,1,1),
+(2,'2025-01-01 11:00:00',1485.00,99,2,1),
+(3,'2025-01-03 11:00:00',990.00,66,3,1),
+(4,'2025-01-01 11:00:00',2265.00,453,4,1),
+(5,'2025-01-01 11:00:00',4800.00,96,5,1),
+(6,'2025-01-03 11:00:00',52080.00,496,6,1),
+(7,'2025-01-01 11:00:00',275.00,11,7,1),
+(8,'2025-01-02 11:00:00',4.62,3,8,1),
+(9,'2025-01-03 13:00:00',15000.00,30,1,1);
 /*!40000 ALTER TABLE `entradas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,15 +188,15 @@ INSERT INTO `metodos` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `pagos`
+-- Dumping data for table `pagos_choferes`
 --
 
-LOCK TABLES `pagos` WRITE;
-/*!40000 ALTER TABLE `pagos` DISABLE KEYS */;
-INSERT INTO `pagos` VALUES
+LOCK TABLES `pagos_choferes` WRITE;
+/*!40000 ALTER TABLE `pagos_choferes` DISABLE KEYS */;
+INSERT INTO `pagos_choferes` VALUES
 (1,2.0,1),
 (2,5.0,4);
-/*!40000 ALTER TABLE `pagos` ENABLE KEYS */;
+/*!40000 ALTER TABLE `pagos_choferes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

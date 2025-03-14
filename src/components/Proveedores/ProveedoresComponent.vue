@@ -23,8 +23,17 @@
       </b-table-column>
 
       <b-table-column field="editar" label="Editar" v-slot="props">
-        <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
-          Editar
+        <b-button type="is-warning" icon-left="pen" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
+        </b-button>
+      </b-table-column>
+
+      <b-table-column field="pagos" label="Pagos" v-slot="props">
+        <b-button type="is-success" icon-left="cash" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
+        </b-button>
+      </b-table-column>
+
+      <b-table-column field="productos" label="Productos" v-slot="props">
+        <b-button type="is-info" icon-left="format-list-bulleted" tag="router-link" :to="{ name: 'HistorialComponent', query: { proveedor: props.row.id } }">
         </b-button>
       </b-table-column>
     </b-table>

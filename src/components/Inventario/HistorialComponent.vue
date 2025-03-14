@@ -6,12 +6,18 @@
       <b-breadcrumb-item active>Historial de Inventario</b-breadcrumb-item>
     </b-breadcrumb>
     <div class="columns">
-      <div class="column">
-        <b-select v-model="perPage">
+      <div class="column is-flex">
+        <b-select class="mr-1" v-model="perPage">
           <option value="5">5 por página</option>
           <option value="10">10 por página</option>
           <option value="15">15 por página</option>
           <option value="20">20 por página</option>
+        </b-select>
+        <b-select class="has-text-black" v-model="filtroProveedor" @input="obtenerMovimientos">
+          <option value="">Todos los proveedores</option>
+          <option v-for="proveedor in proveedores" :value="proveedor.id" :key="proveedor.id">
+            {{ proveedor.nombre }}
+          </option>
         </b-select>
       </div>
       <div class="column is-flex is-justify-content-end">
@@ -47,6 +53,10 @@
       <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
         {{ props.row.nombreCliente || 'N/A' }}
       </b-table-column>
+
+      <b-table-column field="nombreCliente" label="Proveedor" sortable searchable v-slot="props">
+        {{ props.row.nombreProveedor || 'N/A' }}
+      </b-table-column>
     </b-table>
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
@@ -62,11 +72,15 @@ export default {
   data: () => ({
     cargando: false,
     movimientos: [],
+    proveedores: [],
+    filtroProveedor: '',
     perPage: 10,
   }),
 
   mounted() {
+    this.filtroProveedor = this.$route.query.proveedor || ''
     this.obtenerMovimientos()
+    this.obtenerProveedores()
   },
 
   methods: {
@@ -74,12 +88,26 @@ export default {
       this.cargando = true
       let payload = {
         accion: 'historial',
+        proveedor: this.filtroProveedor || null,
       }
 
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(movimientos => {
           movimientos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
           this.movimientos = movimientos
+          this.cargando = false
+        })
+    },
+
+    obtenerProveedores() {
+      this.cargando = true
+      let payload = {
+        accion: 'obtener',
+      }
+
+      HttpService.obtenerConConsultas('proveedores.php', payload)
+        .then(proveedores => {
+          this.proveedores = proveedores
           this.cargando = false
         })
     },

@@ -163,6 +163,7 @@ DROP TABLE IF EXISTS `entradas`;
 CREATE TABLE `entradas` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `fecha` datetime NOT NULL,
+  `monto` decimal(9,2) NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
   `idProducto` bigint(20) NOT NULL,
   `idUsuario` bigint(20) NOT NULL,
@@ -207,13 +208,13 @@ CREATE TABLE `metodos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `pagos`
+-- Table structure for table `pagos_choferes`
 --
 
-DROP TABLE IF EXISTS `pagos`;
+DROP TABLE IF EXISTS `pagos_choferes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pagos` (
+CREATE TABLE `pagos_choferes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `monto` decimal(9,2) NOT NULL,
   `idChofer` bigint(20) NOT NULL,
