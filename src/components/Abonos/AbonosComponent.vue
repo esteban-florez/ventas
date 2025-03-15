@@ -104,6 +104,12 @@ export default {
       this.cuentaApartado = cuentaApartado
       this.datosCuentaApartado = [
         {
+          nombre: 'Nombre del Cliente',
+          total: cuentaApartado.nombreCliente,
+          icono: 'account',
+          clase: 'has-text-primary',
+        },
+        {
           nombre: 'Monto total',
           total: cuentaApartado.total,
           icono: 'cash',
@@ -120,12 +126,6 @@ export default {
           total: cuentaApartado.porPagar,
           icono: 'clock',
           clase: 'has-text-danger',
-        },
-        {
-          nombre: 'Nombre del Cliente',
-          total: cuentaApartado.nombreCliente,
-          icono: 'account',
-          clase: 'has-text-primary',
         },
       ]
 

@@ -32,7 +32,7 @@
       </b-table-column>
 
       <b-table-column field="pagos" label="Pagos" v-slot="props">
-        <b-button type="is-success" icon-left="cash" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
+        <b-button type="is-success" icon-left="cash" tag="router-link" :to="{ name: 'PagosComponent', params: { id: props.row.id } }">
         </b-button>
       </b-table-column>
 

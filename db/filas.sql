@@ -195,9 +195,9 @@ UNLOCK TABLES;
 LOCK TABLES `pagos_proveedores` WRITE;
 /*!40000 ALTER TABLE `pagos_proveedores` DISABLE KEYS */;
 INSERT INTO `pagos_proveedores` VALUES
-(1,10000.00,1),
-(2,1000.62,2),
-(3,1000.00,1);
+(1,'2025-03-05',10000.00,1,1),
+(2,'2025-03-05',1000.62,2,1),
+(3,'2025-03-05',1000.00,1,1);
 /*!40000 ALTER TABLE `pagos_proveedores` ENABLE KEYS */;
 UNLOCK TABLES;
 

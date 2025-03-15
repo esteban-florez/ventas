@@ -1,5 +1,5 @@
 <template>
-    <section class="hero is-medium is-primary">
+    <section class="hero is-medium is-primary mb-4">
       <div class="hero-body">
         <p class="title">
           {{ titulo }}

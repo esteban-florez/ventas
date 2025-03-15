@@ -40,6 +40,7 @@ import PDFChoferes from '@/components/PDF/PDFChoferes.vue'
 import PDFMovimientos from '@/components/PDF/PDFMovimientos.vue'
 import PDFAbonos from '@/components/PDF/PDFAbonos.vue'
 import PDFAbono from '@/components/PDF/PDFAbono.vue'
+import PagosComponent from '@/components/Pagos/PagosComponent.vue'
 
 Vue.use(VueRouter)
 
@@ -123,6 +124,11 @@ const routes = [
     path: '/editar-proveedor/:id',
     name: 'EditarProveedor',
     component: EditarProveedor,
+  },
+  {
+    path: '/pagos/:id',
+    name: 'PagosComponent',
+    component: PagosComponent,
   },
   {
     path: '/clientes',

@@ -218,8 +218,10 @@ DROP TABLE IF EXISTS `pagos_proveedores`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pagos_proveedores` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `fecha` datetime NOT NULL,
   `monto` decimal(9,2) NOT NULL,
   `idProveedor` bigint(20) NOT NULL,
+  `idUsuario` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

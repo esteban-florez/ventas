@@ -775,6 +775,21 @@ function editarProveedor($datos) {
 	return editar($sentencia, $parametros);
 }
 
+function obtenerPagosProveedor($id) {
+    $sentencia = "SELECT pp.*, u.nombre AS nombreUsuario
+        FROM pagos_proveedores AS pp
+        LEFT JOIN usuarios as u ON u.id = pp.idUsuario
+        WHERE pp.idProveedor = ?
+        ORDER BY pp.fecha DESC";
+
+    $pagos = selectPrepare($sentencia, [$id]);
+
+    return [
+        'proveedor' => obtenerProveedorPorId($id),
+        'pagos' => $pagos,
+    ];
+}
+
 /*
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 
