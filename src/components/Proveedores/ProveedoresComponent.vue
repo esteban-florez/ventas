@@ -22,6 +22,10 @@
         {{ props.row.direccion }}
       </b-table-column>
 
+      <b-table-column field="deuda" label="Deuda" sortable searchable v-slot="props">
+        ${{ props.row.deuda.toFixed(2) }}
+      </b-table-column>
+
       <b-table-column field="editar" label="Editar" v-slot="props">
         <b-button type="is-warning" icon-left="pen" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
         </b-button>

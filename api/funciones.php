@@ -713,13 +713,54 @@ function obtenerDeliveries() {
 /* PROVEEDORES */
 
 function obtenerProveedores() {
-	$sentencia = "SELECT * FROM proveedores;";
-	return selectQuery($sentencia);
+    $sentencia = "SELECT proveedores.*,
+        IFNULL(SUM(entradas.monto), 0) AS total
+        FROM proveedores
+        LEFT JOIN productos ON productos.proveedor = proveedores.id
+        LEFT JOIN entradas ON entradas.idProducto = productos.id
+        GROUP BY proveedores.id;";
+
+    $sentencia2 = "SELECT proveedores.id,
+        IFNULL(SUM(pagos_proveedores.monto), 0) AS pagado
+        FROM proveedores
+        LEFT JOIN pagos_proveedores ON pagos_proveedores.idProveedor = proveedores.id
+        GROUP BY proveedores.id;";
+
+    $proveedores = selectQuery($sentencia);
+    $pagados = selectQuery($sentencia2);
+
+    foreach ($proveedores as $index => $proveedor) {
+        $fila = $pagados[$index];
+        if ($proveedor->id === $fila->id) {
+            $proveedor->pagado = $fila->pagado;
+
+            $proveedor->deuda = ($proveedor->total * 100) - ($fila->pagado * 100);
+            $proveedor->deuda = $proveedor->deuda / 100;
+        }
+    }
+
+	return $proveedores;
 }
 
 function obtenerProveedorPorId($id) {
-	$sentencia = "SELECT * FROM proveedores WHERE id = ?;";
-	return selectRegresandoObjeto($sentencia, [$id]);
+	$sentencia = "SELECT proveedores.*,
+        IFNULL(SUM(entradas.monto), 0) AS total
+        FROM proveedores
+        LEFT JOIN productos ON productos.proveedor = proveedores.id
+        LEFT JOIN entradas ON entradas.idProducto = productos.id
+        WHERE proveedores.id = ?";
+
+    $sentencia2 = "SELECT IFNULL(SUM(pagos_proveedores.monto), 0) AS pagado
+        FROM proveedores
+        LEFT JOIN pagos_proveedores ON pagos_proveedores.idProveedor = proveedores.id
+        WHERE proveedores.id = ?;";
+
+	$proveedor = selectRegresandoObjeto($sentencia, [$id]);
+    $pagado = selectRegresandoObjeto($sentencia2, [$id])->pagado;
+    $proveedor->pagado = $pagado;
+    $proveedor->deuda = $proveedor->total - $pagado;
+
+    return $proveedor;
 }
 
 function registrarProveedor($datos) {
@@ -774,8 +815,8 @@ function obtenerExistencia($id = null) {
 }
 
 function agregarExistenciaProducto($entrada) {
-	$sentencia = "INSERT INTO entradas (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
-	$parametros = [date('Y-m-d H:i:s'), $entrada->cantidad, $entrada->id, $entrada->usuario];
+	$sentencia = "INSERT INTO entradas (fecha, monto, cantidad, idProducto, idUsuario) VALUES (?,?,?,?,?)";
+	$parametros = [date('Y-m-d H:i:s'), $entrada->monto, $entrada->cantidad, $entrada->id, $entrada->usuario];
 	return insertar($sentencia, $parametros);
 }
 
@@ -880,7 +921,14 @@ function registrarProducto($producto) {
 
     if (floatval($producto->existencia) !== 0) {
         $idProducto = obtenerUltimoId('productos');
-        $resultado = $resultado && agregarExistenciaProducto($producto->existencia, $idProducto);
+        
+        $entrada = new stdClass;
+        $entrada->cantidad = $producto->existencia;
+        $entrada->monto = $producto->monto;
+        $entrada->id = $idProducto;
+        $entrada->usuario = $producto->usuario;
+
+        $resultado = $resultado && agregarExistenciaProducto($entrada);
     }
 
     return $resultado;

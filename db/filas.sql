@@ -189,6 +189,19 @@ INSERT INTO `pagos_choferes` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `pagos_proveedores`
+--
+
+LOCK TABLES `pagos_proveedores` WRITE;
+/*!40000 ALTER TABLE `pagos_proveedores` DISABLE KEYS */;
+INSERT INTO `pagos_proveedores` VALUES
+(1,10000.00,1),
+(2,1000.62,2),
+(3,1000.00,1);
+/*!40000 ALTER TABLE `pagos_proveedores` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `productos`
 --
 

@@ -1,5 +1,4 @@
 import Chart from 'chart.js'
-const { VUE_APP_API_URL: RUTA } = process.env
 const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 
 const Utiles = {
@@ -110,10 +109,6 @@ const Utiles = {
     })
     return total
   },
-
-  regresarRuta() {
-    return RUTA
-  }
 }
 
 export default Utiles;

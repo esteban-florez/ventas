@@ -1,11 +1,10 @@
 # Tareas
 
-- Mostrar deuda en tabla de proveedores.
 - Crear página de historial de pagos a proveedores.
 - Actualizar el PDF de movimientos y el de proveedores con campos nuevos.
+- Hacer dialogo de confirmación al momento de mandar 
 
 - Roles y permisos, basicamente rehacer toda la autenticación, la que hay ahorita es de cartón.
-- Botón para volver a enviar comprobantes a clientes por WhatsApp.
 - Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (David pregunta lo del los multiples precios para un mismo producto).
 
 ## Bugs

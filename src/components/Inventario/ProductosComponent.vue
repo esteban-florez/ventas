@@ -158,12 +158,16 @@ export default {
         trapFocus: true,
         onConfirm: (value) => {
           this.cargando = true
+          const precioCompra = Number(producto.precioCompra) * 100
+          const monto = (Number(value) * precioCompra) / 100
+
           HttpService.registrar('productos.php', {
             accion: 'agregar_existencia',
             entrada: {
               cantidad: value,
               id: producto.id,
               usuario: AyudanteSesion.obtenerDatosSesion().id,
+              monto,
             },
           })
             .then(registrado => {
