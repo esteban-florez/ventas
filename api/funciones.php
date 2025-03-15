@@ -713,6 +713,22 @@ function obtenerDeliveries() {
 /* PROVEEDORES */
 
 function obtenerProveedores() {
+    // TODO -> arreglar para que incluya deuda, esta query no sirve
+    // SELECT p.*, (SUM(mp.monto) - SUM(mc.monto)) as deuda
+	// FROM proveedores AS p
+	// LEFT JOIN
+	// (
+	// 	SELECT pp.id AS id, pp.idProveedor AS idProveedor, SUM(pp.monto) AS monto
+	// 	FROM pagos_proveedores AS pp
+	// 	GROUP BY pp.id
+	// ) AS mp ON mp.idProveedor = p.id
+	// LEFT JOIN (
+	// 	SELECT p.id AS id, p.proveedor AS idProveedor, SUM(e.monto) AS monto
+	// 	FROM productos AS p
+	// 	LEFT JOIN entradas AS e ON p.id = e.idProducto
+	// 	GROUP BY p.id
+	// ) AS mc ON mc.idProveedor = p.id
+	// GROUP BY p.id;
 	$sentencia = "SELECT * FROM proveedores;";
 	return selectQuery($sentencia);
 }

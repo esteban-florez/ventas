@@ -1,17 +1,39 @@
 import 'dotenv/config'
 import { Worker } from 'node:worker_threads'
-import { connect } from './whatsapp.mjs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { logger } from './logger.mjs'
+import { WhatsAppClient } from 'easy-baileys'
 
 const log = logger()
 
+const getSocket = async () => {
+  try {
+    const customOptions = {
+        browser: ["Ubuntu", "Chrome", "20.0.04"],
+        printQRInTerminal: false,
+        mobile: false,
+    }
+
+    const client = await WhatsAppClient.create('multi', './baileys_auth', customOptions)
+    const sock = await client.getSocket()
+
+    await new Promise(resolve => setTimeout(resolve, 5000))
+
+    const number = Number(`58${process.env.WHATSAPP_PHONE}`)
+    const code = await client.getPairingCode(number)
+    log.status('Codigo de conexion a WhatsApp: ', code)
+    return sock
+  } catch (error) {
+    console.error('Error iniciando el cliente de WhatsApp:', error.message)
+  }
+}
+
+const jid = phone => `58${phone}@s.whatsapp.net`
+
 async function run() {
   try {
-    const login = process.argv[2] === '--login'
-    const WhatsApp = await connect(login)
-
+    const socket = await getSocket()
     const filePath = fileURLToPath(import.meta.url)
     const folder = dirname(filePath)
     
@@ -20,14 +42,15 @@ async function run() {
     filesWorker.on('message', (data) => {
       const { file, phone } = data
       const buffer = Buffer.from(file)
-      WhatsApp.file(phone, buffer)
+      const caption = 'Comprobante - ' + process.env.OWNER_NAME;
+      socket.sendDocument(jid(phone), buffer, 'Comprobante.pdf', 'application/pdf', caption)
     })
     
     const cronWorker = new Worker(join(folder, 'cron.mjs'), { argv: process.argv })
     
     cronWorker.on('message', (data) => {
       const { text, phone } = data
-      WhatsApp.message(phone, text)
+      socket.sendTextMessage(jid(phone), text)
     })
   } catch (error) {
     log.error('Error al iniciar notifs, reintentando...')
