@@ -2,7 +2,8 @@
   <section id="pdf">
     <div class="comprobante" v-if="datosNegocio">
       <h1><b>Comprobante de Abono</b></h1>
-      <p>{{ datosNegocio.nombre }} Teléfono: {{ datosNegocio.telefono }}</p>
+      <p>{{ nombre }}</p>
+      <p>Teléfono: {{ telefono }}</p>
       <p><b>Fecha: </b>{{ abono.fecha }}</p>
 
       <div class="parrafo">
@@ -24,15 +25,12 @@
 
       <p><b>Gracias por su preferencia</b></p>
       <p>----------------------------</p>
-      <img :src="datosNegocio.logo" alt="Aqui el logo" width="120">
     </div>
   </section>
 </template>
 
 <script>
 import Printd from 'printd'
-import AyudanteSesion from '../../Servicios/AyudanteSesion'
-import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'PDFAbono',
@@ -41,11 +39,14 @@ export default {
     titulo: '',
     cuenta: null,
     abono: null,
-    datosNegocio: null,
+    nombre: '',
+    telefono: '',
   }),
 
   async mounted() {
-    this.obtenerDatosNegocio()
+    const { VUE_APP_OWNER_NAME, VUE_APP_OWNER_PHONE } = process.env
+    this.nombre = VUE_APP_OWNER_NAME
+    this.telefono = VUE_APP_OWNER_PHONE
     document.body.style.opacity = '0'
 
     const json = localStorage.getItem('comprobante-abono')
@@ -95,13 +96,6 @@ export default {
         `])
       })
 },
-
-  methods: {
-    obtenerDatosNegocio() {
-      this.datosNegocio = AyudanteSesion.obtenerDatosNegocio()
-      this.datosNegocio.logo = Utiles.regresarRuta() + this.datosNegocio.logo
-    },
-  },
 
   computed: {
     fecha() {

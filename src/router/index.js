@@ -15,7 +15,6 @@ import EditarCliente from '@/components/Clientes/EditarCliente'
 import UsuariosComponent from '@/components/Usuarios/UsuariosComponent'
 import AgregarUsuario from '@/components/Usuarios/AgregarUsuario'
 import EditarUsuario from '@/components/Usuarios/EditarUsuario'
-import ConfiguracionComponent from '@/components/Configuracion/ConfiguracionComponent'
 import PerfilComponent from '@/components/Usuarios/PerfilComponent'
 import CambiarPassword from '@/components/Usuarios/CambiarPassword'
 import InicioComponent from '@/components/InicioComponent'
@@ -154,11 +153,6 @@ const routes = [
     path: '/editar-usuario/:id',
     name: 'EditarUsuario',
     component: EditarUsuario
-  },
-  {
-    path: '/configurar',
-    name: 'ConfiguracionComponent',
-    component: ConfiguracionComponent
   },
   {
     path: '/metodos',

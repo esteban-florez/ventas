@@ -3,7 +3,7 @@
         <template #brand>
             <b-navbar-item tag="router-link" :to="{ path: '/' }">
                 <img
-                    src="@/assets/logo.png"
+                    src="@/assets/ofertacaracas.jpg"
                 >
             </b-navbar-item>
         </template>
@@ -128,13 +128,6 @@
                 class="is-pulled-left">
                 </b-icon>
                 <b-navbar-dropdown label="Configurar" icon="home">
-                <b-navbar-item tag="router-link" :to="{ path: '/configurar' }">
-                    <b-icon
-                    icon="cogs">
-                    </b-icon>
-                    <span></span>
-                    General
-                </b-navbar-item>
                 <b-navbar-item tag="router-link" :to="{ path: '/metodos' }">
                     <b-icon
                     icon="wallet">

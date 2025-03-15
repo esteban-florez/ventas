@@ -42,10 +42,6 @@ const HttpService =  {
 		let resultado = await respuesta.json()
 		return resultado
 	},
-
-	obtenerDatosNegocio(){
-		return this.obtener("configuracion/obtener_datos.php")
-	}
 }
 
 export default HttpService

@@ -85,20 +85,6 @@ CREATE TABLE `clientes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `configuracion`
---
-
-DROP TABLE IF EXISTS `configuracion`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `configuracion` (
-  `nombre` varchar(255) DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `logo` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `cotizaciones`
 --
 

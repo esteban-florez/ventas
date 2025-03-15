@@ -79,17 +79,6 @@ INSERT INTO `clientes` VALUES
 UNLOCK TABLES;
 
 --
--- Dumping data for table `configuracion`
---
-
-LOCK TABLES `configuracion` WRITE;
-/*!40000 ALTER TABLE `configuracion` DISABLE KEYS */;
-INSERT INTO `configuracion` VALUES
-('Super Mercado','04120001324','./logos/logo.png');
-/*!40000 ALTER TABLE `configuracion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Dumping data for table `cotizaciones`
 --
 

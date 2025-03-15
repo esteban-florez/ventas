@@ -23,20 +23,6 @@ const AyudateSesion = {
 		localStorage.setItem('nombre', usuario.nombre)
 	},
 
-	establecerDatosNegocio(datos){
-		localStorage.setItem('nombreNegocio', datos.nombre)
-		localStorage.setItem('telefonoNegocio', datos.telefono)
-		localStorage.setItem('logoNegocio', datos.logo)
-	},	
-
-	obtenerDatosNegocio(){
-		return {
-			nombre: localStorage.getItem('nombreNegocio'),
-			telefono: localStorage.getItem('telefonoNegocio'),
-			logo: localStorage.getItem('logoNegocio')
-		}
-	},
-
 	cerrarSesion(){
 		localStorage.removeItem('id')
 		localStorage.removeItem('usuario')

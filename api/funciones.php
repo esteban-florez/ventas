@@ -12,38 +12,9 @@
 
 */
 
-define("FECHA_HOY", date("Y-m-d"));
-
-define('DIRECTORIO', './logos/');
-
 date_default_timezone_set('America/Caracas');
 
 error_reporting(0);
-
-function codificar($imagen) {
-    $imagen = str_replace('data:image/png;base64,', '', $imagen);
-    $imagen = str_replace('data:image/jpeg;base64,', '', $imagen);
-    $imagen = str_replace(' ', '+', $imagen);
-    $data = base64_decode($imagen);
-    $file = DIRECTORIO. 'logo.png';
-    $insertar = file_put_contents($file, $data);
-    return $file;
-}
-
-function obtenerAjustes() {
-	$sentencia = "SELECT * FROM configuracion";
-	return selectRegresandoObjeto($sentencia);
-}
-
-function registrarAjustes($ajustes) {
-	$logo = ($ajustes->cambiaLogo) ? codificar($ajustes->logo) : $ajustes->logo;
-	$sentencia = (!obtenerAjustes()) ? 
-	"INSERT INTO configuracion (nombre, telefono, logo) VALUES (?,?,?)" :
-	"UPDATE configuracion SET nombre = ?, telefono = ?, logo = ?";
-
-	$parametros = [$ajustes->nombre, $ajustes->telefono, $logo];
-	return (!obtenerAjustes()) ? insertar($sentencia, $parametros) : editar($sentencia, $parametros);
-}
 
 function obtenerMetodos() {
 	$sentencia = "SELECT * FROM metodos";

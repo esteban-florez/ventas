@@ -1,10 +1,10 @@
 <template>
   <section>
-    <img src="../../assets/ofertacaracas.jpg">
-    <div class="comprobante" :class="tamaño" id="comprobante" v-if="datosNegocio">
+    <div class="comprobante" :class="tamaño" id="comprobante">
       <div class="header">
         <p><b>{{ titulo }}</b></p>
-        <p>{{ datosNegocio.nombre }} Teléfono: {{ datosNegocio.telefono }}</p>
+        <p>{{ nombre }}</p>
+        <p>Teléfono: {{ telefono }}</p>
         <p><b>Cliente:</b>{{ venta.nombreCliente }}</p>
         <p><b>Atiende:</b>{{ venta.nombreUsuario }}</p>
         <p><b>Fecha: </b>{{ venta.fecha }}</p>
@@ -38,8 +38,6 @@
 <script>
 import Printd from 'printd'
 import html2pdf from 'html2pdf.js'
-import AyudanteSesion from '../../Servicios/AyudanteSesion'
-import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'ComprobanteCompra',
@@ -47,7 +45,8 @@ export default {
 
   data: () => ({
     titulo: '',
-    datosNegocio: null,
+    nombre: '',
+    telefono: '',
     cssText: `
       .comprobante {
         font-family: monospace;
@@ -102,7 +101,9 @@ export default {
 
   beforeMount() {
     this.generarTitulo()
-    this.obtenerDatosNegocio()
+    const { VUE_APP_OWNER_NAME, VUE_APP_OWNER_PHONE } = process.env
+    this.nombre = VUE_APP_OWNER_NAME
+    this.telefono = VUE_APP_OWNER_PHONE
   },
 
   mounted() {
@@ -152,11 +153,6 @@ export default {
 
     f(number) {
       return Number(number).toFixed(2)
-    },
-
-    obtenerDatosNegocio() {
-      this.datosNegocio = AyudanteSesion.obtenerDatosNegocio()
-      this.datosNegocio.logo = Utiles.regresarRuta() + this.datosNegocio.logo
     },
 
     async imprimir() {
