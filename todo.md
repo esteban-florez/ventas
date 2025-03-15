@@ -1,7 +1,6 @@
 # Tareas
 
-- Registrar pagos a proveedores.
-- Actualizar el PDF de movimientos y el de proveedores con campos nuevos.
+- Actualizar el PDF de movimientos con campos nuevos.
 - Hacer dialogo de confirmación al momento de mandar.
 
 - Roles y permisos, basicamente rehacer toda la autenticación, la que hay ahorita es de cartón.

@@ -1,4 +1,4 @@
-const AyudateSesion = {
+const AyudanteSesion = {
 	verificarSesion(){
 		let sesion = localStorage.getItem('id')
 		if(sesion) return true
@@ -31,4 +31,4 @@ const AyudateSesion = {
 	}
 }
 
-export default AyudateSesion
+export default AyudanteSesion

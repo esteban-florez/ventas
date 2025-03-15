@@ -790,6 +790,12 @@ function obtenerPagosProveedor($id) {
     ];
 }
 
+function pagarProveedor($pago) {
+    $sentencia = "INSERT INTO pagos_proveedores (fecha, monto, idProveedor, idUsuario) VALUES (?,?,?,?)";
+    $parametros = [date('Y-m-d H:i:s'), $pago->monto, $pago->idProveedor, $pago->idUsuario];
+    return insertar($sentencia, $parametros);
+}
+
 /*
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 

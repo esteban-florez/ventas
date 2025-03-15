@@ -26,13 +26,18 @@
         ${{ props.row.deuda.toFixed(2) }}
       </b-table-column>
 
+      <b-table-column field="pagar" label="Pagar" v-slot="props">
+        <b-button @click="pagar(props.row)" type="is-success" icon-left="wallet-plus" v-if="Number(props.row.deuda) > 0">
+        </b-button>
+      </b-table-column>
+
       <b-table-column field="editar" label="Editar" v-slot="props">
         <b-button type="is-warning" icon-left="pen" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
         </b-button>
       </b-table-column>
 
       <b-table-column field="pagos" label="Pagos" v-slot="props">
-        <b-button type="is-success" icon-left="cash" tag="router-link" :to="{ name: 'PagosComponent', params: { id: props.row.id } }">
+        <b-button type="is-primary" icon-left="cash" tag="router-link" :to="{ name: 'PagosComponent', params: { id: props.row.id } }">
         </b-button>
       </b-table-column>
 
@@ -47,6 +52,7 @@
 <script>
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
+import AyudanteSesion from '@/Servicios/AyudanteSesion'
 
 export default {
   name: 'ProveedoresComponent',
@@ -73,7 +79,43 @@ export default {
           this.proveedores = proveedores
           this.cargando = false
         })
-    }
+    },
+
+    pagar(proveedor) {
+      this.$buefy.dialog.prompt({
+        message: '¿Cual es el monto del pago que vas a registrar?',
+        cancelText: 'Cancelar',
+        confirmText: 'Registrar',
+        inputAttrs: {
+          type: 'number',
+          placeholder: 'Escribe el monto del pago a registrar',
+          value: '',
+          min: 0.01,
+          max: Number(proveedor.deuda),
+          step: 0.01,
+        },
+        trapFocus: true,
+        onConfirm: (value) => {
+          this.cargando = true
+          HttpService.registrar('proveedores.php', {
+            accion: 'pagar_proveedor',
+            pago: {
+              monto: value,
+              idProveedor: proveedor.id,
+              idUsuario: AyudanteSesion.obtenerDatosSesion().id,
+            },
+          })
+            .then(registrado => {
+              if (registrado) {
+                this.cargando = false
+                this.$buefy.toast.open('Pago registrado con éxito.')
+                this.obtenerProveedores()
+              }
+            })
+
+        }
+      })
+    },
   }
 }
 </script>

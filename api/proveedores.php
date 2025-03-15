@@ -31,6 +31,10 @@ switch ($accion) {
     case 'obtener_pagos':
         echo json_encode(obtenerPagosProveedor($payload->id));
         break;
+
+    case 'pagar_proveedor':
+        echo json_encode(pagarProveedor($payload->pago));
+        break;
 	
 	default:
 		echo json_encode("No se reconoce");

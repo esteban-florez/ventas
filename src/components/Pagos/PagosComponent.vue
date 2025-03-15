@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Pagos'" texto="Realizar pago" :boton="existeDeuda" />
+    <nav-component :titulo="'Pagos'" texto="Realizar pago" @click="pagar" :boton="existeDeuda" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Pagos</b-breadcrumb-item>
@@ -23,12 +23,6 @@
             <option value="15">15 por página</option>
             <option value="20">20 por página</option>
           </b-select>
-        </div>
-        <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" :href="`#/pdf/pagos/${proveedor && proveedor.id}`" target="__blank"
-            rel="noopener noreferrer">
-            Imprimir
-          </b-button>
         </div>
       </div>
       <b-table class="box" :data="pagos" :per-page="perPage" :paginated="true" :pagination-simple="false"
@@ -54,6 +48,7 @@ import MensajeInicial from '../Extras/MensajeInicial'
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import CartasTotales from '../Extras/CartasTotales.vue';
+import AyudanteSesion from '@/Servicios/AyudanteSesion';
 
 export default {
   name: "PagosComponent",
@@ -93,26 +88,63 @@ export default {
         },
         {
           nombre: 'Monto total',
-          total: proveedor.total,
+          total: Number(proveedor.total).toFixed(2),
           icono: 'cash',
           clase: 'has-text-info',
         },
         {
           nombre: 'Monto pagado',
-          total: proveedor.pagado,
+          total: Number(proveedor.pagado).toFixed(2),
           icono: 'check-circle',
           clase: 'has-text-success',
         },
         {
           nombre: 'Monto por pagar',
-          total: proveedor.deuda,
+          total: Number(proveedor.deuda).toFixed(2),
           icono: 'clock',
           clase: 'has-text-danger',
         },
       ]
 
       this.cargando = false
-    }
+    },
+
+    
+    pagar() {
+      this.$buefy.dialog.prompt({
+        message: '¿Cual es el monto del pago que vas a registrar?',
+        cancelText: 'Cancelar',
+        confirmText: 'Registrar',
+        inputAttrs: {
+          type: 'number',
+          placeholder: 'Escribe el monto del pago a registrar',
+          value: '',
+          min: 0.01,
+          max: Number(this.proveedor.deuda),
+          step: 0.01,
+        },
+        trapFocus: true,
+        onConfirm: (value) => {
+          this.cargando = true
+          HttpService.registrar('proveedores.php', {
+            accion: 'pagar_proveedor',
+            pago: {
+              monto: value,
+              idProveedor: this.proveedor.id,
+              idUsuario: AyudanteSesion.obtenerDatosSesion().id,
+            },
+          })
+            .then(registrado => {
+              if (registrado) {
+                this.cargando = false
+                this.$buefy.toast.open('Pago registrado con éxito.')
+                this.obtenerPagos()
+              }
+            })
+
+        }
+      })
+    },
   },
 
   computed: {
