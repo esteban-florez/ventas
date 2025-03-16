@@ -3,19 +3,35 @@
     <h1>Reporte de Movimientos</h1>
     <div v-if="movimientos.length > 0">
       <b-table class="box" :data="movimientos">
-        <b-table-column field="nombreProducto" label="Producto" v-slot="props">
-          {{ props.row.nombreProducto }}
-        </b-table-column>
+      <b-table-column field="nombreProducto" label="Producto" v-slot="props">
+        {{ props.row.nombreProducto }}
+      </b-table-column>
 
-        <b-table-column field="cantidad" label="Cantidad" v-slot="props">
-          <span class="has-text-weight-bold" :class="props.row.tipo === '+' ? 'has-text-success' : 'has-text-danger'">
-            {{ props.row.tipo }}{{ props.row.cantidad }}
-          </span>
-        </b-table-column>
+      <b-table-column field="cantidad" label="Cantidad" v-slot="props">
+        <span class="has-text-weight-bold" :class="props.row.signo === '+' ? 'has-text-success' : 'has-text-danger'">
+          {{ props.row.signo }}{{ props.row.cantidad }}
+        </span>
+      </b-table-column>
 
-        <b-table-column field="fecha" label="Fecha" v-slot="props">
-          {{ props.row.fecha }}
-        </b-table-column>
+      <b-table-column field="tipo" label="Tipo" v-slot="props">
+        {{ props.row.tipo }}
+      </b-table-column>
+
+      <b-table-column field="fecha" label="Fecha" v-slot="props">
+        {{ props.row.fecha }}
+      </b-table-column>
+
+      <b-table-column field="nombreUsuario" label="Usuario" v-slot="props">
+        {{ props.row.nombreUsuario }}
+      </b-table-column>
+
+      <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
+        {{ props.row.nombreCliente || 'N/A' }}
+      </b-table-column>
+
+      <b-table-column field="nombreCliente" label="Proveedor" v-slot="props">
+        {{ props.row.nombreProveedor || 'N/A' }}
+      </b-table-column>
       </b-table>
     </div>
     <div v-if="movimientos.length < 1">
