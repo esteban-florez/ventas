@@ -1,12 +1,20 @@
-import { makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import { WhatsAppClient } from 'easy-baileys'
 import { logger } from './logger.mjs'
 
 const log = logger()
+const jid = phone => `58${phone}@s.whatsapp.net`
+
+const customOptions = {
+  browser: ["Ubuntu", "Chrome", "20.0.04"],
+  printQRInTerminal: false,
+  mobile: false,
+  logger: log,
+}
 
 const WhatsApp = {
-  socket: null,
+  sock: null,
   message: sendMessage,
-  file: sendFile,
+  file: sendFile
 }
 
 const HOURLY = 1000 * 60 * 60
@@ -17,69 +25,64 @@ setInterval(close, HOURLY)
 /**
  * @returns {Promise<typeof WhatsApp>}
  */
-export async function connect(login = false) {
-  if (WhatsApp.socket !== null) {
+export async function connect() {
+  if (WhatsApp.sock !== null) {
     log.status('Conectando a WhatsApp, reusando socket...')
     return
   }
 
   log.status('Conectando a WhatsApp, creando nuevo socket...')
 
-  const { state, saveCreds } = await useMultiFileAuthState('./baileys_auth')
-  const socket = makeWASocket({
-    auth: state,
-    printQRInTerminal: true,
-    keepAliveIntervalMs: 10000,
-    logger: log,
-  })
+  try {
+    const client = await WhatsAppClient.create('multi', './baileys_auth', customOptions)
+    const sock = await client.getSocket()
+    const paired = sock.authState.creds.registered
 
-  socket.ev.on('creds.update', saveCreds)
+    return new Promise(resolve => {
+      sock.ev.on('connection.update', async (event) => {
+        const { connection, qr, lastDisconnect } = event
 
-  return new Promise(resolve => {
-    socket.ev.on('connection.update', (update) => {
-      const { connection } = update
-
-      if (connection === 'open') {
-        log.status('Conexion establecida con WhatsApp')
-        WhatsApp.socket = socket
-        resolve(WhatsApp)
-
-        if (login) {
-          log.status('Guardando sesión...')
-          setTimeout(() => {
-            log.status('Sesión guardada, cerrando...')
-            process.exit(0)
-          }, 5000)
-        }
-      }
-  
-      if (connection === 'close') {
-        WhatsApp.socket = null
-        log.status('Conexion cerrada. Reconexion programada en 5 minutos...')
-
-        if (login) {
-          log.status('Iniciando sesión...')
-          connect()
+        if (!paired && qr) {
+          const number = Number(`58${process.env.WHATSAPP_PHONE}`)
+          const code = await client.getPairingCode(number)
+          const formatted = `${code.slice(0, 4)}-${code.slice(4)}`
+          log.status(`Codigo de conexion a WhatsApp: ${formatted}`)
         }
 
-        setTimeout(() => {
-          log.status('Reconectando...')
-          connect()
-        }, FIVE_MIN)
-      }
+        if (connection === 'open') {
+          log.status('Conexion establecida con WhatsApp')
+          WhatsApp.sock = sock
+          resolve(WhatsApp)
+        }
+
+        if (connection === 'close') {
+          log.status('Conexion cerrada')
+
+          WhatsApp.sock = null
+          const status = lastDisconnect?.error?.output?.statusCode
+          const message = lastDisconnect?.error?.message
+
+          if (status === 515 && message.includes('restart required')) {
+            log.status('Sesion iniciada, reiniciando...')
+            resolve(await connect())
+          }
+
+          if (status == 401 && message.includes('Intentional Logout')) {
+            log.status('Reconexion programada en 5 minutos...')
+    
+            setTimeout(() => {
+              log.status('Reconectando...')
+              connect()
+            }, FIVE_MIN)
+          }
+        }
+      })
     })
-  })
-}
-
-async function close() {
-  log.status('Tiempo límite de conexión alcanzado.')
-
-  if (WhatsApp.socket) {
-    log.status('Cerrando conexión manualmente...')
-    WhatsApp.socket.ws.close()
-    WhatsApp.socket = null
+  } catch (error) {
+    console.error('Error iniciando el cliente de WhatsApp:', error.message)
   }
 }
+
 
 /**
  * @param {string} chatId
@@ -87,8 +90,8 @@ async function close() {
  */
 async function sendMessage(chatId, message) {
   try {
-    const id = `58${chatId}@s.whatsapp.net`
-    await this.socket.sendMessage(id, { text: message })
+    const phone = jid(chatId)
+    await this.sock.sendTextMessage(phone, message)
     log.status('Mensaje enviado exitosamente')
   } catch (error) {
     log.error('Error al enviar mensaje')
@@ -98,19 +101,29 @@ async function sendMessage(chatId, message) {
 
 /**
  * @param {string} chatId
- * @param {Buffer} buffer
+ * @param {Buffer} file
+ * @param {string} name
+ * @param {string} caption
  */
-async function sendFile(chatId, buffer) {
+async function sendFile(chatId, file, name, caption) {
   try {
-    const id = `58${chatId}@s.whatsapp.net`
-    await this.socket.sendMessage(id, {
-      document: buffer,
-      mimetype: 'application/pdf',
-      fileName: 'Comprobante.pdf',
-    })
+    const PDF_MIMETYPE = 'application/pdf'
+    const phone = jid(chatId)
+    await this.sock.sendDocument(phone, file, name, PDF_MIMETYPE, caption)
     log.status('Archivo enviado exitosamente')
   } catch (error) {
     log.error('Error al enviar el archivo')
     log.error(error)
+  }
+}
+
+async function close() {
+  log.status('Tiempo limite de conexion alcanzado.')
+
+  if (WhatsApp.sock) {
+    // TODO -> experimentar, también están sock.end() y sock.logout()
+    log.status('Cerrando conexion manualmente...')
+    WhatsApp.sock.logout()
+    WhatsApp.sock = null
   }
 }
