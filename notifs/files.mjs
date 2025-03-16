@@ -6,7 +6,7 @@ import { logger } from './logger.mjs'
 const log = logger()
 
 const app = express()
-const { FILES_PORT, FILES_HOST, WEB_URL } = process.env
+const { FILES_PORT, FILES_HOST, FILES_SCHEME, WEB_URL } = process.env
 
 app.use(fileUpload())
 
@@ -21,7 +21,11 @@ app.post('/pdf', async (req, res) => {
   }
 
   const array = new Uint8Array(file.data)
-  parentPort.postMessage({ phone, file: array })
+  parentPort.postMessage({ 
+    phone, file: array,
+    name: 'Todo Ofertas Caracas - Comprobante.pdf',
+    caption: ''
+  })
 
   res.setHeader('Access-Control-Allow-Origin', WEB_URL)
   res.status(200).json({
@@ -30,5 +34,5 @@ app.post('/pdf', async (req, res) => {
 })
 
 app.listen(FILES_PORT, FILES_HOST, () => {
-  log.status(`API de archivos escuchando en: http://${FILES_HOST}:${FILES_PORT}`)
+  log.status(`API de archivos escuchando en: ${FILES_SCHEME}://${FILES_HOST}:${FILES_PORT}`)
 })
