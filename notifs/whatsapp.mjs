@@ -3,6 +3,7 @@ import { logger } from './logger.mjs'
 
 const log = logger()
 const jid = phone => `58${phone}@s.whatsapp.net`
+const MANUAL_DISCONNECT = 'manual-disconnect'
 
 const customOptions = {
   browser: ["Ubuntu", "Chrome", "20.0.04"],
@@ -14,13 +15,9 @@ const customOptions = {
 const WhatsApp = {
   sock: null,
   message: sendMessage,
-  file: sendFile
+  file: sendFile,
+  disconnect: close,
 }
-
-const HOURLY = 1000 * 60 * 60
-const FIVE_MIN = 1000 * 60 * 5
-
-setInterval(close, HOURLY)
 
 /**
  * @returns {Promise<typeof WhatsApp>}
@@ -28,7 +25,7 @@ setInterval(close, HOURLY)
 export async function connect() {
   if (WhatsApp.sock !== null) {
     log.status('Conectando a WhatsApp, reusando socket...')
-    return
+    return WhatsApp
   }
 
   log.status('Conectando a WhatsApp, creando nuevo socket...')
@@ -57,24 +54,20 @@ export async function connect() {
 
         if (connection === 'close') {
           log.status('Conexion cerrada')
-
           WhatsApp.sock = null
-          const status = lastDisconnect?.error?.output?.statusCode
-          const message = lastDisconnect?.error?.message
 
+          const message = lastDisconnect?.error?.message
+          if (message === MANUAL_DISCONNECT) return
+
+          const status = lastDisconnect?.error?.output?.statusCode
           if (status === 515 && message.includes('restart required')) {
             log.status('Sesion iniciada, reiniciando...')
             resolve(await connect())
+            return
           }
 
-          if (status == 401 && message.includes('Intentional Logout')) {
-            log.status('Reconexion programada en 5 minutos...')
-    
-            setTimeout(() => {
-              log.status('Reconectando...')
-              connect()
-            }, FIVE_MIN)
-          }
+          log.status('Reconectando...')
+          connect()
         }
       })
     })
@@ -105,7 +98,7 @@ async function sendMessage(chatId, message) {
  * @param {string} name
  * @param {string} caption
  */
-async function sendFile(chatId, file, name, caption) {
+async function sendFile(chatId, file, name, caption = '') {
   try {
     const PDF_MIMETYPE = 'application/pdf'
     const phone = jid(chatId)
@@ -118,12 +111,8 @@ async function sendFile(chatId, file, name, caption) {
 }
 
 async function close() {
-  log.status('Tiempo limite de conexion alcanzado.')
-
-  if (WhatsApp.sock) {
-    // TODO -> experimentar, también están sock.end() y sock.logout()
-    log.status('Cerrando conexion manualmente...')
-    WhatsApp.sock.logout()
-    WhatsApp.sock = null
-  }
+  if (!this.sock) return
+  log.status('Cerrando conexion manualmente...')
+  await this.sock.end({ message: MANUAL_DISCONNECT })
+  this.sock = null
 }

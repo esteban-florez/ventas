@@ -189,8 +189,8 @@ export default {
           formData.set('pdf', pdf)
 
           if (this.venta.telefonoCliente) {
-            const { VUE_APP_FILES_URL: FILES_URL } = process.env
-            const url = `${FILES_URL}/pdf?numero=${this.venta.telefonoCliente}`
+            const { VUE_APP_NOTIFS_URL: NOTIFS_URL } = process.env
+            const url = `${NOTIFS_URL}/pdf?numero=${this.venta.telefonoCliente}`
             await fetch(url, { method: 'POST', body: formData })
           }
         })
