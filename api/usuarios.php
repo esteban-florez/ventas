@@ -13,10 +13,7 @@ $accion = $payload->accion;
 
 switch ($accion) {
 	case 'registrar':
-		$password = password_hash($_ENV['OWNER_PASSWORD'], PASSWORD_DEFAULT);
-		$usuario = $payload->usuario;
-		$usuario->password = $password;
-		echo json_encode(registrarUsuario($usuario));
+		echo json_encode(registrarUsuario($payload->usuario));
 		break;
 
 	case 'obtener':
@@ -25,10 +22,6 @@ switch ($accion) {
 
 	case 'iniciar_sesion':
 		echo json_encode(iniciarSesion($payload->usuario));
-		break;
-	
-	case 'obtener_por_nombre':
-		echo json_encode(obtenerClientesPorNombre($payload->nombre));
 		break;
 
 	case 'obtener_por_id':
@@ -48,7 +41,6 @@ switch ($accion) {
 		break;
 
 	case 'cambiar_password':
-		$password =  password_hash($payload->password, PASSWORD_DEFAULT);
 		echo json_encode(cambiarPassword($payload->idUsuario, $password));
 		break;
 	

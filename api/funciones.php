@@ -493,41 +493,41 @@ function registrarAbono($abono) {
 // TODO -> los calculos de estadísticas de ventas (SUM(total) FROM ventas) deberían hacerse directo a la tabla "productos_vendidos" filtrando por tipo = venta, ya que el total de ventas puede incluir el delivery pagado por el cliente, que no sería una ganancia técnicamente
 function obtenerTotalVentasPorMesUsuario($idUsuario, $anio) {
 	$sentencia = "SELECT MONTH(fecha) AS mes, SUM(total) AS totalVentas FROM ventas 
-        WHERE YEAR(fecha) = ?  AND idUsuario = ?
+        WHERE YEAR(fecha) = ? AND idUsuario = ?
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
     $parametros = [$anio, $idUsuario];
     return selectPrepare($sentencia, $parametros);
 }
 
 function calcularTotalIngresosUsuario($idUsuario) {
-	$sentencia = "SELECT 
+	$sentencia = "SELECT
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE idUsuario = ?) AS totalIngresos";
-	$parametros = [$idUsuario, $idUsuario];
+	(SELECT IFNULL(SUM(monto),0) FROM abonos) AS totalIngresos";
+	$parametros = [$idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
 function calcularTotalIngresosHoyUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) AS totalIngresos";
-	$parametros = [$idUsuario, $idUsuario];
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE()) AS totalIngresos";
+	$parametros = [$idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
 function calcularTotalIngresosSemanaUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) AS totalIngresos";
-	$parametros = [$idUsuario, $idUsuario];
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW())) AS totalIngresos";
+	$parametros = [$idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
 function calcularTotalIngresosMesUsuario($idUsuario) {
 	$sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) AS totalIngresos";
-	$parametros = [$idUsuario, $idUsuario];
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
+	$parametros = [$idUsuario];
 	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
@@ -543,21 +543,20 @@ function iniciarSesion($usuario) {
 	$sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
 	$parametros = [$usuario->usuario];
 	$resultado = selectRegresandoObjeto($sentencia, $parametros);
-	if($resultado) {
-		$loginCorrecto = verificarPassword($resultado->id, $usuario->password);
-		if($loginCorrecto) {
-			$datos = [
-				"id" => $resultado->id,
-				"usuario" => $resultado->usuario,
-				"nombre" => $resultado->nombre
-			];	
 
-			return ["estado" => $loginCorrecto, "usuario" => $datos];
-		}
-	
-	}
-	return false;
+    if (!$resultado) return false;
 
+    $loginCorrecto = verificarPassword($resultado->id, $usuario->password);
+
+    if(!$loginCorrecto) return false;
+
+    $datos = [
+        "id" => $resultado->id,
+        "usuario" => $resultado->usuario,
+        "nombre" => $resultado->nombre
+    ];	
+
+    return ["estado" => $loginCorrecto, "usuario" => $datos];
 }
 
 function verificarPassword($idUsuario, $password) {
@@ -571,13 +570,39 @@ function verificarPassword($idUsuario, $password) {
 
 function cambiarPassword($idUsuario, $password) {
 	$sentencia = "UPDATE usuarios SET password = ? WHERE id = ?";
-	$parametros = [$password, $idUsuario];
+    $hasheado = password_hash($password, PASSWORD_BCRYPT);
+	$parametros = [$hasheado, $idUsuario];
 	return editar($sentencia, $parametros);
 }
+
 function registrarUsuario($usuario) {
+    $existente = (int) selectRegresandoObjeto("SELECT COUNT(*) AS existente
+        FROM usuarios
+        WHERE usuario = ?", [$usuario->usuario])->existente;
+
+    if ($existente > 0) {
+        return [
+            'registrado' => false,
+            'mensaje' => 'El nombre de usuario ya existe.'
+        ];
+    }
+
+    if ($usuario->password !== $usuario->confirmacion) {
+        return [
+            'registrado' => false,
+            'mensaje' => 'La contraseña y su confirmacion no coinciden.'
+        ];
+    }
+
 	$sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password) VALUES (?,?,?,?)";
-	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->password];
-	return insertar($sentencia, $parametros);
+    $hasheado = password_hash($usuario->password, PASSWORD_BCRYPT);
+	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $hasheado];
+	$resultado = insertar($sentencia, $parametros);
+
+    return [
+        'registrado' => $resultado,
+        'mensaje' => 'El usuario fue registrado con éxito.',
+    ];
 }
 
 function obtenerUsuarioPorId($id) {
