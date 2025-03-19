@@ -26,6 +26,8 @@
   </form>
 </template>
 <script>
+import AyudanteSesion from '@/Servicios/AyudanteSesion';
+
 
 export default {
   name: "FormUsuario",
@@ -42,6 +44,7 @@ export default {
   }),
 
   mounted() {
+    console.log(AyudanteSesion.obtenerDatosSesion())
     this.datosUsuario = this.usuario
   },
 

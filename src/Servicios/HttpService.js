@@ -5,13 +5,14 @@ const HttpService =  {
 		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`, {
 			method: "post",
 			body: JSON.stringify(datos),
+      credentials: 'include',
 		});
 		let resultado = await respuesta.json()
 		return resultado
 	},
 
 	async obtener(ruta) {
-		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`)
+		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`, { credentials: 'include' })
 		let resultado = await respuesta.json()
 		return resultado
 	},
@@ -20,6 +21,7 @@ const HttpService =  {
 		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`, {
 			method: "post",				
 			body: JSON.stringify(datos),
+      credentials: 'include',
 		});
 		let resultado = await respuesta.json()
 		return resultado
@@ -29,6 +31,7 @@ const HttpService =  {
 		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`, {
 			method: "post",				
 			body: JSON.stringify(datos),
+      credentials: 'include',
 		});
 		let resultado = await respuesta.json()
 		return resultado
@@ -38,6 +41,7 @@ const HttpService =  {
 		let respuesta = await fetch(`${RUTA_GLOBAL}/${ruta}`, {
 			method: "post",				
 			body: JSON.stringify(payload),
+      credentials: 'include',
 		});
 		let resultado = await respuesta.json()
 		return resultado

@@ -43,6 +43,14 @@ switch ($accion) {
 	case 'cambiar_password':
 		echo json_encode(cambiarPassword($payload->idUsuario, $password));
 		break;
+
+    case 'estado_autenticacion':
+        echo json_encode(obtenerEstadoAutenticacion());
+        break;
+
+    case 'cerrar_sesion':
+        echo json_encode(cerrarSesion());
+        break;
 	
 	default:
 		echo json_encode("No se reconoce");

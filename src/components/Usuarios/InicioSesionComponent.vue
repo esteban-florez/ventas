@@ -1,5 +1,5 @@
 <template>
-  <section class="hero  is-fullheight fondo">
+  <section class="hero is-fullheight fondo">
 
     <div class="hero-body">
       <div class="container">
@@ -24,7 +24,7 @@
 import HttpService from '../../Servicios/HttpService'
 
 export default {
-  name: "InicioSesion",
+  name: "InicioSesionComponent",
 
   data: () => ({
     usuario: {
@@ -56,7 +56,7 @@ export default {
               message: 'Información correcta. Bienvenido.'
             })
             this.$router.push({ name: 'InicioComponent' })
-            this.$emit("login", resultado)
+            this.$emit("sesion")
           }
         })
     },

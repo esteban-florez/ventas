@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import App from '@/App.vue'
 import ProductosComponent from '@/components/Inventario/ProductosComponent'
 import AgregarProducto from '@/components/Inventario/AgregarProducto'
 import EditarProducto from '@/components/Inventario/EditarProducto'
@@ -41,10 +42,17 @@ import PDFMovimientos from '@/components/PDF/PDFMovimientos.vue'
 import PDFAbonos from '@/components/PDF/PDFAbonos.vue'
 import PDFAbono from '@/components/PDF/PDFAbono.vue'
 import PagosComponent from '@/components/Pagos/PagosComponent.vue'
+import InicioSesionComponent from '@/components/Usuarios/InicioSesionComponent.vue'
+import AyudanteSesion from '@/Servicios/AyudanteSesion'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/login',
+    name: 'InicioSesionComponent',
+    component: InicioSesionComponent,
+  },
   {
     path: '/',
     name: 'InicioComponent',
@@ -250,11 +258,26 @@ const routes = [
     name: 'CambiarPassword',
     component: CambiarPassword
   },
-
 ]
 
-const router = new VueRouter({
-  routes
+const router = new VueRouter({ routes })
+
+router.beforeEach(async (to, from, next) => {
+  await App.methods.obtenerUsuario()
+
+  const usuario = AyudanteSesion.obtenerDatosSesion()
+
+  if (to.name === 'InicioSesionComponent' && usuario) {
+    next({ name: 'InicioComponent' })
+    return
+  }
+  
+  if (to.name !== 'InicioSesionComponent' && !usuario) {
+    next({ name: 'InicioSesionComponent' })
+    return
+  }
+
+  next()
 })
 
 export default router

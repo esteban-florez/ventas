@@ -1,42 +1,48 @@
 <template>
-  <div id="app">
-    <inicio-sesion @login="onLogin" v-if="!logeado"/>
-    <div v-if="logeado">
-      <encabezado-component />
-      <div class="container">
-        <router-view/>
-      </div>
-    </div>    
+  <div>
+    <encabezado-component :usuario="usuario" @sesion="obtenerUsuario" />
+    <div :class="{ 'container': usuario }">
+      <router-view @sesion="obtenerUsuario" />
+    </div>
   </div>
 </template>
+
 <script>
   import EncabezadoComponent from './components/EncabezadoComponent'
-  import InicioSesion from './components/Usuarios/InicioSesion'
-  import AyudanteSesion from './Servicios/AyudanteSesion'
+  import HttpService from './Servicios/HttpService'
 
   export default {
-    name: "App", 
+    name: 'App',
+
     components: {
       EncabezadoComponent,
-      InicioSesion
     },
 
-    data:()=>({
-      logeado: false
+    data: () => ({
+      usuario: null,
+      permisos: null,
     }),
 
-    mounted(){
-      const log = AyudanteSesion.verificarSesion()
-      this.logeado = log
+    mounted() {
+      this.obtenerUsuario()
     },
 
     methods: {
-      onLogin(resultado){
-        if(resultado.estado) {
-          AyudanteSesion.establecerSesion(resultado.usuario)
-          this.logeado = AyudanteSesion.verificarSesion()
+      async obtenerUsuario() {
+        const { usuario, permisos } = await HttpService.obtenerConConsultas('usuarios.php', {
+          accion: 'estado_autenticacion'
+        })
+
+        this.usuario = usuario
+        this.permisos = permisos
+      },
+
+      extraerDatos() {
+        return {
+          usuario: this.usuario,
+          permisos: this.permisos,
         }
       }
-    }
+    },
   }
 </script>

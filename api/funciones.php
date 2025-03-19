@@ -550,6 +550,13 @@ function iniciarSesion($usuario) {
 
     if(!$loginCorrecto) return false;
 
+    // Destruimos la sesión anterior
+    cerrarSesion();
+
+    // Iniciamos una nueva sesión
+    session_start();
+    $_SESSION['userid'] = $resultado->id;
+
     $datos = [
         "id" => $resultado->id,
         "usuario" => $resultado->usuario,
@@ -557,6 +564,29 @@ function iniciarSesion($usuario) {
     ];	
 
     return ["estado" => $loginCorrecto, "usuario" => $datos];
+}
+
+function cerrarSesion() {
+    session_unset();
+    session_destroy();
+    return true;
+}
+
+function obtenerEstadoAutenticacion() {
+    $id = $_SESSION['userid'];
+
+    if (!$id) {
+        return ['usuario' => null, 'permisos' => null];
+    }
+
+    $usuario = obtenerUsuarioPorId($id);
+
+    dd($usuario);
+
+    return [
+        'usuario' => $usuario,
+        'permisos' => new stdClass,
+    ];
 }
 
 function verificarPassword($idUsuario, $password) {
@@ -606,7 +636,10 @@ function registrarUsuario($usuario) {
 }
 
 function obtenerUsuarioPorId($id) {
-	$sentencia = "SELECT id, usuario, nombre, telefono FROM usuarios WHERE id = ?";
+    // TODO -> obtener rol y permisos del usuario
+	$sentencia = "SELECT u.id, u.usuario, u.nombre, u.telefono
+        FROM usuarios AS u
+        WHERE u.id = ?";
 	return selectRegresandoObjeto($sentencia, [$id]);
 }
 
