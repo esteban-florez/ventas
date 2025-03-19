@@ -41,7 +41,7 @@ switch ($accion) {
 		break;
 
 	case 'cambiar_password':
-		echo json_encode(cambiarPassword($payload->idUsuario, $password));
+		echo json_encode(cambiarPassword($payload->idUsuario, $payload->datos));
 		break;
 
     case 'estado_autenticacion':

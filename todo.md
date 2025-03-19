@@ -1,10 +1,10 @@
 # Tareas
 
+- Roles y permisos.
 - Pasar el cron a script PHP.
 - Cambiar notifs para que sea una API.
 - Hacer dialogo de confirmación al momento de mandar PDFs por WhatsApp.
 
-- Roles y permisos, basicamente rehacer toda la autenticación, la que hay ahorita es de cartón.
 - Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (David pregunta lo del los multiples precios para un mismo producto).
 
 ## Bugs

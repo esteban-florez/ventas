@@ -593,16 +593,25 @@ function verificarPassword($idUsuario, $password) {
 	$sentencia = "SELECT password FROM usuarios WHERE id = ?";
 	$parametros = [$idUsuario];
 	$resultado = selectRegresandoObjeto($sentencia, $parametros);
-	$verificar = password_verify($password, $resultado->password);
-	if($verificar) return true;
-	return false;
+	return password_verify($password, $resultado->password);
 }
 
-function cambiarPassword($idUsuario, $password) {
+function cambiarPassword($idUsuario, $datos) {
+    $actualCoincide = verificarPassword($idUsuario, $datos->oldPassword);
+
+    if (!$actualCoincide) {
+        return ['registrado' => false, 'mensaje' => 'La contraseña actual es incorrecta.'];
+    }
+
+    if ($datos->password !== $datos->confirmation) {
+        return ['registrado' => false, 'mensaje' => 'La contraseña y su confirmación no coinciden.'];
+    }
+
 	$sentencia = "UPDATE usuarios SET password = ? WHERE id = ?";
-    $hasheado = password_hash($password, PASSWORD_BCRYPT);
+    $hasheado = password_hash($datos->password, PASSWORD_BCRYPT);
 	$parametros = [$hasheado, $idUsuario];
-	return editar($sentencia, $parametros);
+	$resultado = editar($sentencia, $parametros);
+    return ['registrado' => $resultado, 'mensaje' => 'La contraseña se actualizó exitosamente.'];
 }
 
 function registrarUsuario($usuario) {

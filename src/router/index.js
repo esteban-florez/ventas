@@ -252,7 +252,7 @@ const routes = [
     path: '/perfil',
     name: 'PerfilComponent',
     component: PerfilComponent
-  },  
+  },
   {
     path: '/cambiar-password',
     name: 'CambiarPassword',

@@ -144,7 +144,7 @@ export default {
     async salir() {
       await HttpService.obtenerConConsultas('usuarios.php', { accion: 'cerrar_sesion' })
       this.$emit('sesion')
-      window.location.reload()
+      this.$route.push({ name: 'InicioSesionComponent' })
     }
   }
 }

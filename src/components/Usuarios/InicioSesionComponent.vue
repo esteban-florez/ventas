@@ -6,7 +6,7 @@
 
         <div class="box">
           <h1 class="title is-1 has-text-centered is-family-monospace">Todo Ofertas Caracas</h1>
-          <img src="../../assets/ofertacaracas.jpg" width="300" style="display: block; margin:0 auto;">
+          <img src="../../assets/ofertacaracas.jpg" width="200" style="display: block; margin:0 auto;">
           <b-field label="Nombre de usuario">
             <b-input icon="shield-account" type="text" placeholder="Ej. paco" v-model="usuario.usuario"></b-input>
           </b-field>
