@@ -9,8 +9,10 @@ $accion = $filename.$payload->accion;
 
 $permisos = json_decode($permisos);
 
-if ($permisos->$accion === false) {
-    dd($accion);
+$noUsuario = !$usuario;
+$noAutorizado = $permisos->$accion === false;
+
+if ($accion !== 'usuarios.iniciar_sesion' && ($noUsuario || $noAutorizado)) {
     http_response_code(401);
     echo json_encode([
         'mensaje' => 'No se encuentra autorizado para hacer esta petición',

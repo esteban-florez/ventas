@@ -6,14 +6,23 @@ import { logger } from './logger.mjs'
 import { getReminderMessages } from './reminders.mjs'
 import { connect } from './whatsapp.mjs'
 
-const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, WEB_URL, OWNER_NAME } = process.env
+const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, NOTIFS_API_KEY, WEB_URL, OWNER_NAME } = process.env
 
 const log = logger()
 const app = express()
 
 app.use(bodyParser.json())
 app.use(fileUpload())
-app.use((_, res, next) => {
+
+app.use((req, res, next) => {
+  const apiKey = req.headers['x-api-key']
+
+  if (!apiKey || apiKey !== NOTIFS_API_KEY) {
+    return res.status(401).json({
+      message: 'Clave de API no válida'
+    })
+  }
+
   res.setHeader('Access-Control-Allow-Origin', WEB_URL)
   next()
 })
@@ -25,7 +34,7 @@ app.post('/pdf', async (req, res) => {
 
   if (!req.files || Object.keys(req.files).length === 0 || !file || !phone) {
     log.error('Error en la peticion, falta archivo o numero')
-    return res.status(400).send({
+    return res.status(400).json({
       message: 'Falta archivo o numero de telefono.'
     })
   }
