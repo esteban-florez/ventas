@@ -836,6 +836,40 @@ function pagarProveedor($pago) {
     return insertar($sentencia, $parametros);
 }
 
+/* ROLEs */
+
+function obtenerRoles() {
+    $sentencia = "SELECT roles.*, COUNT(usuarios.id) AS numUsuarios
+        FROM roles
+        LEFT JOIN usuarios ON usuarios.idRol = roles.id
+        GROUP BY roles.id;";
+
+	return selectQuery($sentencia);
+}
+
+function obtenerRolPorId($id) {
+    $sentencia = "SELECT roles.*, COUNT(usuarios.id) AS numUsuarios
+        FROM roles
+        LEFT JOIN usuarios ON usuarios.idRol = roles.id
+        WHERE roles.id = ?
+        GROUP BY roles.id;";
+
+	return selectRegresandoObjeto($sentencia, [$id]);
+}
+
+function registrarRol($datos) {
+	$sentencia = "INSERT INTO roles (nombre, permisos) VALUES (?,?);";
+    $parametros = [$datos->nombre, $datos->permisos];
+	return insertar($sentencia, $parametros);
+}
+
+function editarRol($datos) {
+    dd($datos);
+	$sentencia = "UPDATE roles SET nombre = ?, permisos = ? WHERE id = ?";
+	$parametros = [$datos->nombre, $datos->permisos, $datos->id];
+	return editar($sentencia, $parametros);
+}
+
 /*
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 

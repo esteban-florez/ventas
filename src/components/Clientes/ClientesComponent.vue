@@ -1,12 +1,23 @@
 <template>
   <section>
     <nav-component :titulo="'Clientes'" :link="{ path: '/agregar-cliente' }" :texto="'Agregar cliente'" />
-    <div class="column is-flex is-justify-content-end">
-      <b-button type="is-primary" tag="a" href="#/pdf/clientes" target="__blank" rel="noopener noreferrer">
-        Imprimir
-      </b-button>
+    <div class="columns">
+      <div class="column">
+        <b-select v-model="perPage">
+          <option value="5">5 por página</option>
+          <option value="10">10 por página</option>
+          <option value="15">15 por página</option>
+          <option value="20">20 por página</option>
+        </b-select>
+      </div>
+      <div class="column is-flex is-justify-content-end">
+        <b-button type="is-primary" tag="a" href="#/pdf/clientes" target="__blank" rel="noopener noreferrer">
+          Imprimir
+        </b-button>
+      </div>
     </div>
-    <b-table :data="clientes">
+    <b-table class="box" :data="clientes" :per-page="perPage" :paginated="true" :pagination-simple="false"
+    :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
       <b-table-column field="nombre" label="Nombre del cliente" sortable searchable v-slot="props">
         {{ props.row.nombre }}
       </b-table-column>
@@ -48,7 +59,8 @@ export default {
 
   data: () => ({
     cargando: false,
-    clientes: []
+    clientes: [],
+    perPage: 5,
   }),
 
   mounted() {

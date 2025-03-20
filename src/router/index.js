@@ -44,6 +44,9 @@ import PDFAbono from '@/components/PDF/PDFAbono.vue'
 import PagosComponent from '@/components/Pagos/PagosComponent.vue'
 import InicioSesionComponent from '@/components/Usuarios/InicioSesionComponent.vue'
 import AyudanteSesion from '@/Servicios/AyudanteSesion'
+import RolesComponent from '@/components/Roles/RolesComponent.vue'
+import AgregarRol from '@/components/Roles/AgregarRol.vue'
+import EditarRol from '@/components/Roles/EditarRol.vue'
 
 Vue.use(VueRouter)
 
@@ -132,6 +135,21 @@ const routes = [
     path: '/editar-proveedor/:id',
     name: 'EditarProveedor',
     component: EditarProveedor,
+  },
+  {
+    path: '/roles',
+    name: 'RolesComponent',
+    component: RolesComponent,
+  },
+  {
+    path: '/agregar-rol',
+    name: 'AgregarRol',
+    component: AgregarRol,
+  },
+  {
+    path: '/editar-rol/:id',
+    name: 'EditarRol',
+    component: EditarRol,
   },
   {
     path: '/pagos/:id',

@@ -114,6 +114,12 @@
             <span></span>
             Usuarios
           </b-navbar-item>
+          <b-navbar-item tag="router-link" :to="{ path: '/roles' }">
+            <b-icon icon="cog">
+            </b-icon>
+            <span></span>
+            Roles
+          </b-navbar-item>
         </b-navbar-dropdown>
       </b-navbar-item>
 
