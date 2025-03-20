@@ -295,13 +295,71 @@ INSERT INTO `proveedores` VALUES
 UNLOCK TABLES;
 
 --
+-- Dumping data for table `roles`
+--
+
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES
+(1,'Administrador','{
+  "vistas.marcas_categorias": true,
+  "marcas.registrar": true,
+  "marcas.editar": true,
+  "marcas.eliminar": true,
+  "categorias.registrar": true,
+  "categorias.editar": true,
+  "categorias.eliminar": true,
+  "vistas.choferes": true,
+  "choferes.editar": true,
+  "choferes.pagar_chofer": true,
+  "vistas.deliveries": true,
+  "vistas.clientes": true,
+  "clientes.registrar": true,
+  "clientes.editar": true,
+  "clientes.eliminar": true,
+  "vistas.metodos": true,
+  "metodos.registrar": true,
+  "metodos.editar": true,
+  "metodos.eliminar": true,
+  "vistas.inventario": true,
+  "productos.registrar": true,
+  "productos.editar": true,
+  "productos.eliminar": true,
+  "productos.agregar_existencia": true,
+  "productos.remover_existencia": true,
+  "vistas.proveedores": true,
+  "proveedores.registrar": true,
+  "proveedores.editar": true,
+  "vistas.pagos": true,
+  "proveedores.pagar_proveedor": true,
+  "vistas.usuarios": true,
+  "usuarios.registrar": true,
+  "usuarios.editar": true,
+  "usuarios.eliminar": true,
+  "vistas.ventas": true,
+  "ventas.registrar_venta": true,
+  "vistas.cuentas": true,
+  "ventas.registrar_cuenta": true,
+  "vistas.apartados": true,
+  "ventas.registrar_apartado": true,
+  "vistas.cotizaciones": true,
+  "ventas.registrar_cotiza": true,
+  "ventas.eliminar_cotiza": true,
+  "vistas.abonos": true,
+  "ventas.realizar_abono": true,
+  "vistas.historial": true
+}');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping data for table `usuarios`
 --
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
 INSERT INTO `usuarios` VALUES
-(1,'Admin','Luis Pérez','0415010123','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2');
+(1,'Admin','Luis Pérez','0415010123','$2y$12$iiwCElOZFXDK4JjCg0BL2Oza.gTzIFfq0UL4RggVJw05psOA1Mhq2', 1);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
