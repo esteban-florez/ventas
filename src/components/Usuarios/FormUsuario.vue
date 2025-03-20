@@ -54,7 +54,6 @@ export default {
   }),
 
   async mounted() {
-    console.log(AyudanteSesion.usuario())
     this.datosUsuario = this.usuario
 
     const roles = await HttpService.obtenerConConsultas('roles.php', { accion: 'obtener' })

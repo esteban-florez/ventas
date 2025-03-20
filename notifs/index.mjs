@@ -76,7 +76,6 @@ app.post('/cuentas', async (req, res) => {
     messages.forEach(({ phone, text }) => WhatsApp.message(phone, text))
 
     // await new Promise(resolve => setTimeout(resolve, 10_000))
-    console.log('lito')
   } catch (error) {
     log.error('Error durante el envio de recordatorios')
     log.error(error)

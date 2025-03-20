@@ -173,7 +173,6 @@ export default {
 
     obtenerVentas() {
       this.cargando = true
-      console.log(this.filtros)
       let payload = {
         filtros: {
           fechaInicio: this.filtros.fechaInicio || null,

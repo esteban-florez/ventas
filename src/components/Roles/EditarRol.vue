@@ -41,7 +41,6 @@ export default {
 
   methods: {
     async onEditar(datosRol) {
-      console.log(datosRol)
       this.cargando = true
       const resultado = await HttpService.editar('roles.php', {
         accion: 'editar',

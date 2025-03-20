@@ -283,10 +283,8 @@ const router = new VueRouter({ routes })
 
 router.beforeEach(async (to, _, next) => {
   await App.methods.obtenerUsuario()
-  console.log(to)
   const usuario = AyudanteSesion.usuario()
   const permisos = AyudanteSesion.permisos()
-  console.log(usuario, permisos)
 
   const toLogin = to.name === 'InicioSesionComponent'
   
@@ -308,7 +306,6 @@ router.beforeEach(async (to, _, next) => {
   }
 
   if (!(to.name in PERMISOS_RUTAS)) {
-    console.log('nota')
     next()
     return
   }
