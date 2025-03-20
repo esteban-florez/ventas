@@ -6,7 +6,7 @@ import { logger } from './logger.mjs'
 import { getReminderMessages } from './reminders.mjs'
 import { connect } from './whatsapp.mjs'
 
-const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, WEB_URL, OWNER_NAME, OWNER_PHONE } = process.env
+const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, WEB_URL, OWNER_NAME } = process.env
 
 const log = logger()
 const app = express()
@@ -74,8 +74,6 @@ app.post('/cuentas', async (req, res) => {
   try {
     const WhatsApp = await connect()
     messages.forEach(({ phone, text }) => WhatsApp.message(phone, text))
-
-    // await new Promise(resolve => setTimeout(resolve, 10_000))
   } catch (error) {
     log.error('Error durante el envio de recordatorios')
     log.error(error)

@@ -41,7 +41,7 @@ import html2pdf from 'html2pdf.js'
 
 export default {
   name: 'ComprobanteCompra',
-  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'realizarVenta'],
+  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente'],
 
   data: () => ({
     titulo: '',
@@ -168,7 +168,7 @@ export default {
 
       setTimeout(async () => {
         this.d.onAfterPrint(async () => {
-          if (!this.realizarVenta) return
+          if (!this.enviarCliente) return
           const comprobante = html.querySelector('#comprobante')
           if (this.tamaño === 'tiquera') {
             comprobante.classList.remove('tiquera')

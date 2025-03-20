@@ -15,7 +15,7 @@
         @imprimir="onGenerarComprobante" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
-      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" />
+      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -43,7 +43,8 @@ export default {
     apartados: [],
     totalesGenerales: [],
     apartadoSeleccionado: null,
-    mostrarComprobante: false
+    mostrarComprobante: false,
+    enviarCliente: false,
   }),
 
   mounted() {
@@ -53,6 +54,23 @@ export default {
   methods: {
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
+    },
+
+    confirmarEnvioCliente() {
+      this.$buefy.dialog.confirm({
+        message: '¿Enviar al cliente mediante WhatsApp?',
+        cancelText: 'No',
+        confirmText: 'Sí',
+        trapFocus: true,
+        onConfirm: () => {
+          this.enviarCliente = true
+          this.mostrarComprobante = true
+        },
+        onCancel: () => {
+          this.enviarCliente = false
+          this.mostrarComprobante = true
+        },
+      })
     },
 
     async onGenerarComprobante(apartado) {

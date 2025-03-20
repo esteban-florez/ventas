@@ -59,7 +59,7 @@
         v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
     </b-modal>
     <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
-      :porPagar="porPagar" :tamaño="tamaño" :realizarVenta="true" />
+      :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
   </section>
 </template>
 <script>
@@ -103,6 +103,7 @@ export default {
     mostrarRegistrarCotizacion: false,
     ventaRealizada: null,
     mostrarComprobante: false,
+    enviarCliente: false,
     tipoVenta: ""
   }),
 
@@ -219,14 +220,31 @@ export default {
             trapFocus: true,
             onConfirm: () => {
               this.tamaño = 'tiquera'
-              this.mostrarComprobante = true
+              this.confirmarEnvioCliente()
             },
             onCancel: () => {
               this.tamaño = 'carta'
-              this.mostrarComprobante = true
+              this.confirmarEnvioCliente()
             },
           })
         })
+    },
+
+    confirmarEnvioCliente() {
+      this.$buefy.dialog.confirm({
+        message: '¿Enviar al cliente mediante WhatsApp?',
+        cancelText: 'No',
+        confirmText: 'Sí',
+        trapFocus: true,
+        onConfirm: () => {
+          this.enviarCliente = true
+          this.mostrarComprobante = true
+        },
+        onCancel: () => {
+          this.enviarCliente = false
+          this.mostrarComprobante = true
+        },
+      })
     },
 
     cancelarVenta() {
