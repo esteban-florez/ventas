@@ -1,6 +1,6 @@
 <template>
   <div>
-    <encabezado-component :usuario="usuario" @sesion="obtenerUsuario" />
+    <encabezado-component :usuario="usuario" @cierre="olvidarSesion" />
     <div :class="{ 'container': usuario }">
       <router-view @sesion="obtenerUsuario" />
     </div>
@@ -34,7 +34,13 @@
         })
 
         this.usuario = usuario
-        this.permisos = permisos
+        this.permisos = JSON.parse(permisos)
+      },
+
+      olvidarSesion() {
+        this.usuario = null
+        this.permisos = null
+        this.$router.push({ name: 'InicioSesionComponent' })
       },
 
       extraerDatos() {

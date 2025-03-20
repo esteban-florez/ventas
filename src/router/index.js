@@ -47,6 +47,7 @@ import AyudanteSesion from '@/Servicios/AyudanteSesion'
 import RolesComponent from '@/components/Roles/RolesComponent.vue'
 import AgregarRol from '@/components/Roles/AgregarRol.vue'
 import EditarRol from '@/components/Roles/EditarRol.vue'
+import { PERMISOS_RUTAS } from '@/consts'
 
 Vue.use(VueRouter)
 
@@ -280,18 +281,51 @@ const routes = [
 
 const router = new VueRouter({ routes })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _, next) => {
   await App.methods.obtenerUsuario()
-
+  console.log(to)
   const usuario = AyudanteSesion.usuario()
+  const permisos = AyudanteSesion.permisos()
 
-  if (to.name === 'InicioSesionComponent' && usuario) {
-    next({ name: 'InicioComponent' })
+  const toLogin = to.name === 'InicioSesionComponent'
+  
+  if (!usuario) {
+    if (toLogin) {
+      next()
+      return
+    }
+
+    next({ name: 'InicioSesionComponent' })
+    return
+  }
+
+  const inicio = () => next({ name: 'InicioComponent' })
+
+  if (toLogin) {
+    inicio()
     return
   }
   
-  if (to.name !== 'InicioSesionComponent' && !usuario) {
-    next({ name: 'InicioSesionComponent' })
+  const puedeVender = permisos['ventas.registrar_venta'] 
+    || permisos['ventas.registrar_cuenta']
+    || permisos['ventas.registrar_apartado']
+    || permisos['ventas.registrar_cotiza']
+
+  if (to.name === 'RealizarVenta' && !puedeVender) {
+    inicio()
+    return
+  }
+
+  if (!(to.name in PERMISOS_RUTAS)) {
+    console.log('nota')
+    next()
+    return
+  }
+
+  const permisoNecesario = PERMISOS_RUTAS[to.name]
+
+  if (!permisos[permisoNecesario]) {
+    inicio()
     return
   }
 

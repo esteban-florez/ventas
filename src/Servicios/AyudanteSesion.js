@@ -6,6 +6,9 @@ const AyudanteSesion = {
     return usuario
   },
 
+  /**
+   * @return {Record<keyof typeof import('./../consts.js').PERMISOS, boolean>}
+   */
   permisos() {
     const { permisos } = App.methods.extraerDatos()
     return permisos
