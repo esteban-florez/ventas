@@ -1,6 +1,6 @@
 <template>
   <div>
-    <encabezado-component :usuario="usuario" @cierre="olvidarSesion" />
+    <encabezado-component :usuario="usuario" :permisos="sesion.permisos()" @cierre="olvidarSesion" />
     <div :class="{ 'container': usuario }">
       <router-view @sesion="obtenerUsuario" />
     </div>
@@ -10,6 +10,7 @@
 <script>
   import EncabezadoComponent from './components/EncabezadoComponent'
   import HttpService from './Servicios/HttpService'
+  import AyudanteSesion from './Servicios/AyudanteSesion'
 
   export default {
     name: 'App',
@@ -21,6 +22,7 @@
     data: () => ({
       usuario: null,
       permisos: null,
+      sesion: AyudanteSesion,
     }),
 
     mounted() {

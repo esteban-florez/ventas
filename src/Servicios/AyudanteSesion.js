@@ -11,6 +11,14 @@ const AyudanteSesion = {
    */
   permisos() {
     const { permisos } = App.methods.extraerDatos()
+
+    if (permisos) {
+      permisos['vistas.vender'] = permisos['ventas.registrar_venta'] 
+      || permisos['ventas.registrar_cuenta']
+      || permisos['ventas.registrar_apartado']
+      || permisos['ventas.registrar_cotiza']
+    }
+
     return permisos
   },
 }

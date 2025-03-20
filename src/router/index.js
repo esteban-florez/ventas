@@ -286,6 +286,7 @@ router.beforeEach(async (to, _, next) => {
   console.log(to)
   const usuario = AyudanteSesion.usuario()
   const permisos = AyudanteSesion.permisos()
+  console.log(usuario, permisos)
 
   const toLogin = to.name === 'InicioSesionComponent'
   
@@ -302,16 +303,6 @@ router.beforeEach(async (to, _, next) => {
   const inicio = () => next({ name: 'InicioComponent' })
 
   if (toLogin) {
-    inicio()
-    return
-  }
-  
-  const puedeVender = permisos['ventas.registrar_venta'] 
-    || permisos['ventas.registrar_cuenta']
-    || permisos['ventas.registrar_apartado']
-    || permisos['ventas.registrar_cotiza']
-
-  if (to.name === 'RealizarVenta' && !puedeVender) {
     inicio()
     return
   }

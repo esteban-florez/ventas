@@ -78,6 +78,7 @@ export const PERMISOS_RUTAS = {
   'RolesComponent': 'vistas.roles',
   'UsuariosComponent': 'vistas.usuarios',
   'ReporteVentas': 'vistas.ventas',
+  'RealizarVentas': 'vistas.vender',
   'AgregarCliente': 'clientes.registrar',
   'EditarCliente': 'clientes.editar',
   'EditarChofer': 'choferes.editar',
