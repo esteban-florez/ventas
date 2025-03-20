@@ -554,11 +554,9 @@ function obtenerEstadoAutenticacion() {
 
     $usuario = obtenerUsuarioPorId($id);
 
-    dd($usuario);
-
     return [
         'usuario' => $usuario,
-        'permisos' => new stdClass,
+        'permisos' => $usuario->permisos,
     ];
 }
 
@@ -606,9 +604,9 @@ function registrarUsuario($usuario) {
         ];
     }
 
-	$sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password) VALUES (?,?,?,?)";
+	$sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password, idRol) VALUES (?,?,?,?,?)";
     $hasheado = password_hash($usuario->password, PASSWORD_BCRYPT);
-	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $hasheado];
+	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $hasheado, $usuario->idRol];
 	$resultado = insertar($sentencia, $parametros);
 
     return [
@@ -618,16 +616,22 @@ function registrarUsuario($usuario) {
 }
 
 function obtenerUsuarioPorId($id) {
-    // TODO -> obtener rol y permisos del usuario
-	$sentencia = "SELECT u.id, u.usuario, u.nombre, u.telefono
+	$sentencia = "SELECT u.id, u.usuario, u.nombre, u.telefono, u.idRol,
+        r.nombre AS rol, r.permisos
         FROM usuarios AS u
+        LEFT JOIN roles AS r ON r.id = u.idRol
         WHERE u.id = ?";
 	return selectRegresandoObjeto($sentencia, [$id]);
 }
 
 function editarUsuario($usuario) {
-	$sentencia = "UPDATE usuarios SET usuario = ?, nombre = ?, telefono = ? WHERE id = ?";
-	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->id];
+	$sentencia = "UPDATE usuarios SET usuario = ?, nombre = ?, telefono = ?, idRol = ? WHERE id = ?";
+
+    if ($usuario->id == 1) {
+        $usuario->idRol = 1;
+    }
+
+	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->idRol, $usuario->id];
 	return editar($sentencia, $parametros);
 }
 
@@ -637,7 +641,7 @@ function eliminarUsuario($id) {
 }
 
 function obtenerUsuarios() {
-	$sentencia = "SELECT id, usuario, nombre, telefono FROM usuarios";
+	$sentencia = "SELECT id, usuario, nombre, telefono, idRol FROM usuarios";
 	return selectQuery($sentencia);
 }
 

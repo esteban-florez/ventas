@@ -11,6 +11,13 @@
       <b-input step="any" icon="phone" type="number" placeholder="Ej. 04120001234"
         v-model="datosUsuario.telefono" required></b-input>
     </b-field>
+    <b-field label="Rol del usuario" v-if="!editar || !(datosUsuario.id == 1)">
+        <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="datosUsuario.idRol" required>
+          <option v-for="rol in roles" :key="rol.id" :value="rol.id">
+            {{ rol.nombre }}
+          </option>
+        </b-select>
+      </b-field>
     <b-field label="Contraseña" v-if="!editar">
       <b-input step="any" icon="phone" type="password" placeholder="Introduce la contraseña"
         v-model="datosUsuario.password" minlength="8" maxlength="20" required></b-input>
@@ -27,6 +34,7 @@
 </template>
 <script>
 import AyudanteSesion from '@/Servicios/AyudanteSesion';
+import HttpService from '@/Servicios/HttpService';
 
 
 export default {
@@ -40,12 +48,17 @@ export default {
       telefono: "",
       password: "",
       confirmacion: "",
+      idRol: null,
     },
+    roles: [],
   }),
 
-  mounted() {
+  async mounted() {
     console.log(AyudanteSesion.usuario())
     this.datosUsuario = this.usuario
+
+    const roles = await HttpService.obtenerConConsultas('roles.php', { accion: 'obtener' })
+    this.roles = roles
   },
 
   methods: {
