@@ -12,9 +12,21 @@ include_once "funciones.php";
 $accion = $payload->accion;
 
 switch ($accion) {
-	case 'vender':
-		echo json_encode(terminarVenta($payload->datos));
-		break;
+    case 'registrar_venta':
+        echo json_encode(vender($payload->datos));
+        break;
+
+    case 'registrar_cuenta':
+        echo json_encode(agregarCuentaApartado($payload->datos));
+        break;
+
+    case 'registrar_apartado':
+        echo json_encode(agregarCuentaApartado($payload->datos));
+        break;
+
+    case 'registrar_cotiza':
+        echo json_encode(agregarCotizacion($payload->datos));
+        break;
 
 	case 'obtener_ventas':
 		echo json_encode(
@@ -55,12 +67,8 @@ switch ($accion) {
 		);
 		break;
 
-	case 'eliminar_cotizacion':
+	case 'eliminar_cotiza':
 		echo json_encode(eliminarCotizacion($payload->id));
-		break;
-
-	case 'abonar':
-		echo json_encode(registrarAbono($payload->total, $payload->id));
 		break;
 
     case 'por_pagar':

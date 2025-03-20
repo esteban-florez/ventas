@@ -30,7 +30,7 @@ export default {
   }),
 
   mounted() {
-    this.nombreUsuario = AyudanteSesion.obtenerDatosSesion().nombre
+    this.nombreUsuario = AyudanteSesion.usuario().nombre
     this.obtenerIngresos()
     this.obtenerTotalesMeses(this.anioSeleccionado)
   },

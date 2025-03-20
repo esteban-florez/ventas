@@ -300,33 +300,6 @@ function obtenerProductosCotizados($id) {
 	return selectPrepare($sentencia, $parametros);
 }
 
-function terminarVenta($venta) {
-	$tipo = $venta->tipo;
-
-	switch ($tipo) {
-		case 'venta':
-			return vender($venta);
-			break;
-
-		case 'cuenta':
-			return agregarCuentaApartado($venta);
-			break;
-
-		case 'apartado':
-			return agregarCuentaApartado($venta);
-			break;
-
-		case 'cotiza':
-			return agregarCotizacion($venta);
-			break;
-		
-		default:
-			return false;
-			break;
-	}
-
-}
-
 function registrarDelivery($venta, $relacion, $id) {
     $delivery = $venta->delivery;
 

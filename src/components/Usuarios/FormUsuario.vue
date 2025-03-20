@@ -44,7 +44,7 @@ export default {
   }),
 
   mounted() {
-    console.log(AyudanteSesion.obtenerDatosSesion())
+    console.log(AyudanteSesion.usuario())
     this.datosUsuario = this.usuario
   },
 

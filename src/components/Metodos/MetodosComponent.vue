@@ -92,7 +92,7 @@ export default {
         onConfirm: () => {
           this.cargando = true
           HttpService.eliminar('metodos.php', {
-            accion: 'eliminar_cotizacion',
+            accion: 'eliminar_cotiza',
             id: id
           }).then(resultado => {
             if (resultado) {

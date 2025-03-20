@@ -102,7 +102,7 @@ export default {
             pago: {
               monto: value,
               idProveedor: proveedor.id,
-              idUsuario: AyudanteSesion.obtenerDatosSesion().id,
+              idUsuario: AyudanteSesion.usuario().id,
             },
           })
             .then(registrado => {

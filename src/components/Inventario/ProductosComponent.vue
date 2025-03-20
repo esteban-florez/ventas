@@ -166,7 +166,7 @@ export default {
             entrada: {
               cantidad: value,
               id: producto.id,
-              usuario: AyudanteSesion.obtenerDatosSesion().id,
+              usuario: AyudanteSesion.usuario().id,
               monto,
             },
           })
@@ -203,7 +203,7 @@ export default {
             producto: {
               cantidad: value,
               id: producto.id,
-              usuario: AyudanteSesion.obtenerDatosSesion().id,
+              usuario: AyudanteSesion.usuario().id,
             },
           })
             .then(registrado => {

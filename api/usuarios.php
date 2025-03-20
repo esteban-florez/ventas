@@ -35,10 +35,6 @@ switch ($accion) {
 	case 'eliminar':
 		echo json_encode(eliminarUsuario($payload->id));
 		break;
-	
-	case 'verificar_password':
-		echo json_encode(verificarPassword($payload->idUsuario, $payload->password));
-		break;
 
 	case 'cambiar_password':
 		echo json_encode(cambiarPassword($payload->idUsuario, $payload->datos));

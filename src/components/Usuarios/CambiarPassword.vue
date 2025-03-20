@@ -55,7 +55,7 @@ export default {
 
       const { registrado, mensaje } = await HttpService.registrar('usuarios.php', {
         accion: 'cambiar_password',
-        idUsuario: AyudanteSesion.obtenerDatosSesion().id,
+        idUsuario: AyudanteSesion.usuario().id,
         datos: this.datos,
       })
 

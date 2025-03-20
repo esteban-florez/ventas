@@ -146,7 +146,7 @@ export default {
         onConfirm: () => {
           this.cargando = true
           HttpService.eliminar('ventas.php', {
-            accion: 'eliminar_cotizacion',
+            accion: 'eliminar_cotiza',
             id: id
           })
             .then(resultado => {

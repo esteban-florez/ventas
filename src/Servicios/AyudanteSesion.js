@@ -1,9 +1,14 @@
-import App from "@/App.vue"
+import App from '@/App.vue'
 
 const AyudanteSesion = {
-  obtenerDatosSesion() {
+  usuario() {
     const { usuario } = App.methods.extraerDatos()
     return usuario
+  },
+
+  permisos() {
+    const { permisos } = App.methods.extraerDatos()
+    return permisos
   },
 }
 

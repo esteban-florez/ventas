@@ -32,7 +32,7 @@ export default {
       cantidadMayoreo: 0,
       categoria: '',
       marca: '',
-      usuario: AyudateSesion.obtenerDatosSesion().id,
+      usuario: AyudateSesion.usuario().id,
     },
   }),
 

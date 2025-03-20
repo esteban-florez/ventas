@@ -131,7 +131,7 @@ export default {
             pago: {
               monto: value,
               idProveedor: this.proveedor.id,
-              idUsuario: AyudanteSesion.obtenerDatosSesion().id,
+              idUsuario: AyudanteSesion.usuario().id,
             },
           })
             .then(registrado => {

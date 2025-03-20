@@ -141,9 +141,9 @@ export default {
         total,
         productos: this.productos,
         cliente: venta.cliente.id,
-        usuario: AyudanteSesion.obtenerDatosSesion().id,
+        usuario: AyudanteSesion.usuario().id,
         nombreCliente: (venta.cliente.nombre) ? venta.cliente.nombre : 'MOSTRADOR',
-        nombreUsuario: AyudanteSesion.obtenerDatosSesion().usuario,
+        nombreUsuario: AyudanteSesion.usuario().usuario,
         telefonoCliente: venta.cliente.telefono,
         fecha: new Date().toJSON().slice(0, 10).replace(/-/g, '/')
       }
@@ -184,7 +184,7 @@ export default {
 
       this.cargando = true
       let datos = {
-        accion: 'vender',
+        accion: 'registrar_' + tipo,
         datos: this.ventaRealizada
       }
 

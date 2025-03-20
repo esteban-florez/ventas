@@ -265,7 +265,7 @@ const router = new VueRouter({ routes })
 router.beforeEach(async (to, from, next) => {
   await App.methods.obtenerUsuario()
 
-  const usuario = AyudanteSesion.obtenerDatosSesion()
+  const usuario = AyudanteSesion.usuario()
 
   if (to.name === 'InicioSesionComponent' && usuario) {
     next({ name: 'InicioComponent' })
