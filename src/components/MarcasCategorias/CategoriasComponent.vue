@@ -1,6 +1,6 @@
 <template>
 	<section>
-		<b-button type="is-primary" size="is-medium" class="is-rounded" icon-left="plus" @click="agregarCategoria">
+		<b-button type="is-primary" size="is-medium" class="is-rounded" icon-left="plus" @click="agregarCategoria" v-if="can('categorias.registrar')">
 			Agregar categoría
 		</b-button>
 		<b-table
@@ -9,11 +9,11 @@
 			{{ props.row.nombreCategoria }}
 		</b-table-column>
 
-		<b-table-column field="eliminar" label="Eliminar" v-slot="props">
+		<b-table-column field="eliminar" label="Eliminar" v-slot="props" v-if="can('categorias.eliminar')">
 			<b-button type="is-danger" icon-left="delete" @click="eliminar(props.row)">Eliminar</b-button>
 		</b-table-column>
 
-		<b-table-column field="editar" label="Editar" v-slot="props">
+		<b-table-column field="editar" label="Editar" v-slot="props" v-if="can('categorias.editar')">
 			<b-button type="is-info" icon-left="pen" @click="editar(props.row)">Editar</b-button>
 		</b-table-column>
 	</b-table>

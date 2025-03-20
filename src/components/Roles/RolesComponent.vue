@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Roles'" :texto="'Agregar rol'" :link="{ name: 'AgregarRol' }"/>
+    <nav-component :titulo="'Roles'" :texto="'Agregar rol'" :link="can('roles.registrar') ? { name: 'AgregarRol' }: null"/>
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Roles</b-breadcrumb-item> 
@@ -25,7 +25,7 @@
         {{ props.row.numUsuarios }} usuarios con este rol
       </b-table-column>
 
-      <b-table-column field="editar" label="Editar" v-slot="props">
+      <b-table-column field="editar" label="Editar" v-slot="props" v-if="can('roles.editar')">
         <b-button type="is-warning" icon-left="pen" tag="router-link" :to="{ name: 'EditarRol', params: { id: props.row.id } }" v-if="props.row.nombre !== 'Administrador'">
           Editar
         </b-button>

@@ -11,19 +11,19 @@
           Total ${{ total }}
         </p>
         <nav class="level mt-2">
-          <div class="level-item has-text-centered">
+          <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
             <b-button class="button is-responsive" type="is-success" inverted icon-left="check" size="is-large"
               @click="abrirDialogo('venta')">
               Terminar venta
             </b-button>
           </div>
-          <div class="level-item has-text-centered">
+          <div class="level-item has-text-centered" v-if="can('ventas.registrar_cuenta')">
             <b-button class="button is-responsive" type="is-info" inverted icon-left="wallet-plus" size="is-large"
               @click="abrirDialogo('cuenta')">
               Agregar a cuenta
             </b-button>
           </div>
-          <div class="level-item has-text-centered">
+          <div class="level-item has-text-centered" v-if="can('ventas.registrar_apartado')">
             <b-button class="button is-responsive" type="is-dark" inverted icon-left="wallet-travel" size="is-large"
               @click="abrirDialogo('apartado')">
               Realizar apartado
@@ -35,7 +35,7 @@
               Cancelar
             </b-button>
           </div>
-          <div class="level-item has-text-centered">
+          <div class="level-item has-text-centered" v-if="can('ventas.registrar_cotiza')">
             <b-button class="button is-responsive" type="is-warning" inverted icon-left="ticket-outline" size="is-large"
               @click="abrirDialogo('cotiza')">
               Cotizar

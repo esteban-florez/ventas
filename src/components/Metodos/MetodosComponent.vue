@@ -1,7 +1,7 @@
 <template>
   <section>
     
-    <nav-component titulo="Métodos de pago" :link="{ path: '/agregar-metodo' }" texto="Agregar método de pago" />
+    <nav-component titulo="Métodos de pago" :link="can('metodos.registrar') ? { path: '/agregar-metodo' } : null" texto="Agregar método de pago" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item acive>Métodos de pago</b-breadcrumb-item>
@@ -28,12 +28,12 @@
           {{ props.row.tipo }}
         </b-table-column>
 
-        <b-table-column field="acciones" label="Acciones" v-slot="props">
+        <b-table-column field="acciones" label="Acciones" v-slot="props" v-if="can('metodos.eliminar')">
           <b-button type="is-danger" @click="eliminar(props.row.id)">
             <b-icon icon="delete">
             </b-icon>
           </b-button>
-          <b-button tag="router-link" class="ml-4" type="is-warning" :to="{ name: 'EditarMetodo', params: { id: props.row.id } }">
+          <b-button tag="router-link" class="ml-4" type="is-warning" :to="{ name: 'EditarMetodo', params: { id: props.row.id } }" v-if="can('metodos.editar')">
             <b-icon icon="pen">
             </b-icon>
           </b-button>

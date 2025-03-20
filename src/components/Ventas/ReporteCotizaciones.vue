@@ -62,7 +62,7 @@
           </b-button>
         </b-table-column>
 
-        <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+        <b-table-column field="eliminar" label="Eliminar" v-slot="props" v-if="can('cotiza.eliminar')">
           <b-button type="is-danger" @click="eliminar(props.row.id)">
             <b-icon icon="delete">
             </b-icon>

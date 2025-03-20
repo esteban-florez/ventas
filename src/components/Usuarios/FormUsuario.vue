@@ -33,9 +33,7 @@
   </form>
 </template>
 <script>
-import AyudanteSesion from '@/Servicios/AyudanteSesion';
 import HttpService from '@/Servicios/HttpService';
-
 
 export default {
   name: "FormUsuario",

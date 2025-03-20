@@ -1,6 +1,6 @@
 <template>
     <section>
-        <nav-component :titulo="'Usuarios'" :link="{ path: '/agregar-usuario' }" :texto="'Agregar usuario'" />
+        <nav-component :titulo="'Usuarios'" :link="can('usuarios.registrar') ? { path: '/agregar-usuario' } : null" :texto="'Agregar usuario'" />
         <mensaje-inicial :titulo="'No se han registrado usuarios'" :subtitulo="'Agrega algunos usuarios'" v-if="usuarios.length < 1" />
         <b-table
         :data="usuarios">
@@ -16,11 +16,11 @@
                 {{ props.row.telefono }}
             </b-table-column>
 
-            <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+            <b-table-column field="eliminar" label="Eliminar" v-slot="props" v-if="can('usuarios.eliminar')">
                 <b-button type="is-danger" icon-left="delete" @click="eliminar(props.row.id)">Eliminar</b-button>
             </b-table-column>
 
-            <b-table-column field="editar" label="Editar" v-slot="props">
+            <b-table-column field="editar" label="Editar" v-slot="props" v-if="can('usuarios.editar')">
                 <b-button type="is-info" icon-left="pen" @click="editar(props.row.id)">Editar</b-button>
             </b-table-column>
         </b-table>

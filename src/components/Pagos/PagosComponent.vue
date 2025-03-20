@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Pagos'" texto="Realizar pago" @click="pagar" :boton="existeDeuda" />
+    <nav-component :titulo="'Pagos'" texto="Realizar pago" @click="pagar" :boton="existeDeuda && can('proveedores.pagar_proveedor')" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Pagos</b-breadcrumb-item>

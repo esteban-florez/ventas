@@ -44,10 +44,10 @@
 
       <b-table-column field="acciones" label="Acciones" v-slot="props">
         <div class="is-flex">
-          <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarChofer', params: { id: props.row.id } }">
+          <b-button type="is-info" icon-left="pen" tag="router-link" :to="{ name: 'EditarChofer', params: { id: props.row.id } }" v-if="can('choferes.editar')">
             Editar
           </b-button>
-          <b-button v-if="tieneDeuda(props.row)" class="ml-1" type="is-success" icon-left="plus" @click="pagar(props.row)">
+          <b-button v-if="tieneDeuda(props.row) && can('choferes.pagar_chofer')" class="ml-1" type="is-success" icon-left="plus" @click="pagar(props.row)">
             Pagar
           </b-button>
         </div>

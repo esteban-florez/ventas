@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Proveedores'" :texto="'Agregar proveedor'" :link="{ name: 'AgregarProveedor' }"/>
+    <nav-component :titulo="'Proveedores'" :texto="'Agregar proveedor'" :link="can('proveedores.registrar') ? { name: 'AgregarProveedor' } : null"/>
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Proveedores</b-breadcrumb-item> 
@@ -26,22 +26,22 @@
         ${{ props.row.deuda.toFixed(2) }}
       </b-table-column>
 
-      <b-table-column field="pagar" label="Pagar" v-slot="props">
+      <b-table-column field="pagar" label="Pagar" v-slot="props" v-if="can('proveedores.pagar_proveedor')">
         <b-button @click="pagar(props.row)" type="is-success" icon-left="wallet-plus" v-if="Number(props.row.deuda) > 0">
         </b-button>
       </b-table-column>
 
-      <b-table-column field="editar" label="Editar" v-slot="props">
+      <b-table-column field="editar" label="Editar" v-slot="props" v-if="can('proveedores.editar')">
         <b-button type="is-warning" icon-left="pen" tag="router-link" :to="{ name: 'EditarProveedor', params: { id: props.row.id } }">
         </b-button>
       </b-table-column>
 
-      <b-table-column field="pagos" label="Pagos" v-slot="props">
+      <b-table-column field="pagos" label="Pagos" v-slot="props" v-if="can('vistas.pagos')">
         <b-button type="is-primary" icon-left="cash" tag="router-link" :to="{ name: 'PagosComponent', params: { id: props.row.id } }">
         </b-button>
       </b-table-column>
 
-      <b-table-column field="productos" label="Productos" v-slot="props">
+      <b-table-column field="productos" label="Productos" v-slot="props" v-if="can('vistas.historial')">
         <b-button type="is-info" icon-left="format-list-bulleted" tag="router-link" :to="{ name: 'HistorialComponent', query: { proveedor: props.row.id } }">
         </b-button>
       </b-table-column>

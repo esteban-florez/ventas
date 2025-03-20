@@ -144,5 +144,5 @@ export const PERMISOS = {
   'ventas.eliminar_cotiza': 'Eliminar cotizacion',
   'vistas.abonos': 'Ver abonos',
   'ventas.realizar_abono': 'Registrar abono',
-  'vistas.historial': 'Ver movimientos'
+  'vistas.historial': 'Ver movimientos',
 }

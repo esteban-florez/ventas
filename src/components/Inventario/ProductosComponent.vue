@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Inventario'" :link="{ path: '/agregar-producto' }" :texto="'Agregar producto'" />
+    <nav-component :titulo="'Inventario'" :link="can('producto.registrar') ? { path: '/agregar-producto' } : null" :texto="'Agregar producto'" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Inventario</b-breadcrumb-item>
@@ -85,25 +85,25 @@
           {{ props.row.nombreProveedor }}
         </b-table-column>
 
-        <b-table-column field="agregar" label="Agregar" v-slot="props">
+        <b-table-column field="agregar" label="Agregar" v-slot="props" v-if="can('productos.agregar_existencia')">
           <b-button type="is-primary" @click="agregarExistencia(props.row)">
             <b-icon icon="plus" />
           </b-button>
         </b-table-column>
 
-        <b-table-column field="remover" label="Retirar" v-slot="props">
+        <b-table-column field="remover" label="Retirar" v-slot="props" v-if="can('productos.remover_existencia')">
           <b-button type="is-warning" @click="removerExistencia(props.row)">
             <b-icon icon="minus" />
           </b-button>
         </b-table-column>
 
-        <b-table-column field="editar" label="Editar" v-slot="props">
+        <b-table-column field="editar" label="Editar" v-slot="props" v-if="can('productos.editar')">
           <b-button type="is-info" @click="editar(props.row.id)">
             <b-icon icon="pen" />
           </b-button>
         </b-table-column>
 
-        <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+        <b-table-column field="eliminar" label="Eliminar" v-slot="props" v-if="can('productos.eliminar')">
           <b-button type="is-danger" @click="eliminar(props.row.id)">
             <b-icon icon="delete" />
           </b-button>

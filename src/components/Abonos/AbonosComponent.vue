@@ -81,7 +81,7 @@ export default {
 
   async mounted() {
     await this.obtenerAbonos()
-    if (Number(this.cuentaApartado.porPagar) === 0) return
+    if (Number(this.cuentaApartado.porPagar) === 0 && this.can('abonos.registrar')) return
     this.link = { name: 'RealizarAbono', params: { id: this.$route.params.id } }
   },
 

@@ -59,7 +59,7 @@
       </b-table-column>
 
       <b-table-column field="abonos" label="Abonos" v-slot="props">
-        <b-button type="is-warning" tag="router-link" :to="{ name: 'AbonosComponent', params: { id: props.row.id } }">
+        <b-button type="is-warning" tag="router-link" :to="{ name: 'AbonosComponent', params: { id: props.row.id } }" v-if="can('vistas.abonos')">
           <b-icon icon="format-list-bulleted">
           </b-icon>
         </b-button>
@@ -72,7 +72,7 @@
         </b-button>
       </b-table-column>
 
-      <b-table-column field="abonar" label="Abonar" v-slot="props">
+      <b-table-column field="abonar" label="Abonar" v-slot="props" v-if="can('ventas.realizar_abono')">
         <b-button type="is-primary" tag="router-link" :to="{ name: 'RealizarAbono', params: { id: props.row.id } }" v-if="props.row.porPagar > 0">
           <b-icon icon="wallet-plus">
           </b-icon>

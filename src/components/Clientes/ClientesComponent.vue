@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Clientes'" :link="{ path: '/agregar-cliente' }" :texto="'Agregar cliente'" />
+    <nav-component :titulo="'Clientes'" :link="can('clientes.registrar') ? { path: '/agregar-cliente' } : null" :texto="'Agregar cliente'" />
     <div class="columns">
       <div class="column">
         <b-select v-model="perPage">
@@ -38,11 +38,11 @@
         {{ props.row.direccion }}
       </b-table-column>
 
-      <b-table-column field="eliminar" label="Eliminar" v-slot="props">
+      <b-table-column field="eliminar" label="Eliminar" v-slot="props" v-if="can('clientes.eliminar')">
         <b-button type="is-danger" icon-left="delete" @click="eliminar(props.row.id)">Eliminar</b-button>
       </b-table-column>
 
-      <b-table-column field="editar" label="Editar" v-slot="props">
+      <b-table-column field="editar" label="Editar" v-slot="props" v-if="can('clientes.editar')">
         <b-button type="is-info" icon-left="pen" @click="editar(props.row.id)">Editar</b-button>
       </b-table-column>
     </b-table>
