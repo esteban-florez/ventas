@@ -8,6 +8,7 @@ if (!$payload) {
 }
 
 include_once "funciones.php";
+include_once "auth.php";
 
 $accion = $payload->accion;
 
