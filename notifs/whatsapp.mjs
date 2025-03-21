@@ -85,7 +85,7 @@ async function sendMessage(chatId, message) {
   try {
     const phone = jid(chatId)
     await this.sock.sendTextMessage(phone, message)
-    log.status('Mensaje enviado exitosamente')
+    log.status(`Mensaje enviado a 0${chatId} de forma exitosa`)
   } catch (error) {
     log.error('Error al enviar mensaje')
     log.error(error)

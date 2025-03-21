@@ -1,6 +1,6 @@
 # Tareas
 
-- Enlazar cuenta con numero de WhatsApp (/login en API).
+- Configurar número de WhatsApp directamente desde la interfaz web. 
 - Opción para enviar mensaje con TODOS LOS PRODUCTOS (????) a todos los clientes cuando se registro un producto nuevo (David pregunta lo del los multiples precios para un mismo producto).
 
 ## Bugs

@@ -190,13 +190,11 @@ export default {
           formData.set('pdf', pdf)
 
           const { VUE_APP_API_URL: API_URL } = process.env
-          const response = await fetch(`${API_URL}/archivo.php?numero=${telefono}`, {
+          await fetch(`${API_URL}/archivo.php?numero=${telefono}`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
           })
-
-          console.log('super', await response.json())
         })
 
         this.d.print(zona, [this.cssText])

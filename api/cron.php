@@ -15,19 +15,16 @@ $filtros->fechaFin = null;
 
 $cuentas = obtenerCuentasApartados($filtros, 'cuenta');
 
-$response = fetch()
-    ->baseUri($url)
-    ->withHeaders([
-        'Content-Type' => 'application/json',
-        'Origin' => $_ENV['WEB_URL'],
-        'X-Api-Key' => $_ENV['NOTIFS_API_KEY'],
-    ])
-    ->withBody(['cuentas' => $cuentas])
-    ->post('/cuentas');
-
-$data = $response->json();
-
-echo json_encode([
-    'res' => $data,
-    'cuentas' => $cuentas,
-]);
+try {
+    $response = fetch()
+        ->baseUri($url)
+        ->withHeaders([
+            'Content-Type' => 'application/json',
+            'Origin' => $_ENV['WEB_URL'],
+            'X-Api-Key' => $_ENV['NOTIFS_API_KEY'],
+        ])
+        ->withBody(['cuentas' => $cuentas])
+        ->post('/cuentas');
+} catch (\Throwable $th) {
+    dd($th->getMessage());
+}
