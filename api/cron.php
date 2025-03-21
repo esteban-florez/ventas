@@ -5,11 +5,7 @@ if (php_sapi_name() !== 'cli') die('Not allowed');
 require_once 'funciones.php';
 require_once 'encabezado.php';
 
-$scheme = $_ENV['NOTIFS_SCHEME'];
-$host = $_ENV['NOTIFS_HOST'];
-$port = $_ENV['NOTIFS_PORT'];
-
-$url = "$scheme://$host:$port";
+$url = $_ENV['NOTIFS_URL'];
 
 $filtros = new stdClass;
 $filtros->fechaInicio = null;

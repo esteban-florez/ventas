@@ -5,7 +5,7 @@ import { logger } from './logger.mjs'
 import { getReminderMessages } from './reminders.mjs'
 import { connect } from './whatsapp.mjs'
 
-const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, NOTIFS_API_KEY, WEB_URL, OWNER_NAME, OWNER_PHONE } = process.env
+const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_URL, NOTIFS_API_KEY, WEB_URL, OWNER_NAME, OWNER_PHONE } = process.env
 
 const log = logger()
 const app = express()
@@ -99,7 +99,7 @@ app.post('/cuentas', async (req, res) => {
 })
 
 app.listen(NOTIFS_PORT, NOTIFS_HOST, () => {
-  log.status(`API de archivos escuchando en: ${NOTIFS_SCHEME}://${NOTIFS_HOST}:${NOTIFS_PORT}`)
+  log.status(`API de archivos escuchando en: ${NOTIFS_URL}`)
 })
 
 function delay(ms) {

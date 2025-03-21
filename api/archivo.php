@@ -9,16 +9,10 @@ try {
     $pdf = $_FILES['pdf'];
     $path = $pdf['tmp_name'];
 
-    dd($pdf['size']);
-
     $contents = file_get_contents($path);
     $base64 = base64_encode($contents);
 
-    $scheme = $_ENV['NOTIFS_SCHEME'];
-    $host = $_ENV['NOTIFS_HOST'];
-    $port = $_ENV['NOTIFS_PORT'];
-
-    $url = "$scheme://$host:$port";
+    $url = $_ENV['NOTIFS_URL'];
     $response = fetch()
         ->baseUri($url)
         ->withHeaders([
