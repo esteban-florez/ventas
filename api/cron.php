@@ -1,5 +1,7 @@
 <?php
 
+if (php_sapi_name() !== 'cli') die('Not allowed');
+
 require_once 'funciones.php';
 require_once 'encabezado.php';
 
