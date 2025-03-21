@@ -99,7 +99,7 @@ app.post('/cuentas', async (req, res) => {
 })
 
 app.listen(NOTIFS_PORT, NOTIFS_HOST, () => {
-  log.status(`API de archivos escuchando en: ${NOTIFS_URL}`)
+  log.status(`API de notificaciones escuchando en: ${NOTIFS_URL}`)
 })
 
 function delay(ms) {
