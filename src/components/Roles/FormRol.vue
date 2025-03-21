@@ -1,7 +1,7 @@
 <template>
 	<form @submit.prevent="registrar">
 		<b-field label="Nombre del rol">
-      <b-input icon="account" type="text" placeholder="Ej. Empresa 123 C.A." v-model="nombre" minlength="4" maxlength="50" required></b-input>
+      <b-input icon="account" type="text" placeholder="Ej. Cajero" v-model="nombre" minlength="4" maxlength="50" required></b-input>
     </b-field>
     <b-field label="Permisos del rol">
       <div class="permisos-grid">
