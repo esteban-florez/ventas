@@ -4,7 +4,6 @@ include_once 'encabezado.php';
 include_once 'funciones.php';
 include_once 'auth.php';
 
-
 try {
     $numero = $_GET['numero'];
     $pdf = $_FILES['pdf'];
@@ -36,5 +35,5 @@ try {
     dd($th->getMessage());
     echo json_encode(['mensaje' => 'Error en fetch-php']);
 }
-dd('koko 2');
+
 

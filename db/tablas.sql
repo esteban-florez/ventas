@@ -1,387 +1,595 @@
--- /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.6.2-MariaDB, for Win64 (AMD64)
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost    Database: ventas
--- ------------------------------------------------------
--- Server version	11.6.2-MariaDB
+-- Host: localhost:3306
+-- Generation Time: Mar 21, 2025 at 11:49 AM
+-- Server version: 8.0.41-cll-lve
+-- PHP Version: 8.3.19
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
+
+--
+-- Database: `sistema6_ventas`
+--
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `abonos`
 --
 
 DROP TABLE IF EXISTS `abonos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `abonos` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` date NOT NULL,
-  `monto` decimal(9, 2) NOT NULL,
-  `origen` varchar(50) DEFAULT NULL,
-  `simple` varchar(20) DEFAULT NULL,
-  `idMetodo` bigint(20) DEFAULT NULL,
-  `idCuenta` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `monto` decimal(9,2) NOT NULL,
+  `origen` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `simple` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idMetodo` bigint DEFAULT NULL,
+  `idCuenta` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `categorias`
 --
 
 DROP TABLE IF EXISTS `categorias`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `categorias` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombreCategoria` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombreCategoria` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `choferes`
 --
 
 DROP TABLE IF EXISTS `choferes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `choferes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `tipo` varchar(20) NOT NULL,
-  `ci` varchar(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipo` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `ci` varchar(20) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `clientes`
 --
 
 DROP TABLE IF EXISTS `clientes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `clientes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `tipo` varchar(20) NOT NULL,
-  `ci` varchar(20) NOT NULL,
-  `direccion` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipo` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `ci` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `direccion` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `cotizaciones`
 --
 
 DROP TABLE IF EXISTS `cotizaciones`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cotizaciones` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `total` decimal(9,2) NOT NULL,
   `hasta` date NOT NULL,
-  `idCliente` bigint(20) DEFAULT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idCliente` bigint DEFAULT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `cuentas_apartados`
 --
 
 DROP TABLE IF EXISTS `cuentas_apartados`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cuentas_apartados` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `total` decimal(9,2) NOT NULL,
-  `dias` int(11) NOT NULL,
-  `tipo` enum('apartado','cuenta') NOT NULL,
-  `idCliente` bigint(20) DEFAULT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `dias` int NOT NULL,
+  `tipo` enum('apartado','cuenta') COLLATE utf8mb4_general_ci NOT NULL,
+  `idCliente` bigint DEFAULT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `deliveries`
 --
 
 DROP TABLE IF EXISTS `deliveries`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `deliveries` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `costo` decimal(9,2) NOT NULL,
-  `destino` varchar(255) NOT NULL,
+  `destino` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `gratis` tinyint(1) NOT NULL,
-  `idChofer` bigint(20) NOT NULL,
-  `idVenta` bigint(20) DEFAULT NULL,
-  `idCuenta` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idChofer` bigint NOT NULL,
+  `idVenta` bigint DEFAULT NULL,
+  `idCuenta` bigint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `entradas`
 --
 
 DROP TABLE IF EXISTS `entradas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `entradas` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `monto` decimal(9,2) NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
-  `idProducto` bigint(20) NOT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idProducto` bigint NOT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `marcas`
 --
 
 DROP TABLE IF EXISTS `marcas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `marcas` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombreMarca` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombreMarca` varchar(50) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `metodos`
 --
 
 DROP TABLE IF EXISTS `metodos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `metodos` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `tipo` enum('Pago Móvil', 'Transferencia', 'Zelle', 'Binance') NOT NULL,
-  `cuenta` varchar(20) DEFAULT NULL,
-  `banco` varchar(20) DEFAULT NULL,
-  `tipoCi` varchar(20) DEFAULT NULL,
-  `ci` varchar(20) DEFAULT NULL,
-  `beneficiario` varchar(50) DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `tipo` enum('Pago Móvil','Transferencia','Zelle','Binance') COLLATE utf8mb4_general_ci NOT NULL,
+  `cuenta` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `banco` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tipoCi` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ci` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `beneficiario` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `correo` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `pagos_choferes`
 --
 
 DROP TABLE IF EXISTS `pagos_choferes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pagos_choferes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `monto` decimal(9,2) NOT NULL,
-  `idChofer` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idChofer` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `pagos_proveedores`
 --
 
 DROP TABLE IF EXISTS `pagos_proveedores`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pagos_proveedores` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `monto` decimal(9,2) NOT NULL,
-  `idProveedor` bigint(20) NOT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idProveedor` bigint NOT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Table structure for table `productos`
 --
 
 DROP TABLE IF EXISTS `productos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `productos` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `codigo` varchar(50) NOT NULL,
-  `nombre` varchar(255) NOT NULL,
-  `unidad` varchar(10) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `codigo` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nombre` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `unidad` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
   `precioCompra` decimal(8,2) NOT NULL,
   `precioVenta` decimal(8,2) NOT NULL,
   `precioVenta2` decimal(8,2) NOT NULL,
   `precioVenta3` decimal(8,2) NOT NULL,
-  `vendidoMayoreo` tinyint(1),
+  `vendidoMayoreo` tinyint(1) DEFAULT NULL,
   `precioMayoreo` decimal(8,2) DEFAULT NULL,
   `cantidadMayoreo` decimal(8,2) DEFAULT NULL,
-  `marca` bigint(20) unsigned DEFAULT NULL,
-  `categoria` bigint(20) unsigned DEFAULT NULL,
-  `proveedor` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `marca` bigint UNSIGNED DEFAULT NULL,
+  `categoria` bigint UNSIGNED DEFAULT NULL,
+  `proveedor` bigint UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `productos_cotizados`
 --
 
 DROP TABLE IF EXISTS `productos_cotizados`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `productos_cotizados` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
   `precio` decimal(8,2) NOT NULL,
-  `idProducto` bigint(20) NOT NULL,
-  `idCotizacion` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idProducto` bigint NOT NULL,
+  `idCotizacion` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Table structure for table `productos_vendidos`
---
-
-DROP TABLE IF EXISTS `productos_vendidos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `productos_vendidos` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `fecha` datetime NOT NULL,
-  `cantidad` decimal(5,2) NOT NULL,
-  `precio` decimal(8,2) NOT NULL,
-  `idProducto` bigint(20) NOT NULL,
-  `idReferencia` bigint(20) NOT NULL,
-  `tipo` enum('apartado','cuenta','venta') DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `productos_removidos`
 --
 
 DROP TABLE IF EXISTS `productos_removidos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `productos_removidos` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `cantidad` decimal(5,2) NOT NULL,
-  `idProducto` bigint(20) NOT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `idProducto` bigint NOT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `productos_vendidos`
+--
+
+DROP TABLE IF EXISTS `productos_vendidos`;
+CREATE TABLE `productos_vendidos` (
+  `id` bigint UNSIGNED NOT NULL,
+  `fecha` datetime NOT NULL,
+  `cantidad` decimal(5,2) NOT NULL,
+  `precio` decimal(8,2) NOT NULL,
+  `idProducto` bigint NOT NULL,
+  `idReferencia` bigint NOT NULL,
+  `tipo` enum('apartado','cuenta','venta') COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `proveedores`
 --
 
 DROP TABLE IF EXISTS `proveedores`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `proveedores` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `rif` varchar(30) NOT NULL,
-  `direccion` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `rif` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `direccion` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `roles`
 --
 
 DROP TABLE IF EXISTS `roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(50) NOT NULL,
-  `permisos` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `permisos` text COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `usuarios`
 --
 
 DROP TABLE IF EXISTS `usuarios`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `usuarios` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `usuario` varchar(50) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `idRol` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `id` bigint UNSIGNED NOT NULL,
+  `usuario` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `idRol` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `ventas`
 --
 
 DROP TABLE IF EXISTS `ventas`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ventas` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha` datetime NOT NULL,
   `pagado` decimal(9,2) NOT NULL,
   `total` decimal(9,2) NOT NULL,
-  `origen` varchar(30) DEFAULT NULL,
-  `simple` varchar(20) DEFAULT NULL,
-  `idMetodo` bigint(20) DEFAULT NULL,
-  `idCliente` bigint(20) DEFAULT NULL,
-  `idUsuario` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+  `origen` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `simple` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idMetodo` bigint DEFAULT NULL,
+  `idCliente` bigint DEFAULT NULL,
+  `idUsuario` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `abonos`
+--
+ALTER TABLE `abonos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `categorias`
+--
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `choferes`
+--
+ALTER TABLE `choferes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `clientes`
+--
+ALTER TABLE `clientes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cotizaciones`
+--
+ALTER TABLE `cotizaciones`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `cuentas_apartados`
+--
+ALTER TABLE `cuentas_apartados`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `deliveries`
+--
+ALTER TABLE `deliveries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `entradas`
+--
+ALTER TABLE `entradas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `marcas`
+--
+ALTER TABLE `marcas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `metodos`
+--
+ALTER TABLE `metodos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pagos_choferes`
+--
+ALTER TABLE `pagos_choferes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pagos_proveedores`
+--
+ALTER TABLE `pagos_proveedores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `productos`
+--
+ALTER TABLE `productos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `productos_cotizados`
+--
+ALTER TABLE `productos_cotizados`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `productos_removidos`
+--
+ALTER TABLE `productos_removidos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `productos_vendidos`
+--
+ALTER TABLE `productos_vendidos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `proveedores`
+--
+ALTER TABLE `proveedores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ventas`
+--
+ALTER TABLE `ventas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `abonos`
+--
+ALTER TABLE `abonos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `categorias`
+--
+ALTER TABLE `categorias`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `choferes`
+--
+ALTER TABLE `choferes`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cotizaciones`
+--
+ALTER TABLE `cotizaciones`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cuentas_apartados`
+--
+ALTER TABLE `cuentas_apartados`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `deliveries`
+--
+ALTER TABLE `deliveries`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `entradas`
+--
+ALTER TABLE `entradas`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `marcas`
+--
+ALTER TABLE `marcas`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `metodos`
+--
+ALTER TABLE `metodos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pagos_choferes`
+--
+ALTER TABLE `pagos_choferes`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pagos_proveedores`
+--
+ALTER TABLE `pagos_proveedores`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `productos`
+--
+ALTER TABLE `productos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `productos_cotizados`
+--
+ALTER TABLE `productos_cotizados`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `productos_removidos`
+--
+ALTER TABLE `productos_removidos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `productos_vendidos`
+--
+ALTER TABLE `productos_vendidos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `proveedores`
+--
+ALTER TABLE `proveedores`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ventas`
+--
+ALTER TABLE `ventas`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
-
--- Dump completed on 2025-02-05  9:07:37
