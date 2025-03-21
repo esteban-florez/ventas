@@ -232,7 +232,7 @@ function obtenerCuentasApartados($filtros, $tipo) {
 }
 
 function obtenerCotizaciones($filtros, $tipo) {
-	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
@@ -254,7 +254,7 @@ function obtenerVentas($filtros) {
 	$fechaInicio = !$filtros->fechaInicio ? '1950-01-01' : $filtros->fechaInicio;
 	$fechaFin = !$filtros->fechaFin ? '3000-12-31' : $filtros->fechaFin;
 
-	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario 
+	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente 
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario

@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
-import fileUpload from 'express-fileupload' 
+// import fileUpload from 'express-fileupload' 
 import bodyParser from 'body-parser'
 import { logger } from './logger.mjs'
 import { getReminderMessages } from './reminders.mjs'
@@ -11,8 +11,8 @@ const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_SCHEME, NOTIFS_API_KEY, WEB_URL, OWNER_
 const log = logger()
 const app = express()
 
-app.use(bodyParser.json())
-app.use(fileUpload())
+app.use(bodyParser.json({ limit: '50mb' }))
+// app.use(fileUpload())
 
 app.use((req, res, next) => {
   const apiKey = req.headers['x-api-key']
@@ -30,17 +30,16 @@ app.use((req, res, next) => {
 app.post('/pdf', async (req, res) => {
   log.status('Recibiendo peticion de archivos...')
   const phone = req.query.numero.slice(1)
-  const file = req.files.pdf
+  const base64 = req.body.pdf
 
-  if (!req.files || Object.keys(req.files).length === 0 || !file || !phone) {
+  if (!base64 || !phone) {
     log.error('Error en la peticion, falta archivo o numero')
     return res.status(400).json({
       message: 'Falta archivo o numero de telefono.'
     })
   }
 
-  const array = new Uint8Array(file.data)
-  const buffer = Buffer.from(array)
+  const buffer = Buffer.from(base64, 'base64');
   const name = OWNER_NAME + ' - Comprobante.pdf'
 
   try {
@@ -49,6 +48,9 @@ app.post('/pdf', async (req, res) => {
   } catch (error) {
     log.error('Error durante el envio de comprobante')
     log.error(error)
+    return res.status(500).json({
+      mensaje: 'Hubo un error al enviar el comprobante'
+    })
   }
 
   return res.status(200).json({

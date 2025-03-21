@@ -14,7 +14,7 @@ $filtros->fechaInicio = null;
 $filtros->fechaFin = null;
 
 $cuentas = obtenerCuentasApartados($filtros, 'cuenta');
-dd($_ENV['NOTIFS_API_KEY']);
+
 $response = fetch()
     ->baseUri($url)
     ->withHeaders([

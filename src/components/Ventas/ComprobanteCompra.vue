@@ -168,7 +168,8 @@ export default {
 
       setTimeout(async () => {
         this.d.onAfterPrint(async () => {
-          if (!this.enviarCliente) return
+          const telefono = this.venta.telefonoCliente
+          if (!this.enviarCliente || !telefono) return
           const comprobante = html.querySelector('#comprobante')
           if (this.tamaño === 'tiquera') {
             comprobante.classList.remove('tiquera')
@@ -188,11 +189,14 @@ export default {
           const formData = new FormData()
           formData.set('pdf', pdf)
 
-          if (this.venta.telefonoCliente) {
-            const { VUE_APP_NOTIFS_URL: NOTIFS_URL } = process.env
-            const url = `${NOTIFS_URL}/pdf?numero=${this.venta.telefonoCliente}`
-            await fetch(url, { method: 'POST', body: formData })
-          }
+          const { VUE_APP_API_URL: API_URL } = process.env
+          const response = await fetch(`${API_URL}/archivo.php?numero=${telefono}`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+          })
+
+          console.log('super', await response.json())
         })
 
         this.d.print(zona, [this.cssText])
