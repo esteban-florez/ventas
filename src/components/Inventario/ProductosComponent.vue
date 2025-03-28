@@ -1,6 +1,6 @@
 <template>
   <section>
-    <nav-component :titulo="'Inventario'" :link="can('producto.registrar') ? { path: '/agregar-producto' } : null" :texto="'Agregar producto'" />
+    <nav-component :titulo="'Inventario'" :link="can('productos.registrar') ? { path: '/agregar-producto' } : null" :texto="'Agregar producto'" />
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Inventario</b-breadcrumb-item>
