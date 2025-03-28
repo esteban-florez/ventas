@@ -27,3 +27,6 @@ baileys_auth
 notifs.log
 
 /vendor/
+
+stderr.log
+tmp
