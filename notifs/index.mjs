@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.post('/pdf', async (req, res) => {
+app.post('/ws-api/pdf', async (req, res) => {
   log.status('Recibiendo peticion de archivos...')
   const phone = req.query.numero.slice(1)
   const base64 = req.body.pdf
@@ -56,7 +56,7 @@ app.post('/pdf', async (req, res) => {
   })
 })
 
-app.post('/cuentas', async (req, res) => {
+app.post('/ws-api/cuentas', async (req, res) => {
   const { cuentas } = req.body
 
   if (!cuentas || !Array.isArray(cuentas)) {
