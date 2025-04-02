@@ -14,7 +14,13 @@ $accion = $payload->accion;
 
 switch ($accion) {
 	case 'registrar':
-		echo json_encode(registrarProducto($payload->producto));
+        require_once 'alerta.php';
+		$resultado = registrarProducto($payload->producto);
+        $notif = alertaNuevoProducto();
+        echo json_encode([
+            'producto_registrado' => $resultado,
+            'notifs' => $notif,
+        ]);
 		break;
 
 	case 'obtener':

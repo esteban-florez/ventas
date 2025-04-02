@@ -109,16 +109,14 @@ export default {
     marcas: [],
     proveedores: [],
     producto: {
-      codigo: "",
-      nombre: "",
-      unidad: "",
-      precioCompra: "",
-      precioVenta: "",
-      precioVenta2: "",
-      precioVenta3: "",
+      codigo: '',
+      nombre: '',
+      unidad: null,
+      precioCompra: '',
+      precioVenta: '',
       existencia: 0,
       vendidoMayoreo: false,
-      precioMayoreo: "",
+      precioMayoreo: '',
       cantidadMayoreo: 0,
       categoria: null,
       marca: null,
@@ -132,7 +130,9 @@ export default {
     this.obtenerCategorias()
     this.obtenerMarcas()
     this.obtenerProveedores()
-    this.producto = this.productoProp
+    if (this.productoProp) {
+      this.producto = this.productoProp
+    }
     this.producto.vendidoMayoreo = (this.productoProp.vendidoMayoreo === 1) ? true : false
     this.producto.cantidadMayoreo = parseInt(this.productoProp.cantidadMayoreo)
   },

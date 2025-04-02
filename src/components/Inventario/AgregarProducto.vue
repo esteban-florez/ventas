@@ -6,7 +6,7 @@
       <b-breadcrumb-item tag='router-link' to="/inventario">Inventario</b-breadcrumb-item>
       <b-breadcrumb-item active>Agregar producto</b-breadcrumb-item>
     </b-breadcrumb>
-    <form-producto @registrado="onRegistrado" :productoProp="producto" :editar="false" />
+    <form-producto @registrado="onRegistrado" :editar="false" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -21,23 +21,11 @@ export default {
 
   data: () => ({
     cargando: false,
-    producto: {
-      codigo: '',
-      nombre: '',
-      precioCompra: '',
-      precioVenta: '',
-      existencia: 0,
-      vendidoMayoreo: false,
-      precioMayoreo: '',
-      cantidadMayoreo: 0,
-      categoria: '',
-      marca: '',
-      usuario: AyudateSesion.usuario().id,
-    },
   }),
 
   methods: {
     onRegistrado(producto) {
+      console.log(producto)
       this.cargando = true
 
       const precioCompra = Number(producto.precioCompra) * 100
@@ -47,19 +35,28 @@ export default {
         accion: 'registrar',
         producto: {
           monto,
-          ...this.producto,
+          usuario: AyudateSesion.usuario().id,
+          ...producto,
         }
       }
 
       HttpService.registrar('productos.php', payload)
         .then(registrado => {
+          this.cargando = false
+
           if (registrado) {
-            this.cargando = false
             this.$buefy.toast.open({
               type: 'is-info',
               message: 'Producto registrado con éxito.'
             })
+
+            return
           }
+
+          this.$buefy.toast.open({
+            type: 'is-danger',
+            message: 'Error al registrar producto.'
+          })
         })
     }
   }

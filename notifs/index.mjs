@@ -3,6 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { logger } from './logger.mjs'
 import { getReminderMessages } from './reminders.mjs'
+import { getNewProductMessage } from './new-product.mjs'
 import { connect } from './whatsapp.mjs'
 
 const { NOTIFS_PORT, NOTIFS_HOST, NOTIFS_URL, NOTIFS_API_KEY, WEB_URL, OWNER_NAME, OWNER_PHONE } = process.env
@@ -94,6 +95,40 @@ app.post('/ws-api/cuentas', async (req, res) => {
     log.status('Envio de recordatorios finalizado')
   } catch (error) {
     log.error('Error durante el envio de recordatorios')
+    log.error(error)
+  }
+})
+
+app.post('/ws-api/producto', async (req, res) => {
+  const { producto, clientes } = req.body
+
+  if (!producto || !clientes || !Array.isArray(clientes)) {
+    log.error('Error en la peticion, falta campo de producto o clientes')
+    return res.status(400).json({
+      message: 'Falta campo de producto o clientes'
+    })
+  }
+
+  res.status(200).json({
+    mensaje: 'Producto y clientes recibidos, empezando proceso de envio.',
+  })
+
+  const message = getNewProductMessage(producto)
+
+  try {
+    const WhatsApp = await connect()
+    for (const { telefono } of clientes) {
+      try {
+        await WhatsApp.message(telefono.slice(1), message)
+        await delay(2000)
+      } catch (error) {
+        log.error(`Error enviando alerta de nuevo producto a ${telefono}: ${error}`)
+        // TODO -> Implementar lógica de reintento aquí
+      }
+    }
+    log.status('Envio de alertas de nuevo producto finalizado')
+  } catch (error) {
+    log.error('Error durante envio de alertas de nuevo producto recordatorios')
     log.error(error)
   }
 })
