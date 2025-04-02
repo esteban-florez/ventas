@@ -1012,7 +1012,6 @@ function buscarProductoPorNombreOCodigo($producto) {
 }
 
 function registrarProducto($producto) {
-    dd($producto);
     $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->proveedor];
