@@ -37,7 +37,7 @@
       </b-field>
 
       <b-field label="Existencia" expanded v-if="!editar">
-        <b-numberinput min="1" type="is-info" placeholder="Existencia" v-model="producto.existencia">
+        <b-numberinput min="1" step="0.01" type="is-info" placeholder="Existencia" v-model="producto.existencia">
         </b-numberinput>
       </b-field>
     </b-field>
