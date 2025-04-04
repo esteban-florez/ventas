@@ -32,8 +32,8 @@
         default-sort="user.first_name" aria-next-label="Next page" aria-previous-label="Previous page"
         aria-page-label="Page" aria-current-label="Current page">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-          {{ props.row.fecha }}
-        </b-table-column>
+      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+      </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
           {{ props.row.nombreCliente }}
@@ -44,7 +44,7 @@
         </b-table-column>
 
         <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" sortable v-slot="props">
-          {{ props.row.hasta }}
+        {{ new Date(props.row.hasta ).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') }}
         </b-table-column>
 
         <b-table-column field="total" label="Total" sortable v-slot="props">
