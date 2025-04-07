@@ -2,6 +2,7 @@
   <section>
     <div class="comprobante" :class="tamaño" id="comprobante">
       <div class="header">
+        <img src="@/assets/ofertacaracas.jpg">
         <p><b>{{ titulo }}</b></p>
         <p>{{ nombre }}</p>
         <p>Teléfono: {{ telefono }}</p>

@@ -153,6 +153,7 @@ export default {
           type: 'number',
           placeholder: 'Escribe la cantidad de productos',
           value: '',
+          step: '0.01',
           min: 1
         },
         trapFocus: true,
@@ -192,7 +193,7 @@ export default {
           placeholder: 'Escribe la cantidad de productos',
           value: '',
           min: 1,
-          step: 1,
+          step: 0.01,
           max: producto.existencia,
         },
         trapFocus: true,

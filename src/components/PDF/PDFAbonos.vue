@@ -9,9 +9,9 @@
     </div>
     <div v-if="abonos.length > 0">
       <b-table class="box" :data="abonos">
-        <b-table-column field="fecha" label="Fecha" v-slot="props">
-          {{ props.row.fecha }}
-        </b-table-column>
+        <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
+      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+      </b-table-column>
 
         <b-table-column field="monto" label="Monto" v-slot="props">
           ${{ props.row.monto }}
