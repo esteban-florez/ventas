@@ -12,7 +12,7 @@
     <div class="mt-2" v-if="apartados.length > 0">
       <cartas-totales :totales="totalesGenerales" />
       <tabla-cuentas-apartados :datos="apartados"
-        @imprimir="onGenerarComprobante" />
+        @imprimir="onGenerarComprobante" :printHref="printHref" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
       v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -49,6 +49,21 @@ export default {
 
   mounted() {
     this.obtenerApartados()
+  },
+
+  computed: {
+    printHref() {
+      let href = '#/pdf/apartados'
+
+      const entries = Object.entries(this.filtros)
+        .filter(entry => Boolean(entry[1]))
+
+      if (entries.length === 0) return href
+
+      const filtros = Object.fromEntries(entries)
+      const params = new URLSearchParams(filtros).toString()
+      return `${href}?${params}`
+    },
   },
 
   methods: {

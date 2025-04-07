@@ -10,7 +10,7 @@
           </b-select>
         </div>
         <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" :href="`#/pdf/${tipo}s`" target="__blank" rel="noopener noreferrer">
+          <b-button type="is-primary" tag="a" :href="printHref" target="__blank" rel="noopener noreferrer">
             Imprimir
           </b-button>
         </div>
@@ -85,7 +85,7 @@
 import TablaProductosVendidos from './TablaProductosVendidos'
 export default {
   name: "TablaProductosApartados",
-  props: ["datos"],
+  props: ["datos", "printHref"],
   components: { TablaProductosVendidos },
 
   data: () => ({

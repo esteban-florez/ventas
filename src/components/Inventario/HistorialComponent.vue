@@ -13,7 +13,7 @@
           <option value="15">15 por página</option>
           <option value="20">20 por página</option>
         </b-select>
-        <b-select class="has-text-black" v-model="filtroProveedor" @input="obtenerMovimientos">
+        <b-select class="has-text-black" v-model="filtros.proveedor" @input="obtenerMovimientos">
           <option value="">Todos los proveedores</option>
           <option v-for="proveedor in proveedores" :value="proveedor.id" :key="proveedor.id">
             {{ proveedor.nombre }}
@@ -21,7 +21,7 @@
         </b-select>
       </div>
       <div class="column is-flex is-justify-content-end">
-        <b-button type="is-primary" tag="a" href="#/pdf/movimientos" target="__blank" rel="noopener noreferrer">
+        <b-button type="is-primary" tag="a" :href="printHref" target="__blank" rel="noopener noreferrer">
           Imprimir
         </b-button>
       </div>
@@ -73,14 +73,31 @@ export default {
     cargando: false,
     movimientos: [],
     proveedores: [],
-    filtroProveedor: '',
+    filtros: {
+      proveedor: '',
+    },
     perPage: 10,
   }),
 
   mounted() {
-    this.filtroProveedor = this.$route.query.proveedor || ''
+    this.filtros.proveedor = this.$route.query.proveedor || ''
     this.obtenerMovimientos()
     this.obtenerProveedores()
+  },
+
+  computed: {
+    printHref() {
+      let href = '#/pdf/movimientos'
+
+      const entries = Object.entries(this.filtros)
+        .filter(entry => Boolean(entry[1]))
+
+      if (entries.length === 0) return href
+
+      const filtros = Object.fromEntries(entries)
+      const params = new URLSearchParams(filtros).toString()
+      return `${href}?${params}`
+    },
   },
 
   methods: {
@@ -88,7 +105,7 @@ export default {
       this.cargando = true
       let payload = {
         accion: 'historial',
-        proveedor: this.filtroProveedor || null,
+        proveedor: this.filtros.proveedor || null,
       }
 
       HttpService.obtenerConConsultas('ventas.php', payload)

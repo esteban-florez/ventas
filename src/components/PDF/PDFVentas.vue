@@ -61,9 +61,16 @@ export default {
 
   mounted() {
     document.body.style.opacity = '0'
-    const accion = 'obtener_ventas'
 
-    HttpService.obtenerConConsultas('ventas.php', { accion })
+    const payload = {
+      accion: 'obtener_ventas',
+      filtros: {
+        fechaInicio: this.$route.query.fechaInicio || null,
+        fechaFin: this.$route.query.fechaFin || null,
+      },
+    }
+
+    HttpService.obtenerConConsultas('ventas.php', payload)
       .then(resultado => {
         this.ventas = resultado.ventas
         return new Promise(res => setTimeout(res, 100))

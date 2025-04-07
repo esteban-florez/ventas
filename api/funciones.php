@@ -82,21 +82,21 @@ function editarMetodo($id, $metodo) {
 */
 
 function obtenerVentasPorDiaMes($mes, $anio) {
-	$sentencia = "SELECT DATE_FORMAT(fecha, '%Y-%m-%d') AS dia, SUM(total) AS totalVentas FROM ventas 
+	$sentencia = "SELECT DATE_FORMAT(fecha, '%Y-%m-%d') AS dia, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
 	WHERE MONTH(fecha) = ? AND YEAR(fecha) = ?
 	GROUP BY dia";
 	return selectPrepare($sentencia, [$mes, $anio]);
 }
 
 function obtenerTotalesVentasPorMes($anio) {
-	$sentencia = "SELECT MONTH(fecha) AS mes, SUM(total) AS totalVentas FROM ventas 
+	$sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
         WHERE YEAR(fecha) = ? 
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
     return selectPrepare($sentencia, [$anio]);
 }
 
 function calcularTotalIngresos() {
-	$sentencia = "SELECT (SELECT SUM(total) FROM ventas) + (SELECT SUM(monto) FROM abonos) AS totalIngresos";
+	$sentencia = "SELECT (SELECT IFNULL(SUM(total), 0) FROM ventas) + (SELECT IFNULL(SUM(monto), 0) FROM abonos) AS totalIngresos";
 	return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
@@ -123,8 +123,8 @@ function calcularTotalIngresosMes() {
 
 function calcularIngresosPendientes() {
 	$sentencia = "SELECT (
-        (SELECT SUM(total) FROM cuentas_apartados)
-        - (SELECT SUM(monto) FROM abonos)
+        (SELECT IFNULL(SUM(total), 0) FROM cuentas_apartados)
+        - (SELECT IFNULL(SUM(monto), 0) FROM abonos)
     ) as pendientes";
 	return selectRegresandoObjeto($sentencia)->pendientes;
 }
@@ -139,7 +139,7 @@ function eliminarCotizacion($id) {
 }
 
 function obtenerTotalVentas($filtros) {
-	$sentencia = "SELECT SUM(total) AS totalVentas FROM ventas";
+	$sentencia = "SELECT IFNULL(SUM(total), 0) AS totalVentas FROM ventas";
     $parametros = [];
 
     if ($filtros->fechaInicio && $filtros->fechaFin) {
@@ -151,7 +151,7 @@ function obtenerTotalVentas($filtros) {
 }
 
 function obtenerTotalCuentasApartados($filtros, $tipo) {
-	$sentencia = "SELECT SUM(total) AS total FROM cuentas_apartados WHERE tipo = ?";
+	$sentencia = "SELECT IFNULL(SUM(total), 0) AS total FROM cuentas_apartados WHERE tipo = ?";
 	$parametros = [$tipo];
 
 	if($filtros->fechaInicio && $filtros->fechaFin) {
@@ -163,8 +163,8 @@ function obtenerTotalCuentasApartados($filtros, $tipo) {
 }
 
 function obtenerTotalPorPagarCuentasApartados($filtros, $tipo) {
-    $sentencia1 = "SELECT SUM(total) AS positivo FROM cuentas_apartados WHERE tipo = ?";
-    $sentencia2 = "SELECT SUM(monto) AS negativo FROM abonos
+    $sentencia1 = "SELECT IFNULL(SUM(total), 0) AS positivo FROM cuentas_apartados WHERE tipo = ?";
+    $sentencia2 = "SELECT IFNULL(SUM(monto), 0) AS negativo FROM abonos
         INNER JOIN cuentas_apartados
         ON cuentas_apartados.id = abonos.idCuenta
         AND cuentas_apartados.tipo = ?";
@@ -188,7 +188,7 @@ function obtenerTotalPorPagarCuentasApartados($filtros, $tipo) {
 }
 
 function obtenerPagosCuentasApartados($filtros, $tipo) {
-	$sentencia = "SELECT SUM(monto) AS totalPagos FROM abonos
+	$sentencia = "SELECT IFNULL(SUM(monto), 0) AS totalPagos FROM abonos
         INNER JOIN cuentas_apartados
         ON cuentas_apartados.id = abonos.idCuenta
         AND cuentas_apartados.tipo = ?";
@@ -207,8 +207,8 @@ function obtenerPagosCuentasApartados($filtros, $tipo) {
 function obtenerCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
         cuentas_apartados.tipo, cuentas_apartados.total,
-         cuentas_apartados.dias, SUM(abonos.monto) AS pagado,
-        (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar,
+        cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
+        (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
         IFNULL(clientes.telefono, '') AS telefonoCliente,
         IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
@@ -216,9 +216,7 @@ function obtenerCuentasApartados($filtros, $tipo) {
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
         LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
-		WHERE cuentas_apartados.tipo = ? 
-		GROUP BY cuentas_apartados.id
-        ORDER BY cuentas_apartados.id DESC";
+		WHERE cuentas_apartados.tipo = ?";
 
 	$parametros = [$tipo];
 
@@ -227,6 +225,12 @@ function obtenerCuentasApartados($filtros, $tipo) {
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
+
+    $sentencia .= "
+        GROUP BY cuentas_apartados.id
+        ORDER BY cuentas_apartados.id DESC
+    ";
+
 	$cuentas = selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($cuentas, $tipo);
 }
@@ -237,13 +241,16 @@ function obtenerCotizaciones($filtros, $tipo) {
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
 		WHERE 1";
+
 	$parametros = [];
 
-	if($filtros->fechaInicio) {
+	if ($filtros->fechaInicio && $filtros->fechaFin) {
 		$sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
 		array_push($parametros, $filtros->fechaInicio);
 		array_push($parametros, $filtros->fechaFin);
 	}
+
+    $sentencia .= " ORDER BY cotizaciones.id DESC";
 
 	$cotizaciones = selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($cotizaciones, $tipo);
@@ -251,18 +258,21 @@ function obtenerCotizaciones($filtros, $tipo) {
 
 
 function obtenerVentas($filtros) {
-	$fechaInicio = !$filtros->fechaInicio ? '1950-01-01' : $filtros->fechaInicio;
-	$fechaFin = !$filtros->fechaFin ? '3000-12-31' : $filtros->fechaFin;
-
 	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente 
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
-        LEFT JOIN metodos on metodos.id = ventas.idMetodo
-		WHERE DATE(ventas.fecha) >= ? AND  DATE(ventas.fecha) <= ?
-		ORDER BY ventas.id DESC";
-	$parametros = [$fechaInicio, $fechaFin];
-    // si este sistema dura más de 975 años activo, va a fallar XD
+        LEFT JOIN metodos on metodos.id = ventas.idMetodo";
+
+    $parametros = [];
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
+
+    $sentencia .= " ORDER BY ventas.id DESC";
+
 	$ventas =  selectPrepare($sentencia, $parametros);
 	return agregarProductosVendidos($ventas, 'venta');
 }
@@ -410,7 +420,7 @@ function registrarProductosCotizados($productos, $idCotizacion) {
 }
 
 function montoPorPagarCuentaApartado($id) {
-    $sentencia = "SELECT (cuentas_apartados.total - SUM(abonos.monto)) AS porPagar
+    $sentencia = "SELECT (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar
         FROM cuentas_apartados
         LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
         WHERE cuentas_apartados.id = ?";
@@ -421,8 +431,8 @@ function montoPorPagarCuentaApartado($id) {
 function obtenerCuentaApartado($id) {
     return selectRegresandoObjeto("SELECT cuentas_apartados.*,
         clientes.nombre AS nombreCliente,
-        SUM(abonos.monto) AS pagado,
-        (total - SUM(abonos.monto)) AS porPagar
+        IFNULL(SUM(abonos.monto), 0) AS pagado,
+        (total - IFNULL(SUM(abonos.monto), 0)) AS porPagar
         FROM cuentas_apartados
         LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
         LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
@@ -465,7 +475,7 @@ function registrarAbono($abono) {
 
 // TODO -> los calculos de estadísticas de ventas (SUM(total) FROM ventas) deberían hacerse directo a la tabla "productos_vendidos" filtrando por tipo = venta, ya que el total de ventas puede incluir el delivery pagado por el cliente, que no sería una ganancia técnicamente
 function obtenerTotalVentasPorMesUsuario($idUsuario, $anio) {
-	$sentencia = "SELECT MONTH(fecha) AS mes, SUM(total) AS totalVentas FROM ventas 
+	$sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
         WHERE YEAR(fecha) = ? AND idUsuario = ?
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
     $parametros = [$anio, $idUsuario];
@@ -505,7 +515,7 @@ function calcularTotalIngresosMesUsuario($idUsuario) {
 }
 
 function obtenerVentasPorUsuario() {
-	$sentencia = "SELECT usuarios.usuario, SUM(ventas.total) AS totalVentas
+	$sentencia = "SELECT usuarios.usuario, IFNULL(SUM(ventas.total), 0) AS totalVentas
     FROM ventas
 	INNER JOIN usuarios ON usuarios.id = ventas.idUsuario
 	GROUP BY usuarios.id";
@@ -658,7 +668,7 @@ function obtenerUsuarios() {
 */
 
 function obtenerVentasPorCliente() {
-	$sentencia = "SELECT clientes.nombre, SUM(ventas.total) AS totalVentas  FROM ventas
+	$sentencia = "SELECT clientes.nombre, IFNULL(SUM(ventas.total), 0) AS totalVentas  FROM ventas
 	INNER JOIN clientes ON clientes.id = ventas.idCliente
 	GROUP BY clientes.id";
 	return selectQuery($sentencia);
@@ -886,7 +896,7 @@ function editarRol($datos) {
 
 */
 function obtenerProductosMasVendidos($limite) {
-	$sentencia = "SELECT SUM(productos_vendidos.cantidad * productos_vendidos.precio) AS total, SUM(productos_vendidos.cantidad) AS unidades,
+	$sentencia = "SELECT IFNULL(SUM(productos_vendidos.cantidad * productos_vendidos.precio), 0) AS total, IFNULL(SUM(productos_vendidos.cantidad), 0) AS unidades,
 	productos.nombre
     FROM productos_vendidos INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	WHERE productos_vendidos.tipo = 'venta'
@@ -1085,7 +1095,7 @@ function eliminarProducto($id) {
 //FUNCIONES DE LAS MARCAS
 
 function obtenerTotalesMarca() {
-	$sentencia = "SELECT marcas.nombreMarca, SUM(productos_vendidos.precio * productos_vendidos.cantidad) AS totalVentas
+	$sentencia = "SELECT marcas.nombreMarca, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
 	FROM productos_vendidos
 	INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	INNER JOIN marcas ON marcas.id = productos.marca
@@ -1095,7 +1105,7 @@ function obtenerTotalesMarca() {
 }
 
 function obtenerTotalesCategoria() {
-	$sentencia = "SELECT categorias.nombreCategoria, SUM(productos_vendidos.precio * productos_vendidos.cantidad) AS totalVentas
+	$sentencia = "SELECT categorias.nombreCategoria, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
 	FROM productos_vendidos
 	INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	INNER JOIN categorias ON categorias.id = productos.categoria

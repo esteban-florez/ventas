@@ -19,7 +19,7 @@
           </b-select>
         </div>
         <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" href="#/pdf/cotizaciones" target="__blank" rel="noopener noreferrer">
+          <b-button type="is-primary" tag="a" :href="printHref" target="__blank" rel="noopener noreferrer">
             Imprimir
           </b-button>
         </div>
@@ -110,6 +110,21 @@ export default {
 
   mounted() {
     this.obtenerCotizaciones()
+  },
+
+  computed: {
+    printHref() {
+      let href = '#/pdf/cotizaciones'
+
+      const entries = Object.entries(this.filtros)
+        .filter(entry => Boolean(entry[1]))
+
+      if (entries.length === 0) return href
+
+      const filtros = Object.fromEntries(entries)
+      const params = new URLSearchParams(filtros).toString()
+      return `${href}?${params}`
+    },
   },
 
   methods: {

@@ -53,9 +53,13 @@ export default {
 
   mounted() {
     document.body.style.opacity = '0'
-    const accion = 'historial'
 
-    HttpService.obtenerConConsultas('ventas.php', { accion, proveedor: null })
+    const payload = {
+      accion: 'historial',
+      proveedor: this.$route.query.proveedor || null,
+    }
+
+    HttpService.obtenerConConsultas('ventas.php', payload)
       .then(resultado => {
         resultado.sort(
           (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
