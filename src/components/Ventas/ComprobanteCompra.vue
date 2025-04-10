@@ -15,7 +15,6 @@
           <p>Fecha Vencimiento: {{ venta.hasta }}</p>
         </div>
       </div>
-      <p><b>{{ titulo }}</b></p>
       <div class="cliente-info">
         <p><b>Cliente:</b> <b>{{ venta.nombreCliente }}</b></p>
         <p><b>Atiende:</b> <b>{{ venta.nombreUsuario }}</b></p>
@@ -41,24 +40,18 @@
             <td>${{ producto.precio }}</td>
             <td>${{ f(producto.precio * producto.cantidad) }}</td>
           </tr>
-          <tr v-for="(producto, index) in venta.productos" :key="index">
-            <p v-if="venta.delivery"><b>Costo Delivery:</b>${{ f(venta.delivery.costo) }}</p>
-          </tr>
         </tbody>
       </table>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-
-      <div class="pago-info">
-        <p><b>Total:</b> ${{ f(venta.total) }}</p>
-        <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
-        <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
-        <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
-        <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
+      <div class="pago-container">
+        <div class="pago-info">
+          <p><b>Total:</b> ${{ f(venta.total) }}</p>
+          <p v-if="venta.delivery"><b>Delivery:</b>${{ f(venta.delivery.costo) }}</p>
+          <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
+          <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
+          <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
+          <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
+        </div>
       </div>
 
       <p><b>Gracias por su preferencia</b></p>
@@ -82,6 +75,8 @@ export default {
     cssText: `
       .comprobante {
         font-family: monospace;
+        display: flex;
+        flex-direction: column;
       }
 
       .carta-header {
@@ -136,9 +131,14 @@ export default {
         font-weight: bold;
       }
 
+      .pago-container {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin-top: 40px;
+      }
+
       .pago-info {
-        bottom: 10px;
-        right: 10px;
         border: 2px solid #000;
         padding: 10px;
         width: 200px;
