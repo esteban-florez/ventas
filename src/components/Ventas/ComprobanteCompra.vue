@@ -1,41 +1,63 @@
 <template>
   <section>
     <div class="comprobante" :class="tamaño" id="comprobante">
-      <div class="header">
-        <img src="@/assets/ofertacaracas.jpg">
-        <p><b>{{ titulo }}</b></p>
-        <p>{{ nombre }}</p>
-        <p>Teléfono: {{ telefono }}</p>
-        <p><b>Cliente:</b>{{ venta.nombreCliente }}</p>
-        <p><b>Atiende:</b>{{ venta.nombreUsuario }}</p>
-        <p><b>Fecha: </b>{{ venta.fecha }}</p>
-        <p v-if="cotiza"><b>Válido hasta: </b>{{ venta.hasta }}</p>
+      <div class="header carta-header" v-if="tamaño === 'carta'">
+        <div class="logo-container">
+          <img src="@/assets/ofertacaracas.jpg" class="logo">
+        </div>
+        <div class="empresa-info">
+          <h1>Ofertas Caracas</h1>
+        </div>
+        <div class="factura-info">
+          <p><b>Nota de Entrega: {{ venta.numeroFactura }}</b></p>
+          <p>Página: 1</p>
+          <p>Fecha Emisión: {{ venta.fecha }}</p>
+          <p>Fecha Vencimiento: {{ venta.hasta }}</p>
+        </div>
       </div>
-      <table>
+      <p><b>{{ titulo }}</b></p>
+      <div class="cliente-info">
+        <p><b>Cliente:</b> <b>{{ venta.nombreCliente }}</b></p>
+        <p><b>Atiende:</b> <b>{{ venta.nombreUsuario }}</b></p>
+      </div>
+
+      <table class="tabla-productos">
         <thead>
-          <th style="text-align: start;">Producto</th>
-          <th></th>
-          <th>Total</th>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Unidad</th>
+            <th>Precio Unitario</th>
+            <th>Total</th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="(producto, index) in venta.productos" :key="index">
-            <td class="ml-2">{{ producto.nombre }}</td>
-            <td class="mr-2">${{ producto.precio }} X {{ producto.cantidad }} {{ producto.unidad }}.</td>
+            <td>{{ producto.codigo }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td>{{ producto.unidad }}</td>
+            <td>${{ producto.precio }}</td>
             <td>${{ f(producto.precio * producto.cantidad) }}</td>
           </tr>
         </tbody>
       </table>
-      <p v-if="venta.delivery"><b>Delivery:</b>${{ f(venta.delivery.costo) }}</p>
-      <p><b>Total:</b>${{ f(venta.total) }}</p>
-      <p v-if="!cotiza"><b>Su pago:</b>${{ f(venta.pagado) }}</p>
-      <p v-if="tipoVenta"><b>Cambio:</b>${{ f(venta.pagado - venta.total) }}</p>
-      <p v-if="cuenta || apartado"><b>Por pagar:</b>${{ f(porPagar) }}</p>
-      <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
+
+      <div class="pago-info">
+        <p><b>Total:</b> ${{ f(venta.total) }}</p>
+        <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
+        <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
+        <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
+        <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
+      </div>
+
       <p><b>Gracias por su preferencia</b></p>
       <p>----------------------------</p>
     </div>
   </section>
 </template>
+
 <script>
 import Printd from 'printd'
 import html2pdf from 'html2pdf.js'
@@ -51,41 +73,68 @@ export default {
     cssText: `
       .comprobante {
         font-family: monospace;
-        font-size: 22px;
       }
 
-      .comprobante p {
-        margin: 0!important;
-        padding: 0!important;
-        text-align: center;
+      .carta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
       }
 
-      .comprobante img {
-        display: block;
-        margin: 0 auto;
-      }
-
-      .comprobante th,
-      .comprobante td {
-        border-bottom: 1px solid #ddd;
-        margin: 0!important;
-        padding: 0!important;
-      }
-
-      .comprobante table {
-        width: 100%;
-      }
-
-      .comprobante.carta .header p {
-        text-align: center;
-      }
-
-      .comprobante.carta table {
-        margin: 1rem;
-      }
-
-      .comprobante.carta p {
+      .logo-container {
         text-align: left;
+        width: 30%;
+      }
+
+      .empresa-info {
+        text-align: center;
+        width: 40%;
+      }
+
+      .factura-info {
+        text-align: right;
+        width: 30%;
+      }
+
+      .logo {
+        width: 100px;
+        height: auto;
+      }
+
+      .cliente-info {
+        text-align: left;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .tabla-productos {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        border: 2px solid #000;
+      }
+
+      .tabla-productos th, .tabla-productos td {
+        border: 2px solid #000;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .tabla-productos thead {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      .pago-info {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        border: 2px solid #000;
+        padding: 10px;
+        width: 200px;
+        font-weight: bold;
       }
 
       .comprobante.tiquera {
@@ -172,6 +221,7 @@ export default {
           const telefono = this.venta.telefonoCliente
           if (!this.enviarCliente || !telefono) return
           const comprobante = html.querySelector('#comprobante')
+
           if (this.tamaño === 'tiquera') {
             comprobante.classList.remove('tiquera')
             comprobante.classList.add('carta')
@@ -206,7 +256,6 @@ export default {
 
         this.$emit('impreso', false)
       }, 10)
-
     },
   }
 }
