@@ -41,8 +41,17 @@
             <td>${{ producto.precio }}</td>
             <td>${{ f(producto.precio * producto.cantidad) }}</td>
           </tr>
+          <tr v-for="(producto, index) in venta.productos" :key="index">
+            <p v-if="venta.delivery"><b>Costo Delivery:</b>${{ f(venta.delivery.costo) }}</p>
+          </tr>
         </tbody>
       </table>
+
+<br>
+<br>
+<br>
+<br>
+<br>
 
       <div class="pago-info">
         <p><b>Total:</b> ${{ f(venta.total) }}</p>
@@ -128,7 +137,6 @@ export default {
       }
 
       .pago-info {
-        position: absolute;
         bottom: 10px;
         right: 10px;
         border: 2px solid #000;
