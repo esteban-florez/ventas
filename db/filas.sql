@@ -82,7 +82,7 @@ INSERT INTO `cotizaciones` (`id`, `fecha`, `total`, `hasta`, `idCliente`, `idUsu
 --
 
 INSERT INTO `cuentas_apartados` (`id`, `fecha`, `total`, `dias`, `tipo`, `idCliente`, `idUsuario`) VALUES
-(1, '2025-02-18 17:30:03', 1002.00, 7, 'cuenta', 2, 1),
+(1, '2025-02-18 17:30:03', 1110.00, 7, 'cuenta', 2, 1),
 (2, '2025-02-19 17:36:09', 1000.00, 0, 'apartado', 1, 1),
 (3, '2025-02-19 17:53:10', 1010.50, 10, 'cuenta', 1, 1),
 (4, '2025-02-19 17:53:25', 1000.00, 0, 'apartado', 2, 1),
@@ -249,9 +249,9 @@ INSERT INTO `usuarios` (`id`, `usuario`, `nombre`, `telefono`, `password`, `idRo
 --
 
 INSERT INTO `ventas` (`id`, `fecha`, `pagado`, `total`, `origen`, `simple`, `idMetodo`, `idCliente`, `idUsuario`) VALUES
-(1, '2025-02-25 17:30:52', 54.00, 54.00, NULL, 'Punto de Venta', NULL, 1, 1),
-(2, '2025-02-25 17:52:56', 51.50, 51.50, '04151231234', NULL, 2, 1, 1),
-(3, '2025-02-28 13:38:54', 59.50, 59.50, NULL, 'Efectivo (Bs)', NULL, 2, 1),
+(1, '2025-02-25 17:30:52', 42.00, 42.00, NULL, 'Punto de Venta', NULL, 1, 1),
+(2, '2025-02-25 17:52:56', 33.50, 33.50, '04151231234', NULL, 2, 1, 1),
+(3, '2025-02-28 13:38:54', 32.50, 32.50, NULL, 'Efectivo (Bs)', NULL, 2, 1),
 (4, '2025-02-28 14:48:09', 1000.00, 1000.00, 'pagozelle@correo.com', NULL, 4, 1, 1),
 (5, '2025-02-28 16:43:50', 30.00, 30.00, NULL, 'Punto de Venta', NULL, 3, 1);
 COMMIT;

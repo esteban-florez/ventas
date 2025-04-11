@@ -207,6 +207,7 @@ function obtenerPagosCuentasApartados($filtros, $tipo) {
 function obtenerCuentasApartados($filtros, $tipo) {
 	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
         cuentas_apartados.tipo, cuentas_apartados.total,
+        deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis,
         cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
         (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
@@ -217,6 +218,7 @@ function obtenerCuentasApartados($filtros, $tipo) {
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
         LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
+        LEFT JOIN deliveries ON deliveries.idCuenta = cuentas_apartados.id
 		WHERE cuentas_apartados.tipo = ?";
 
 	$parametros = [$tipo];
@@ -233,6 +235,17 @@ function obtenerCuentasApartados($filtros, $tipo) {
     ";
 
 	$cuentas = selectPrepare($sentencia, $parametros);
+
+    foreach ($cuentas as $cuenta) {
+        if ($cuenta->costoDelivery) {
+            $cuenta->delivery = new stdClass;
+            $cuenta->delivery->costo = $cuenta->costoDelivery;
+            $cuenta->delivery->gratis = $cuenta->deliveryGratis;
+            unset($cuenta->costoDelivery);
+            unset($cuenta->deliveryGratis);
+        }
+    }
+
 	return agregarProductosVendidos($cuentas, $tipo);
 }
 
@@ -259,11 +272,12 @@ function obtenerCotizaciones($filtros, $tipo) {
 
 
 function obtenerVentas($filtros) {
-	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
+	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
-        LEFT JOIN metodos on metodos.id = ventas.idMetodo";
+        LEFT JOIN metodos ON metodos.id = ventas.idMetodo
+        LEFT JOIN deliveries ON deliveries.idVenta = ventas.id";
 
     $parametros = [];
     if ($filtros->fechaInicio && $filtros->fechaFin) {
@@ -274,7 +288,18 @@ function obtenerVentas($filtros) {
 
     $sentencia .= " ORDER BY ventas.id DESC";
 
-	$ventas =  selectPrepare($sentencia, $parametros);
+	$ventas = selectPrepare($sentencia, $parametros);
+
+    foreach ($ventas as $venta) {
+        if ($venta->costoDelivery) {
+            $venta->delivery = new stdClass;
+            $venta->delivery->costo = $venta->costoDelivery;
+            $venta->delivery->gratis = $venta->deliveryGratis;
+            unset($venta->costoDelivery);
+            unset($venta->deliveryGratis);
+        }
+    }
+
 	return agregarProductosVendidos($ventas, 'venta');
 }
 
@@ -294,7 +319,7 @@ function agregarProductosVendidos($arreglo, $tipo) {
 }
 
 function obtenerProductosVendidos($id, $tipo) {
-	$sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad
+	$sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
 	FROM productos_vendidos
 	LEFT JOIN productos ON productos.id =  productos_vendidos.idProducto
 	WHERE productos_vendidos.idReferencia = ? AND productos_vendidos.tipo = ?";
@@ -303,7 +328,7 @@ function obtenerProductosVendidos($id, $tipo) {
 }
 
 function obtenerProductosCotizados($id) {
-	$sentencia = "SELECT productos_cotizados.cantidad, productos_cotizados.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad
+	$sentencia = "SELECT productos_cotizados.cantidad, productos_cotizados.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
 	FROM productos_cotizados
 	LEFT JOIN productos ON productos.id =  productos_cotizados.idProducto
 	WHERE productos_cotizados.idCotizacion = ?";

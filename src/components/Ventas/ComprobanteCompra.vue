@@ -47,15 +47,20 @@
 
       <div class="pago-container">
         <div class="pago-info">
+          <p v-if="venta.delivery && !venta.delivery.gratis"><b>
+            Delivery:</b>${{ f(venta.delivery.costo) }}
+          </p>
           <p><b>Total:</b> ${{ f(venta.total) }}</p>
-          <p v-if="venta.delivery"><b>Delivery:</b>${{ f(venta.delivery.costo) }}</p>
           <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
           <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
           <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
         </div>
       </div>
 
-      <p><b>Gracias por su preferencia</b></p>
+      <p class="aviso-delivery" v-if="venta.delivery && !venta.delivery.gratis">
+        <b>El monto del delivery está incluido en el total.</b>
+      </p>
+      <p><b>Gracias por su preferencia.</b></p>
       <p>----------------------------</p>
     </div>
   </section>
@@ -96,6 +101,10 @@ export default {
       .empresa-info {
         text-align: center;
         width: 40%;
+      }
+
+      .aviso-delivery {
+        margin-bottom: -0.5rem;
       }
 
       .factura-info {

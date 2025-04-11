@@ -132,11 +132,9 @@ export default {
     },
 
     onTerminar(venta) {
-      let total = this.total
+      this.calcularTotal()
 
-      if (venta.delivery && venta.delivery.gratis) {
-        total += parseFloat(venta.delivery.costo)
-      }
+      let total = this.total
 
       this.ventaRealizada = {
         total,
@@ -188,6 +186,10 @@ export default {
         accion: 'registrar_' + tipo,
         datos: this.ventaRealizada
       }
+
+      this.costoDelivery = null
+      this.esDelivery = false
+      this.deliveryGratis = false
 
       HttpService.registrar('ventas.php', datos)
         .then(id => {
