@@ -211,6 +211,7 @@ function obtenerCuentasApartados($filtros, $tipo) {
         (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
         IFNULL(clientes.telefono, '') AS telefonoCliente,
+        IFNULL(clientes.direccion, '') AS direccionCliente,
         IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
 		FROM cuentas_apartados
 		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
@@ -236,7 +237,7 @@ function obtenerCuentasApartados($filtros, $tipo) {
 }
 
 function obtenerCotizaciones($filtros, $tipo) {
-	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente
+	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
@@ -258,7 +259,7 @@ function obtenerCotizaciones($filtros, $tipo) {
 
 
 function obtenerVentas($filtros) {
-	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente 
+	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario

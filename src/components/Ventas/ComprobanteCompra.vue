@@ -9,14 +9,16 @@
           <h1>Ofertas Caracas</h1>
         </div>
         <div class="factura-info">
-          <p><b>Nota de Entrega: {{ venta.numeroFactura }}</b></p>
+          <p><b>Nota de Entrega: {{ venta.id }}</b></p>
           <p>Página: 1</p>
           <p>Fecha Emisión: {{ venta.fecha }}</p>
-          <p>Fecha Vencimiento: {{ venta.hasta }}</p>
+          <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
         </div>
       </div>
       <div class="cliente-info">
         <p><b>Cliente:</b> <b>{{ venta.nombreCliente }}</b></p>
+        <p><b>Numero telefónico:</b> <b>{{ venta.telefonoCliente }}</b></p>
+        <p><b>Dirección:</b> <b>{{ venta.direccionCliente }}</b></p>
         <p><b>Atiende:</b> <b>{{ venta.nombreUsuario }}</b></p>
       </div>
 
@@ -50,7 +52,6 @@
           <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
           <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
           <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
-          <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
         </div>
       </div>
 
