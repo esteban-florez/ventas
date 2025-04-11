@@ -5,13 +5,6 @@ const log = logger()
 const jid = phone => `58${phone}@s.whatsapp.net`
 const MANUAL_DISCONNECT = 'manual-disconnect'
 
-const customOptions = {
-  browser: ["Ubuntu", "Chrome", "20.0.04"],
-  printQRInTerminal: false,
-  mobile: false,
-  logger: log,
-}
-
 const WhatsApp = {
   sock: null,
   message: sendMessage,
@@ -31,7 +24,14 @@ export async function connect() {
   log.status('Conectando a WhatsApp, creando nuevo socket...')
 
   try {
-    const client = await WhatsAppClient.create('multi', './baileys_auth', customOptions)
+    const client = await WhatsAppClient.create('multi', './baileys_auth', {
+      browser: ["Ubuntu", "Chrome", "20.0.04"],
+      printQRInTerminal: false,
+      mobile: false,
+      logger: log,
+      qrTimeout: 300_000,
+    })
+
     const sock = await client.getSocket()
     const paired = sock.authState.creds.registered
 
