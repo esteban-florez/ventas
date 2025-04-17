@@ -11,7 +11,8 @@
         <div class="factura-info">
           <p><b>Nota de Entrega: {{ venta.id }}</b></p>
           <p>Página: 1</p>
-          <p>Fecha Emisión: {{ venta.fecha }}</p>
+          <p>Fecha Emisión: {{ tiempo[0] }}</p>
+          <p>Hora Emisión: {{ tiempo[1] }}</p>
           <p v-if="cuenta || apartado"><b>Vence en:</b> {{ venta.dias }} días</p>
         </div>
       </div>
@@ -75,6 +76,7 @@ export default {
   props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente'],
 
   data: () => ({
+    tiempo: '',
     titulo: '',
     nombre: '',
     telefono: '',
@@ -83,6 +85,7 @@ export default {
         font-family: monospace;
         display: flex;
         flex-direction: column;
+        font-size: 10px;
       }
 
       .carta-header {
@@ -177,6 +180,7 @@ export default {
   mounted() {
     this.d = new Printd();
     this.imprimir();
+    this.tiempo = this.venta.fecha.split(' ')
   },
 
   computed: {
