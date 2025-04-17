@@ -104,12 +104,12 @@ export default {
       this.metodo = venta.simple
       this.pagado = parseFloat(venta.pagado)
       this.id = venta.id,
-      this.delivery = {
+      this.delivery = venta.delivery ? {
         costo: venta.delivery.costo,
         destino: venta.direccionCliente,
-        gratis: !!venta.delivery.gratis,
+        gratis: !venta.delivery.gratis,
         idChofer: venta.deliveryId
-      }
+      } : null
     })
   },
 

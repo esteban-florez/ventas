@@ -138,7 +138,7 @@ export default {
       idMetodo: this.initialIdMetodo,
       origen: this.initialOrigen,
       cliente: {...this.initialCliente},
-      esDelivery: !this.initialDelivery,
+      esDelivery: this.initialDelivery,
       nuevoChofer: false,
       delivery: {...this.initialDelivery},
       chofer: {...this.initialChofer},

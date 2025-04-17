@@ -25,6 +25,12 @@
 
 	export default{
 		name: "BusquedaCliente",
+		props: {
+			initialCliente: {
+				type: Object,
+				default: () => null
+			}
+		},
 
 		data: () => ({
 			cliente: "",
@@ -54,6 +60,18 @@
 					this.clientesEncontrados = clientes
 				})
 			},
+		},
+
+		watch: {
+			initialCliente: {
+				immediate: true,
+				handler(newVal) {
+					if (newVal && newVal.nombre) {
+						this.clienteSeleccionado = newVal;
+						this.cliente = newVal.nombre;
+					}
+				}
+			}
 		},
 
 		computed: {
