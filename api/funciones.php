@@ -16,22 +16,26 @@ date_default_timezone_set('America/Caracas');
 
 error_reporting(0);
 
-function obtenerMetodos() {
-	$sentencia = "SELECT * FROM metodos";
-	return selectQuery($sentencia);
+function obtenerMetodos()
+{
+    $sentencia = "SELECT * FROM metodos";
+    return selectQuery($sentencia);
 }
 
-function obtenerMetodoPorId($id) {
-	$sentencia = "SELECT * FROM metodos WHERE id = ?";
-	return selectRegresandoObjeto($sentencia, [$id]);
+function obtenerMetodoPorId($id)
+{
+    $sentencia = "SELECT * FROM metodos WHERE id = ?";
+    return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function eliminarMetodo($id) {
-	$sentencia = "DELETE FROM metodos WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarMetodo($id)
+{
+    $sentencia = "DELETE FROM metodos WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
-function registrarMetodo($metodo) {
+function registrarMetodo($metodo)
+{
     $campos = '';
     $marcadores = '';
 
@@ -56,12 +60,13 @@ function registrarMetodo($metodo) {
     }
 
     $parametros = array_merge([$metodo->nombre], $datos);
-	$sentencia = "INSERT INTO metodos (nombre, $campos) VALUES (?,$marcadores)";
+    $sentencia = "INSERT INTO metodos (nombre, $campos) VALUES (?,$marcadores)";
 
-	return insertar($sentencia, clean($parametros));
+    return insertar($sentencia, clean($parametros));
 }
 
-function editarMetodo($id, $metodo) {
+function editarMetodo($id, $metodo)
+{
     $sentencia = 'UPDATE metodos SET nombre = ?, cuenta = ?, banco = ?, tipoCi = ?, ci = ?, beneficiario = ?, telefono = ?, correo = ? WHERE id = ?';
 
     $parametros = [$metodo->nombre, $metodo->cuenta, $metodo->banco, $metodo->tipoCi, $metodo->ci, $metodo->beneficiario, $metodo->telefono, $metodo->correo, $id];
@@ -81,65 +86,74 @@ function editarMetodo($id, $metodo) {
 
 */
 
-function obtenerVentasPorDiaMes($mes, $anio) {
-	$sentencia = "SELECT DATE_FORMAT(fecha, '%Y-%m-%d') AS dia, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
+function obtenerVentasPorDiaMes($mes, $anio)
+{
+    $sentencia = "SELECT DATE_FORMAT(fecha, '%Y-%m-%d') AS dia, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
 	WHERE MONTH(fecha) = ? AND YEAR(fecha) = ?
 	GROUP BY dia";
-	return selectPrepare($sentencia, [$mes, $anio]);
+    return selectPrepare($sentencia, [$mes, $anio]);
 }
 
-function obtenerTotalesVentasPorMes($anio) {
-	$sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
+function obtenerTotalesVentasPorMes($anio)
+{
+    $sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
         WHERE YEAR(fecha) = ? 
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
     return selectPrepare($sentencia, [$anio]);
 }
 
-function calcularTotalIngresos() {
-	$sentencia = "SELECT (SELECT IFNULL(SUM(total), 0) FROM ventas) + (SELECT IFNULL(SUM(monto), 0) FROM abonos) AS totalIngresos";
-	return selectRegresandoObjeto($sentencia)->totalIngresos;
+function calcularTotalIngresos()
+{
+    $sentencia = "SELECT (SELECT IFNULL(SUM(total), 0) FROM ventas) + (SELECT IFNULL(SUM(monto), 0) FROM abonos) AS totalIngresos";
+    return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularTotalIngresosHoy() {
-	$sentencia = "SELECT 
+function calcularTotalIngresosHoy()
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE DATE(fecha) = CURDATE()) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE()) AS totalIngresos";
-	return selectRegresandoObjeto($sentencia)->totalIngresos;
+    return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularTotalIngresosSemana() {
-	$sentencia = "SELECT 
+function calcularTotalIngresosSemana()
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE WEEK(fecha) = WEEK(NOW())) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW())) AS totalIngresos";
-	return selectRegresandoObjeto($sentencia)->totalIngresos;
+    return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularTotalIngresosMes() {
-	$sentencia = "SELECT 
+function calcularTotalIngresosMes()
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
-	return selectRegresandoObjeto($sentencia)->totalIngresos;
+    return selectRegresandoObjeto($sentencia)->totalIngresos;
 }
 
-function calcularIngresosPendientes() {
-	$sentencia = "SELECT (
+function calcularIngresosPendientes()
+{
+    $sentencia = "SELECT (
         (SELECT IFNULL(SUM(total), 0) FROM cuentas_apartados)
         - (SELECT IFNULL(SUM(monto), 0) FROM abonos)
     ) as pendientes";
-	return selectRegresandoObjeto($sentencia)->pendientes;
+    return selectRegresandoObjeto($sentencia)->pendientes;
 }
 
-function eliminarCotizacion($id) {
-	$sentenciaEliminarCotizacion = "DELETE FROM cotizaciones WHERE id = ?";
-	$cotizacionEliminada = eliminar($sentenciaEliminarCotizacion, $id);
+function eliminarCotizacion($id)
+{
+    $sentenciaEliminarCotizacion = "DELETE FROM cotizaciones WHERE id = ?";
+    $cotizacionEliminada = eliminar($sentenciaEliminarCotizacion, $id);
 
-	$sentenciaEliminarProductos = "DELETE FROM productos_cotizados WHERE idCotizacion = ?";
-	$productosEliminados = eliminar($sentenciaEliminarProductos, $id);
-	return $cotizacionEliminada && $productosEliminados;
+    $sentenciaEliminarProductos = "DELETE FROM productos_cotizados WHERE idCotizacion = ?";
+    $productosEliminados = eliminar($sentenciaEliminarProductos, $id);
+    return $cotizacionEliminada && $productosEliminados;
 }
 
-function obtenerTotalVentas($filtros) {
-	$sentencia = "SELECT IFNULL(SUM(total), 0) AS totalVentas FROM ventas";
+function obtenerTotalVentas($filtros)
+{
+    $sentencia = "SELECT IFNULL(SUM(total), 0) AS totalVentas FROM ventas";
     $parametros = [];
 
     if ($filtros->fechaInicio && $filtros->fechaFin) {
@@ -147,65 +161,69 @@ function obtenerTotalVentas($filtros) {
         $parametros = [$filtros->fechaInicio, $filtros->fechaFin];
     }
 
-	return selectRegresandoObjeto($sentencia, $parametros)->totalVentas;
+    return selectRegresandoObjeto($sentencia, $parametros)->totalVentas;
 }
 
-function obtenerTotalCuentasApartados($filtros, $tipo) {
-	$sentencia = "SELECT IFNULL(SUM(total), 0) AS total FROM cuentas_apartados WHERE tipo = ?";
-	$parametros = [$tipo];
+function obtenerTotalCuentasApartados($filtros, $tipo)
+{
+    $sentencia = "SELECT IFNULL(SUM(total), 0) AS total FROM cuentas_apartados WHERE tipo = ?";
+    $parametros = [$tipo];
 
-	if($filtros->fechaInicio && $filtros->fechaFin) {
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
-		array_push($parametros, $filtros->fechaInicio);
-		array_push($parametros, $filtros->fechaFin);
-	}
-	return selectRegresandoObjeto($sentencia, $parametros)->total;
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
+    return selectRegresandoObjeto($sentencia, $parametros)->total;
 }
 
-function obtenerTotalPorPagarCuentasApartados($filtros, $tipo) {
+function obtenerTotalPorPagarCuentasApartados($filtros, $tipo)
+{
     $sentencia1 = "SELECT IFNULL(SUM(total), 0) AS positivo FROM cuentas_apartados WHERE tipo = ?";
     $sentencia2 = "SELECT IFNULL(SUM(monto), 0) AS negativo FROM abonos
         INNER JOIN cuentas_apartados
         ON cuentas_apartados.id = abonos.idCuenta
         AND cuentas_apartados.tipo = ?";
-    
-	$parametros = [$tipo];
 
-	if($filtros->fechaInicio && $filtros->fechaFin) {
-		$sentenciaFiltros = " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+    $parametros = [$tipo];
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentenciaFiltros = " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
 
         $sentencia1 .= $sentenciaFiltros;
         $sentencia2 .= $sentenciaFiltros;
 
-		array_push($parametros, $filtros->fechaInicio);
-		array_push($parametros, $filtros->fechaFin);
-	}
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
 
-	$positivo = selectRegresandoObjeto($sentencia1, $parametros)->positivo;
+    $positivo = selectRegresandoObjeto($sentencia1, $parametros)->positivo;
     $negativo = selectRegresandoObjeto($sentencia2, $parametros)->negativo;
 
     return $positivo - $negativo;
 }
 
-function obtenerPagosCuentasApartados($filtros, $tipo) {
-	$sentencia = "SELECT IFNULL(SUM(monto), 0) AS totalPagos FROM abonos
+function obtenerPagosCuentasApartados($filtros, $tipo)
+{
+    $sentencia = "SELECT IFNULL(SUM(monto), 0) AS totalPagos FROM abonos
         INNER JOIN cuentas_apartados
         ON cuentas_apartados.id = abonos.idCuenta
         AND cuentas_apartados.tipo = ?";
 
-	$parametros = [$tipo];
+    $parametros = [$tipo];
 
-	if ($filtros->fechaInicio && $filtros->fechaFin) {
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
-		array_push($parametros, $filtros->fechaInicio);
-		array_push($parametros, $filtros->fechaFin);
-	}
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
 
-	return selectRegresandoObjeto($sentencia, $parametros)->totalPagos;
+    return selectRegresandoObjeto($sentencia, $parametros)->totalPagos;
 }
 
-function obtenerCuentasApartados($filtros, $tipo) {
-	$sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
+function obtenerCuentasApartados($filtros, $tipo)
+{
+    $sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
         cuentas_apartados.tipo, cuentas_apartados.total,
         deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis,
         cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
@@ -221,20 +239,20 @@ function obtenerCuentasApartados($filtros, $tipo) {
         LEFT JOIN deliveries ON deliveries.idCuenta = cuentas_apartados.id
 		WHERE cuentas_apartados.tipo = ?";
 
-	$parametros = [$tipo];
+    $parametros = [$tipo];
 
-	if ($filtros->fechaInicio && $filtros->fechaFin) {
-		$sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
-		array_push($parametros, $filtros->fechaInicio);
-		array_push($parametros, $filtros->fechaFin);
-	}
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
 
     $sentencia .= "
         GROUP BY cuentas_apartados.id
         ORDER BY cuentas_apartados.id DESC
     ";
 
-	$cuentas = selectPrepare($sentencia, $parametros);
+    $cuentas = selectPrepare($sentencia, $parametros);
 
     foreach ($cuentas as $cuenta) {
         if ($cuenta->costoDelivery) {
@@ -246,33 +264,35 @@ function obtenerCuentasApartados($filtros, $tipo) {
         }
     }
 
-	return agregarProductosVendidos($cuentas, $tipo);
+    return agregarProductosVendidos($cuentas, $tipo);
 }
 
-function obtenerCotizaciones($filtros, $tipo) {
-	$sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
+function obtenerCotizaciones($filtros, $tipo)
+{
+    $sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
 		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
 		WHERE 1";
 
-	$parametros = [];
+    $parametros = [];
 
-	if ($filtros->fechaInicio && $filtros->fechaFin) {
-		$sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
-		array_push($parametros, $filtros->fechaInicio);
-		array_push($parametros, $filtros->fechaFin);
-	}
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
 
     $sentencia .= " ORDER BY cotizaciones.id DESC";
 
-	$cotizaciones = selectPrepare($sentencia, $parametros);
-	return agregarProductosVendidos($cotizaciones, $tipo);
+    $cotizaciones = selectPrepare($sentencia, $parametros);
+    return agregarProductosVendidos($cotizaciones, $tipo);
 }
 
 
-function obtenerVentas($filtros) {
-	$sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
+function obtenerVentas($filtros)
+{
+    $sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
 		FROM ventas
 		LEFT JOIN clientes ON clientes.id = ventas.idCliente
 		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
@@ -288,7 +308,7 @@ function obtenerVentas($filtros) {
 
     $sentencia .= " ORDER BY ventas.id DESC";
 
-	$ventas = selectPrepare($sentencia, $parametros);
+    $ventas = selectPrepare($sentencia, $parametros);
 
     foreach ($ventas as $venta) {
         if ($venta->costoDelivery) {
@@ -300,10 +320,11 @@ function obtenerVentas($filtros) {
         }
     }
 
-	return agregarProductosVendidos($ventas, 'venta');
+    return agregarProductosVendidos($ventas, 'venta');
 }
 
-function agregarProductosVendidos($arreglo, $tipo) {
+function agregarProductosVendidos($arreglo, $tipo)
+{
     if ($tipo === 'cotiza') {
         foreach ($arreglo as $item) {
             $item->productos = obtenerProductosCotizados($item->id);
@@ -312,31 +333,34 @@ function agregarProductosVendidos($arreglo, $tipo) {
     }
 
 
-	foreach ($arreglo as $item) {
-		$item->productos = obtenerProductosVendidos($item->id, $tipo);
-	}
-	return $arreglo;
+    foreach ($arreglo as $item) {
+        $item->productos = obtenerProductosVendidos($item->id, $tipo);
+    }
+    return $arreglo;
 }
 
-function obtenerProductosVendidos($id, $tipo) {
-	$sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
+function obtenerProductosVendidos($id, $tipo)
+{
+    $sentencia = "SELECT productos_vendidos.cantidad, productos_vendidos.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
 	FROM productos_vendidos
 	LEFT JOIN productos ON productos.id =  productos_vendidos.idProducto
 	WHERE productos_vendidos.idReferencia = ? AND productos_vendidos.tipo = ?";
-	$parametros = [$id, $tipo];
-	return selectPrepare($sentencia, $parametros);
+    $parametros = [$id, $tipo];
+    return selectPrepare($sentencia, $parametros);
 }
 
-function obtenerProductosCotizados($id) {
-	$sentencia = "SELECT productos_cotizados.cantidad, productos_cotizados.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
+function obtenerProductosCotizados($id)
+{
+    $sentencia = "SELECT productos_cotizados.cantidad, productos_cotizados.precio, productos.nombre, productos.precioCompra, productos.id, productos.unidad, productos.codigo
 	FROM productos_cotizados
 	LEFT JOIN productos ON productos.id =  productos_cotizados.idProducto
 	WHERE productos_cotizados.idCotizacion = ?";
-	$parametros = [$id];
-	return selectPrepare($sentencia, $parametros);
+    $parametros = [$id];
+    return selectPrepare($sentencia, $parametros);
 }
 
-function registrarDelivery($venta, $relacion, $id) {
+function registrarDelivery($venta, $relacion, $id)
+{
     $delivery = $venta->delivery;
 
     if ($delivery->idChofer === '0') {
@@ -353,39 +377,192 @@ function registrarDelivery($venta, $relacion, $id) {
     insertar($sentencia, clean($parametros));
 }
 
-function vender($venta) {
-	$venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
-	$sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+function vender($venta)
+{
+    $venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
+    $sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
 
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
+    $parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
 
     $registrado = insertar($sentencia, clean($parametros));
-	
-	if(!$registrado) return false;
 
-	$idVenta = obtenerUltimoId('ventas');
-	$productosRegistrados = registrarProductosVendidos($venta->productos, $idVenta, 'venta');
+    if (!$registrado)
+        return false;
+
+    $idVenta = obtenerUltimoId('ventas');
+    $productosRegistrados = registrarProductosVendidos($venta->productos, $idVenta, 'venta');
 
     $valido = count($productosRegistrados) > 0;
-    if (!$valido) return false;
+    if (!$valido)
+        return false;
 
-    if (!$venta->delivery) return $idVenta;
+    if (!$venta->delivery)
+        return $idVenta;
 
     registrarDelivery($venta, 'idVenta', $idVenta);
 
     return $idVenta;
 }
 
-function agregarCuentaApartado($venta) {
-	$sentencia = "INSERT INTO cuentas_apartados (fecha, total, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?)";
+
+////AQUI JESUS
+
+function editarApartadoCuenta($id, $cuenta, $tipo)
+{
+    $sentencia = "UPDATE cuentas_apartados SET total = ?, dias = ?, idCliente = ?, idUsuario = ? WHERE id = ?";
+    $parametros = [
+        $cuenta->total,
+        $cuenta->dias,
+        $cuenta->cliente,
+        $cuenta->usuario,
+        $id
+    ];
+    $resultado = editar($sentencia, clean($parametros));
+
+    // Obtener productos vendidos anteriores
+    $sentenciaObtener = "SELECT idProducto, cantidad, precio FROM productos_vendidos WHERE idReferencia = ? AND tipo = ?";
+    $productosAnteriores = selectPrepare($sentenciaObtener, [$id, $tipo]);
+
+    // Crear un mapa de productos actuales
+    $productosActuales = [];
+    foreach ($cuenta->productos as $producto) {
+        $productosActuales[$producto->id] = $producto->cantidad;
+    }
+
+    // Actualizar, eliminar o insertar productos
+    foreach ($productosAnteriores as $productoAnterior) {
+        $idProducto = $productoAnterior->idProducto;
+        $cantidadAnterior = $productoAnterior->cantidad;
+        $precio = $productoAnterior->precio;
+
+        if (isset($productosActuales[$idProducto])) {
+            $cantidadNueva = $productosActuales[$idProducto];
+            $productoEncontrado = array_filter($cuenta->productos, fn($p) => $p->id == $idProducto);
+            $precioNuevo = reset($productoEncontrado)->precio;
+            if ($cantidadNueva != $cantidadAnterior || $precioNuevo != $precio) {
+                $sentenciaActualizar = "UPDATE productos_vendidos SET cantidad = ?, precio = ? WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
+                editar($sentenciaActualizar, [$cantidadNueva, $precioNuevo, $id, $idProducto, $tipo]);
+            }
+            unset($productosActuales[$idProducto]);
+        } else {
+            $sentenciaEliminar = "DELETE FROM productos_vendidos WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
+            eliminar($sentenciaEliminar, [$id, $idProducto, $tipo]);
+        }
+    }
+
+    // Insertar nuevos productos
+    foreach ($productosActuales as $idProducto => $cantidadNueva) {
+        $sentenciaInsertar = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
+        $producto = array_filter($cuenta->productos, fn($p) => $p->id == $idProducto)[0];
+        $parametrosInsertar = [date('Y-m-d H:i:s'), $cantidadNueva, $producto->precio, $idProducto, $id, 'venta'];
+        insertar($sentenciaInsertar, $parametrosInsertar);
+    }
+
+    // Actualizar delivery si existe
+    if (isset($cuenta->delivery)) {
+        // Eliminar delivery anterior
+        $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
+        eliminar($sentenciaEliminarDelivery, $id);
+
+        // Registrar nuevo delivery
+        registrarDelivery($cuenta, 'idVenta', $id);
+    }
+
+    return $resultado;
+}
+
+function editarVenta($id, $venta)
+{
+    $sentencia = "UPDATE ventas SET total = ?, pagado = ?, origen = ?, `simple` = ?, idMetodo = ?, idCliente = ?, idUsuario = ? WHERE id = ?";
+    $parametros = [
+        $venta->total,
+        $venta->pagado,
+        $venta->origen,
+        $venta->simple,
+        $venta->idMetodo,
+        $venta->cliente,
+        $venta->usuario,
+        $id
+    ];
+    $resultado = editar($sentencia, clean($parametros));
+
+    // Obtener productos vendidos anteriores
+    $sentenciaObtener = "SELECT idProducto, cantidad FROM productos_vendidos WHERE idReferencia = ? AND tipo = ?";
+    $productosAnteriores = selectPrepare($sentenciaObtener, [$id, 'venta']);
+
+    // Crear un mapa de productos actuales
+    $productosActuales = [];
+    foreach ($venta->productos as $producto) {
+        $productosActuales[$producto->id] = $producto->cantidad;
+    }
+
+    // Actualizar, eliminar o insertar productos
+    foreach ($productosAnteriores as $productoAnterior) {
+        $idProducto = $productoAnterior->idProducto;
+        $cantidadAnterior = $productoAnterior->cantidad;
+
+        if (isset($productosActuales[$idProducto])) {
+            $cantidadNueva = $productosActuales[$idProducto];
+            if ($cantidadNueva != $cantidadAnterior) {
+                $sentenciaActualizar = "UPDATE productos_vendidos SET cantidad = ? WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
+                editar($sentenciaActualizar, [$cantidadNueva, $id, $idProducto, 'venta']);
+            }
+            unset($productosActuales[$idProducto]);
+        } else {
+            $sentenciaEliminar = "DELETE FROM productos_vendidos WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
+            eliminar($sentenciaEliminar, [$id, $idProducto, 'venta']);
+        }
+    }
+
+    // Insertar nuevos productos
+    foreach ($productosActuales as $idProducto => $cantidadNueva) {
+        $sentenciaInsertar = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
+        $producto = array_filter($venta->productos, fn($p) => $p->id == $idProducto)[0];
+        $parametrosInsertar = [date('Y-m-d H:i:s'), $cantidadNueva, $producto->precio, $idProducto, $id, 'venta'];
+        insertar($sentenciaInsertar, $parametrosInsertar);
+    }
+
+    // Actualizar delivery si existe
+    if (isset($venta->delivery)) {
+        // Eliminar delivery anterior
+        $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
+        eliminar($sentenciaEliminarDelivery, $id);
+
+        // Registrar nuevo delivery
+        registrarDelivery($venta, 'idVenta', $id);
+    }
+
+    return $resultado;
+}
+
+function eliminarVenta($id)
+{
+    // Eliminar productos vendidos relacionados
+    $sentenciaEliminarProductos = "DELETE FROM productos_vendidos WHERE idReferencia = ? AND tipo = 'venta'";
+    eliminar($sentenciaEliminarProductos, $id);
+
+    // Eliminar delivery relacionado
+    $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
+    eliminar($sentenciaEliminarDelivery, $id);
+
+    // Eliminar la venta
+    $sentenciaEliminarVenta = "DELETE FROM ventas WHERE id = ?";
+    return eliminar($sentenciaEliminarVenta, $id);
+}
+
+
+function agregarCuentaApartado($venta)
+{
+    $sentencia = "INSERT INTO cuentas_apartados (fecha, total, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?)";
 
     $ahora = date("Y-m-d H:i:s");
-	$parametros = [$ahora, $venta->total, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
+    $parametros = [$ahora, $venta->total, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
 
-	$registrado = insertar($sentencia, clean($parametros));
-	
-	if(!$registrado) return false;
-    
+    $registrado = insertar($sentencia, clean($parametros));
+
+    if (!$registrado)
+        return false;
+
     $idCuenta = obtenerUltimoId('cuentas_apartados');
 
     if ($venta->pagado) {
@@ -399,53 +576,128 @@ function agregarCuentaApartado($venta) {
     $productosRegistrados = registrarProductosVendidos($venta->productos, $idCuenta, $venta->tipo);
 
     $valido = count($productosRegistrados) > 0;
-    if (!$valido) return false;
+    if (!$valido)
+        return false;
 
-    if (!$venta->delivery) return $idCuenta;
+    if (!$venta->delivery)
+        return $idCuenta;
     registrarDelivery($venta, 'idCuenta', $idCuenta);
 
     return $idCuenta;
 }
 
-function agregarCotizacion($venta) {
-	$sentencia = "INSERT INTO cotizaciones(fecha, total, hasta, idCliente, idUsuario) VALUES (?,?,?,?,?)";
-	$parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->hasta, $venta->cliente, $venta->usuario];
+////AQUI JESUS
 
-	insertar($sentencia, clean($parametros));
-	$idCotizacion = obtenerUltimoId('cotizaciones');
+function editarCuentaApartado($id, $cuenta)
+{
+    $sentencia = "UPDATE cuentas_apartados SET total = ?, dias = ?, tipo = ?, idCliente = ?, idUsuario = ? WHERE id = ?";
+    $parametros = [
+        $cuenta->total,
+        $cuenta->dias,
+        $cuenta->tipo,
+        $cuenta->cliente,
+        $cuenta->usuario,
+        $id
+    ];
+    $resultado = editar($sentencia, clean($parametros));
 
-	$productosRegistrados = registrarProductosCotizados($venta->productos, $idCotizacion);
+    // Eliminar productos vendidos anteriores
+    $sentenciaEliminar = "DELETE FROM productos_vendidos WHERE idReferencia = ? AND tipo = ?";
+    eliminar($sentenciaEliminar, $id);
 
-	if(count($productosRegistrados) > 0) return $idCotizacion;
+    // Registrar nuevos productos vendidos
+    registrarProductosVendidos($cuenta->productos, $id, $cuenta->tipo);
+
+    // Actualizar delivery si existe
+    if (isset($cuenta->delivery)) {
+        // Eliminar delivery anterior
+        $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idCuenta = ?";
+        eliminar($sentenciaEliminarDelivery, $id);
+
+        // Registrar nuevo delivery
+        registrarDelivery($cuenta, 'idCuenta', $id);
+    }
+
+    return $resultado;
 }
 
-function registrarProductosVendidos($productos, $idReferencia, $tipo) {
-	$sentencia = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
-	$resultados = [];
+function eliminarCuentaApartado($id)
+{
+    // Eliminar productos vendidos relacionados
+    $sentenciaEliminarProductos = "DELETE FROM productos_vendidos WHERE idReferencia = ? AND tipo = 'cuenta'";
+    eliminar($sentenciaEliminarProductos, $id);
 
-	foreach ($productos as $producto) {
-		$parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->precio, $producto->id, $idReferencia, $tipo];
-		$productoRegistrado = insertar($sentencia, $parametros);
-		if($productoRegistrado) array_push($resultados, 1);
-	}
+    // Eliminar abonos relacionados
+    $sentenciaEliminarAbonos = "DELETE FROM abonos WHERE idCuenta = ?";
+    eliminar($sentenciaEliminarAbonos, $id);
 
-	return $resultados;
+    // Eliminar delivery relacionado
+    $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idCuenta = ?";
+    eliminar($sentenciaEliminarDelivery, $id);
+
+    // Eliminar la cuenta_apartado
+    $sentenciaEliminarCuenta = "DELETE FROM cuentas_apartados WHERE id = ?";
+    return eliminar($sentenciaEliminarCuenta, $id);
 }
 
-function registrarProductosCotizados($productos, $idCotizacion) {
-	$sentencia = "INSERT INTO productos_cotizados (cantidad, precio, idProducto, idCotizacion) VALUES(?,?,?,?)";
-	$resultados = [];
 
-	foreach ($productos as $producto) {
-		$parametros = [$producto->cantidad, $producto->precio, $producto->id, $idCotizacion];
-		$productoRegistrado = insertar($sentencia, $parametros);
-		if($productoRegistrado) array_push($resultados, 1);
-	}
 
-	return $resultados;
+
+function agregarCotizacion($venta)
+{
+    $sentencia = "INSERT INTO cotizaciones(fecha, total, hasta, idCliente, idUsuario) VALUES (?,?,?,?,?)";
+    $parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->hasta, $venta->cliente, $venta->usuario];
+
+    insertar($sentencia, clean($parametros));
+    $idCotizacion = obtenerUltimoId('cotizaciones');
+
+    $productosRegistrados = registrarProductosCotizados($venta->productos, $idCotizacion);
+
+    if (count($productosRegistrados) > 0)
+        return $idCotizacion;
 }
 
-function montoPorPagarCuentaApartado($id) {
+function registrarProductosVendidos($productos, $idReferencia, $tipo)
+{
+    $sentencia = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
+    $resultados = [];
+
+    foreach ($productos as $producto) {
+        $parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->precio, $producto->id, $idReferencia, $tipo];
+        $productoRegistrado = insertar($sentencia, $parametros);
+        if ($productoRegistrado)
+            array_push($resultados, 1);
+    }
+
+    return $resultados;
+}
+
+function registrarProductosCotizados($productos, $idCotizacion)
+{
+    $sentencia = "INSERT INTO productos_cotizados (cantidad, precio, idProducto, idCotizacion) VALUES(?,?,?,?)";
+    $resultados = [];
+
+    foreach ($productos as $producto) {
+        $parametros = [$producto->cantidad, $producto->precio, $producto->id, $idCotizacion];
+        $productoRegistrado = insertar($sentencia, $parametros);
+        if ($productoRegistrado)
+            array_push($resultados, 1);
+    }
+
+    return $resultados;
+}
+
+function obtenerCuentaUsandoAbono($id)
+{
+    $sentencia = "SELECT cuentas_apartados.id
+        FROM abonos
+        LEFT JOIN cuentas_apartados ON cuentas_apartados.id = abonos.idCuenta
+        WHERE abonos.id = ?";
+    return selectRegresandoObjeto($sentencia, [$id]);
+}
+
+function montoPorPagarCuentaApartado($id)
+{
     $sentencia = "SELECT (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar
         FROM cuentas_apartados
         LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
@@ -454,7 +706,14 @@ function montoPorPagarCuentaApartado($id) {
     return selectRegresandoObjeto($sentencia, [$id])->porPagar;
 }
 
-function obtenerCuentaApartado($id) {
+function editarAbono($id)
+{
+    $sentencia = "SELECT * FROM abonos WHERE id = ?";
+    return selectRegresandoObjeto($sentencia, [$id]);
+}
+
+function obtenerCuentaApartado($id)
+{
     return selectRegresandoObjeto("SELECT cuentas_apartados.*,
         clientes.nombre AS nombreCliente,
         IFNULL(SUM(abonos.monto), 0) AS pagado,
@@ -467,25 +726,43 @@ function obtenerCuentaApartado($id) {
 
 /* Abonos */
 
-function obtenerAbonosPorCuentaApartado($id) {
-	$abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
+function obtenerAbonosPorCuentaApartado($id)
+{
+    $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
         LEFT JOIN metodos ON abonos.idMetodo = metodos.id
         WHERE abonos.idCuenta = ?", [$id]);
 
     $cuentaApartado = obtenerCuentaApartado($id);
 
-    if ($abonos === false || $cuentaApartado === false) return false;
+    if ($abonos === false || $cuentaApartado === false)
+        return false;
 
     return ['abonos' => $abonos, 'cuentaApartado' => $cuentaApartado];
 }
 
-function registrarAbono($abono) {
+function registrarAbono($abono)
+{
     $sentencia = "INSERT INTO abonos (fecha, monto, origen, `simple`, idMetodo, idCuenta) VALUES (?,?,?,?,?,?)";
 
     $parametros = [date('Y-m-d H:i:s'), $abono->monto, $abono->origen, $abono->simple, $abono->idMetodo, $abono->idCuenta];
 
     insertar($sentencia, clean($parametros));
     return obtenerUltimoId('abonos');
+}
+
+function actualizarAbono($abono)
+{
+    $sentencia = "UPDATE abonos SET monto = ?, origen = ?, `simple` = ?, idMetodo = ?, idCuenta = ? WHERE id = ?";
+    $parametros = [
+        $abono->monto,
+        $abono->origen,
+        $abono->simple,
+        is_numeric($abono->idMetodo) ? $abono->idMetodo : null,
+        $abono->idCuenta,
+        $abono->id
+    ];
+
+    return editar($sentencia, clean($parametros));
 }
 
 /*                                                                                                  
@@ -500,64 +777,73 @@ function registrarAbono($abono) {
 */
 
 // TODO -> los calculos de estadísticas de ventas (SUM(total) FROM ventas) deberían hacerse directo a la tabla "productos_vendidos" filtrando por tipo = venta, ya que el total de ventas puede incluir el delivery pagado por el cliente, que no sería una ganancia técnicamente
-function obtenerTotalVentasPorMesUsuario($idUsuario, $anio) {
-	$sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
+function obtenerTotalVentasPorMesUsuario($idUsuario, $anio)
+{
+    $sentencia = "SELECT MONTH(fecha) AS mes, IFNULL(SUM(total), 0) AS totalVentas FROM ventas 
         WHERE YEAR(fecha) = ? AND idUsuario = ?
         GROUP BY MONTH(fecha) ORDER BY mes ASC";
     $parametros = [$anio, $idUsuario];
     return selectPrepare($sentencia, $parametros);
 }
 
-function calcularTotalIngresosUsuario($idUsuario) {
-	$sentencia = "SELECT
+function calcularTotalIngresosUsuario($idUsuario)
+{
+    $sentencia = "SELECT
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE idUsuario = ?) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos) AS totalIngresos";
-	$parametros = [$idUsuario];
-	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
+    $parametros = [$idUsuario];
+    return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosHoyUsuario($idUsuario) {
-	$sentencia = "SELECT 
+function calcularTotalIngresosHoyUsuario($idUsuario)
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE DATE(fecha) = CURDATE() AND idUsuario = ?) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE DATE(fecha) = CURDATE()) AS totalIngresos";
-	$parametros = [$idUsuario];
-	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
+    $parametros = [$idUsuario];
+    return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosSemanaUsuario($idUsuario) {
-	$sentencia = "SELECT 
+function calcularTotalIngresosSemanaUsuario($idUsuario)
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE WEEK(fecha) = WEEK(NOW()) AND idUsuario = ?) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE WEEK(fecha) = WEEK(NOW())) AS totalIngresos";
-	$parametros = [$idUsuario];
-	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
+    $parametros = [$idUsuario];
+    return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function calcularTotalIngresosMesUsuario($idUsuario) {
-	$sentencia = "SELECT 
+function calcularTotalIngresosMesUsuario($idUsuario)
+{
+    $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) + 
 	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
-	$parametros = [$idUsuario];
-	return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
+    $parametros = [$idUsuario];
+    return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
 
-function obtenerVentasPorUsuario() {
-	$sentencia = "SELECT usuarios.usuario, IFNULL(SUM(ventas.total), 0) AS totalVentas
+function obtenerVentasPorUsuario()
+{
+    $sentencia = "SELECT usuarios.usuario, IFNULL(SUM(ventas.total), 0) AS totalVentas
     FROM ventas
 	INNER JOIN usuarios ON usuarios.id = ventas.idUsuario
 	GROUP BY usuarios.id";
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function iniciarSesion($usuario) {
-	$sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
-	$parametros = [$usuario->usuario];
-	$resultado = selectRegresandoObjeto($sentencia, $parametros);
+function iniciarSesion($usuario)
+{
+    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
+    $parametros = [$usuario->usuario];
+    $resultado = selectRegresandoObjeto($sentencia, $parametros);
 
-    if (!$resultado) return false;
+    if (!$resultado)
+        return false;
 
     $loginCorrecto = verificarPassword($resultado->id, $usuario->password);
 
-    if(!$loginCorrecto) return false;
+    if (!$loginCorrecto)
+        return false;
 
     // Destruimos la sesión anterior
     cerrarSesion();
@@ -570,18 +856,20 @@ function iniciarSesion($usuario) {
         "id" => $resultado->id,
         "usuario" => $resultado->usuario,
         "nombre" => $resultado->nombre
-    ];	
+    ];
 
     return ["estado" => $loginCorrecto, "usuario" => $datos];
 }
 
-function cerrarSesion() {
+function cerrarSesion()
+{
     session_unset();
     session_destroy();
     return true;
 }
 
-function obtenerEstadoAutenticacion() {
+function obtenerEstadoAutenticacion()
+{
     $id = $_SESSION['userid'];
 
     if (!$id) {
@@ -596,14 +884,16 @@ function obtenerEstadoAutenticacion() {
     ];
 }
 
-function verificarPassword($idUsuario, $password) {
-	$sentencia = "SELECT password FROM usuarios WHERE id = ?";
-	$parametros = [$idUsuario];
-	$resultado = selectRegresandoObjeto($sentencia, $parametros);
-	return password_verify($password, $resultado->password);
+function verificarPassword($idUsuario, $password)
+{
+    $sentencia = "SELECT password FROM usuarios WHERE id = ?";
+    $parametros = [$idUsuario];
+    $resultado = selectRegresandoObjeto($sentencia, $parametros);
+    return password_verify($password, $resultado->password);
 }
 
-function cambiarPassword($idUsuario, $datos) {
+function cambiarPassword($idUsuario, $datos)
+{
     $actualCoincide = verificarPassword($idUsuario, $datos->oldPassword);
 
     if (!$actualCoincide) {
@@ -614,14 +904,15 @@ function cambiarPassword($idUsuario, $datos) {
         return ['registrado' => false, 'mensaje' => 'La contraseña y su confirmación no coinciden.'];
     }
 
-	$sentencia = "UPDATE usuarios SET password = ? WHERE id = ?";
+    $sentencia = "UPDATE usuarios SET password = ? WHERE id = ?";
     $hasheado = password_hash($datos->password, PASSWORD_BCRYPT);
-	$parametros = [$hasheado, $idUsuario];
-	$resultado = editar($sentencia, $parametros);
+    $parametros = [$hasheado, $idUsuario];
+    $resultado = editar($sentencia, $parametros);
     return ['registrado' => $resultado, 'mensaje' => 'La contraseña se actualizó exitosamente.'];
 }
 
-function registrarUsuario($usuario) {
+function registrarUsuario($usuario)
+{
     $existente = (int) selectRegresandoObjeto("SELECT COUNT(*) AS existente
         FROM usuarios
         WHERE usuario = ?", [$usuario->usuario])->existente;
@@ -640,10 +931,10 @@ function registrarUsuario($usuario) {
         ];
     }
 
-	$sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password, idRol) VALUES (?,?,?,?,?)";
+    $sentencia = "INSERT INTO usuarios (usuario, nombre, telefono, password, idRol) VALUES (?,?,?,?,?)";
     $hasheado = password_hash($usuario->password, PASSWORD_BCRYPT);
-	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $hasheado, $usuario->idRol];
-	$resultado = insertar($sentencia, $parametros);
+    $parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $hasheado, $usuario->idRol];
+    $resultado = insertar($sentencia, $parametros);
 
     return [
         'registrado' => $resultado,
@@ -651,34 +942,44 @@ function registrarUsuario($usuario) {
     ];
 }
 
-function obtenerUsuarioPorId($id) {
-	$sentencia = "SELECT u.id, u.usuario, u.nombre, u.telefono, u.idRol,
+function obtenerUsuarioPorId($id)
+{
+    $sentencia = "SELECT u.id, u.usuario, u.nombre, u.telefono, u.idRol,
         r.nombre AS rol, r.permisos
         FROM usuarios AS u
         LEFT JOIN roles AS r ON r.id = u.idRol
         WHERE u.id = ?";
-	return selectRegresandoObjeto($sentencia, [$id]);
+    return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function editarUsuario($usuario) {
-	$sentencia = "UPDATE usuarios SET usuario = ?, nombre = ?, telefono = ?, idRol = ? WHERE id = ?";
+function editarUsuario($usuario)
+{
+    $sentencia = "UPDATE usuarios SET usuario = ?, nombre = ?, telefono = ?, idRol = ? WHERE id = ?";
 
     if ($usuario->id == 1) {
         $usuario->idRol = 1;
     }
 
-	$parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->idRol, $usuario->id];
-	return editar($sentencia, $parametros);
+    $parametros = [$usuario->usuario, $usuario->nombre, $usuario->telefono, $usuario->idRol, $usuario->id];
+    return editar($sentencia, $parametros);
 }
 
-function eliminarUsuario($id) {
-	$sentencia = "DELETE FROM usuarios WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarUsuario($id)
+{
+    $sentencia = "DELETE FROM usuarios WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
-function obtenerUsuarios() {
-	$sentencia = "SELECT id, usuario, nombre, telefono, idRol FROM usuarios";
-	return selectQuery($sentencia);
+function eliminarAbono($id)
+{
+    $sentencia = "DELETE FROM abonos WHERE id = ?";
+    return eliminar($sentencia, $id);
+}
+
+function obtenerUsuarios()
+{
+    $sentencia = "SELECT id, usuario, nombre, telefono, idRol FROM usuarios";
+    return selectQuery($sentencia);
 }
 
 /*
@@ -693,106 +994,120 @@ function obtenerUsuarios() {
 
 */
 
-function obtenerVentasPorCliente() {
-	$sentencia = "SELECT clientes.nombre, IFNULL(SUM(ventas.total), 0) AS totalVentas  FROM ventas
+function obtenerVentasPorCliente()
+{
+    $sentencia = "SELECT clientes.nombre, IFNULL(SUM(ventas.total), 0) AS totalVentas  FROM ventas
 	INNER JOIN clientes ON clientes.id = ventas.idCliente
 	GROUP BY clientes.id";
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function obtenerClientesPorNombre($nombre) {
-	$sentencia = "SELECT * FROM clientes WHERE nombre LIKE ?";
-	$parametros = ["%".$nombre."%"];
-	return selectPrepare($sentencia, $parametros);
+function obtenerClientesPorNombre($nombre)
+{
+    $sentencia = "SELECT * FROM clientes WHERE nombre LIKE ?";
+    $parametros = ["%" . $nombre . "%"];
+    return selectPrepare($sentencia, $parametros);
 }
 
-function obtenerClientes() {
-	$sentencia = "SELECT * FROM clientes";
-	return selectQuery($sentencia);
+function obtenerClientes()
+{
+    $sentencia = "SELECT * FROM clientes";
+    return selectQuery($sentencia);
 }
 
-function registrarCliente($cliente) {
-	$sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci, direccion) VALUES (?,?,?,?,?)";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion];
-	return insertar($sentencia, clean($parametros));
+function registrarCliente($cliente)
+{
+    $sentencia = "INSERT INTO clientes (nombre, telefono, tipo, ci, direccion) VALUES (?,?,?,?,?)";
+    $parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion];
+    return insertar($sentencia, clean($parametros));
 }
 
-function obtenerClientePorId($id) {
-	$sentencia = "SELECT * FROM clientes WHERE id = ?";
-	return selectRegresandoObjeto($sentencia, [$id]);
+function obtenerClientePorId($id)
+{
+    $sentencia = "SELECT * FROM clientes WHERE id = ?";
+    return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function editarCliente($cliente) {
-	$sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ?, direccion = ? WHERE id = ?";
-	$parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion, $cliente->id];
-	return editar($sentencia, $parametros);
+function editarCliente($cliente)
+{
+    $sentencia = "UPDATE clientes SET nombre = ?, telefono = ?, tipo = ?, ci = ?, direccion = ? WHERE id = ?";
+    $parametros = [$cliente->nombre, $cliente->telefono, $cliente->tipo, $cliente->ci, $cliente->direccion, $cliente->id];
+    return editar($sentencia, $parametros);
 }
 
-function eliminarCliente($id) {
-	$sentencia = "DELETE FROM clientes WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarCliente($id)
+{
+    $sentencia = "DELETE FROM clientes WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
 
 /* Choferes */
-function obtenerChoferes() {
+function obtenerChoferes()
+{
     $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
-	$sentencia = "SELECT choferes.*,
+    $sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         GROUP BY choferes.id;";
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function obtenerChoferesPorNombre($nombre) {
+function obtenerChoferesPorNombre($nombre)
+{
     $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
-	$sentencia = "SELECT choferes.*,
+    $sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
-	$parametros = ["%".$nombre."%"];
-	return selectPrepare($sentencia, $parametros);
+    $parametros = ["%" . $nombre . "%"];
+    return selectPrepare($sentencia, $parametros);
 }
 
-function obtenerChoferPorId($id) {
+function obtenerChoferPorId($id)
+{
     $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
-	$sentencia = "SELECT choferes.*,
+    $sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
         LEFT JOIN deliveries ON deliveries.idChofer = choferes.id
         LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.id = ?
         GROUP BY choferes.id;";
-	return selectRegresandoObjeto($sentencia, [$id]);
+    return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function editarChofer($chofer) {
-	$sentencia = "UPDATE choferes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
-	$parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci, $chofer->id];
-	return editar($sentencia, $parametros);
+function editarChofer($chofer)
+{
+    $sentencia = "UPDATE choferes SET nombre = ?, telefono = ?, tipo = ?, ci = ? WHERE id = ?";
+    $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci, $chofer->id];
+    return editar($sentencia, $parametros);
 }
 
-function registrarPagoChofer($pago) {
+function registrarPagoChofer($pago)
+{
     $sentencia = "INSERT INTO pagos_choferes (monto, idChofer) VALUES (?,?)";
     $parametros = [$pago->monto, $pago->idChofer];
     return insertar($sentencia, $parametros);
 }
 
-function obtenerDeliveries() {
-	$sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer
+function obtenerDeliveries()
+{
+    $sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer
         FROM deliveries
         LEFT JOIN choferes ON deliveries.idChofer = choferes.id;";
 
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
 /* PROVEEDORES */
 
-function obtenerProveedores() {
+function obtenerProveedores()
+{
     $sentencia = "SELECT proveedores.*,
         IFNULL(SUM(entradas.monto), 0) AS total
         FROM proveedores
@@ -819,11 +1134,12 @@ function obtenerProveedores() {
         }
     }
 
-	return $proveedores;
+    return $proveedores;
 }
 
-function obtenerProveedorPorId($id) {
-	$sentencia = "SELECT proveedores.*,
+function obtenerProveedorPorId($id)
+{
+    $sentencia = "SELECT proveedores.*,
         IFNULL(SUM(entradas.monto), 0) AS total
         FROM proveedores
         LEFT JOIN productos ON productos.proveedor = proveedores.id
@@ -835,7 +1151,7 @@ function obtenerProveedorPorId($id) {
         LEFT JOIN pagos_proveedores ON pagos_proveedores.idProveedor = proveedores.id
         WHERE proveedores.id = ?;";
 
-	$proveedor = selectRegresandoObjeto($sentencia, [$id]);
+    $proveedor = selectRegresandoObjeto($sentencia, [$id]);
     $pagado = selectRegresandoObjeto($sentencia2, [$id])->pagado;
     $proveedor->pagado = $pagado;
     $proveedor->deuda = $proveedor->total - $pagado;
@@ -843,19 +1159,22 @@ function obtenerProveedorPorId($id) {
     return $proveedor;
 }
 
-function registrarProveedor($datos) {
-	$sentencia = "INSERT INTO proveedores (nombre, telefono, rif, direccion) VALUES (?,?,?,?);";
+function registrarProveedor($datos)
+{
+    $sentencia = "INSERT INTO proveedores (nombre, telefono, rif, direccion) VALUES (?,?,?,?);";
     $parametros = [$datos->nombre, $datos->telefono, $datos->rif, $datos->direccion];
-	return insertar($sentencia, $parametros);
+    return insertar($sentencia, $parametros);
 }
 
-function editarProveedor($datos) {
-	$sentencia = "UPDATE proveedores SET nombre = ?, telefono = ?, rif = ?, direccion = ? WHERE id = ?";
-	$parametros = [$datos->nombre, $datos->telefono, $datos->rif, $datos->direccion, $datos->id];
-	return editar($sentencia, $parametros);
+function editarProveedor($datos)
+{
+    $sentencia = "UPDATE proveedores SET nombre = ?, telefono = ?, rif = ?, direccion = ? WHERE id = ?";
+    $parametros = [$datos->nombre, $datos->telefono, $datos->rif, $datos->direccion, $datos->id];
+    return editar($sentencia, $parametros);
 }
 
-function obtenerPagosProveedor($id) {
+function obtenerPagosProveedor($id)
+{
     $sentencia = "SELECT pp.*, u.nombre AS nombreUsuario
         FROM pagos_proveedores AS pp
         LEFT JOIN usuarios as u ON u.id = pp.idUsuario
@@ -870,7 +1189,8 @@ function obtenerPagosProveedor($id) {
     ];
 }
 
-function pagarProveedor($pago) {
+function pagarProveedor($pago)
+{
     $sentencia = "INSERT INTO pagos_proveedores (fecha, monto, idProveedor, idUsuario) VALUES (?,?,?,?)";
     $parametros = [date('Y-m-d H:i:s'), $pago->monto, $pago->idProveedor, $pago->idUsuario];
     return insertar($sentencia, $parametros);
@@ -878,36 +1198,39 @@ function pagarProveedor($pago) {
 
 /* ROLEs */
 
-function obtenerRoles() {
+function obtenerRoles()
+{
     $sentencia = "SELECT roles.*, COUNT(usuarios.id) AS numUsuarios
         FROM roles
         LEFT JOIN usuarios ON usuarios.idRol = roles.id
         GROUP BY roles.id;";
 
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function obtenerRolPorId($id) {
+function obtenerRolPorId($id)
+{
     $sentencia = "SELECT roles.*, COUNT(usuarios.id) AS numUsuarios
         FROM roles
         LEFT JOIN usuarios ON usuarios.idRol = roles.id
         WHERE roles.id = ?
         GROUP BY roles.id;";
 
-	return selectRegresandoObjeto($sentencia, [$id]);
+    return selectRegresandoObjeto($sentencia, [$id]);
 }
 
-function registrarRol($datos) {
-	$sentencia = "INSERT INTO roles (nombre, permisos) VALUES (?,?);";
+function registrarRol($datos)
+{
+    $sentencia = "INSERT INTO roles (nombre, permisos) VALUES (?,?);";
     $parametros = [$datos->nombre, $datos->permisos];
-	return insertar($sentencia, $parametros);
+    return insertar($sentencia, $parametros);
 }
 
-function editarRol($datos) {
-    dd($datos);
-	$sentencia = "UPDATE roles SET nombre = ?, permisos = ? WHERE id = ?";
-	$parametros = [$datos->nombre, $datos->permisos, $datos->id];
-	return editar($sentencia, $parametros);
+function editarRol($datos)
+{
+    $sentencia = "UPDATE roles SET nombre = ?, permisos = ? WHERE id = ?";
+    $parametros = [$datos->nombre, $datos->permisos, $datos->id];
+    return editar($sentencia, $parametros);
 }
 
 /*
@@ -921,18 +1244,20 @@ function editarRol($datos) {
 |___|    |___|  |_||_______||______| |_______||_______|  |___|  |_______||_______|
 
 */
-function obtenerProductosMasVendidos($limite) {
-	$sentencia = "SELECT IFNULL(SUM(productos_vendidos.cantidad * productos_vendidos.precio), 0) AS total, IFNULL(SUM(productos_vendidos.cantidad), 0) AS unidades,
+function obtenerProductosMasVendidos($limite)
+{
+    $sentencia = "SELECT IFNULL(SUM(productos_vendidos.cantidad * productos_vendidos.precio), 0) AS total, IFNULL(SUM(productos_vendidos.cantidad), 0) AS unidades,
 	productos.nombre
     FROM productos_vendidos INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	WHERE productos_vendidos.tipo = 'venta'
 	GROUP BY productos_vendidos.idProducto
 	ORDER BY total DESC
 	LIMIT ?";
-	return selectPrepare($sentencia, [$limite]);
+    return selectPrepare($sentencia, [$limite]);
 }
 
-function obtenerExistencia($id = null) {
+function obtenerExistencia($id = null)
+{
     $salidas = "SELECT COALESCE(SUM(productos_vendidos.cantidad), 0) FROM productos_vendidos WHERE productos_vendidos.idProducto = productos.id";
 
     $removidos = "SELECT COALESCE(SUM(productos_removidos.cantidad), 0) FROM productos_removidos WHERE productos_removidos.idProducto = productos.id";
@@ -949,19 +1274,22 @@ function obtenerExistencia($id = null) {
     return selectRegresandoObjeto("$sentencia WHERE productos.id = ?;", [$id]);
 }
 
-function agregarExistenciaProducto($entrada) {
-	$sentencia = "INSERT INTO entradas (fecha, monto, cantidad, idProducto, idUsuario) VALUES (?,?,?,?,?)";
-	$parametros = [date('Y-m-d H:i:s'), $entrada->monto, $entrada->cantidad, $entrada->id, $entrada->usuario];
-	return insertar($sentencia, $parametros);
+function agregarExistenciaProducto($entrada)
+{
+    $sentencia = "INSERT INTO entradas (fecha, monto, cantidad, idProducto, idUsuario) VALUES (?,?,?,?,?)";
+    $parametros = [date('Y-m-d H:i:s'), $entrada->monto, $entrada->cantidad, $entrada->id, $entrada->usuario];
+    return insertar($sentencia, $parametros);
 }
 
-function removerExistenciaProducto($producto) {
-	$sentencia = "INSERT INTO productos_removidos (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
-	$parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->id, $producto->usuario];
-	return insertar($sentencia, $parametros);
+function removerExistenciaProducto($producto)
+{
+    $sentencia = "INSERT INTO productos_removidos (fecha, cantidad, idProducto, idUsuario) VALUES (?,?,?,?)";
+    $parametros = [date('Y-m-d H:i:s'), $producto->cantidad, $producto->id, $producto->usuario];
+    return insertar($sentencia, $parametros);
 }
 
-function obtenerHistorialInventario($proveedor) {
+function obtenerHistorialInventario($proveedor)
+{
     $antiguo = "SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto";
 
     $sentencia1 = "SELECT e.fecha, e.cantidad,
@@ -1005,20 +1333,21 @@ function obtenerHistorialInventario($proveedor) {
     return $movimientos;
 }
 
-function calcularGananciaInventario() {
+function calcularGananciaInventario()
+{
     $productos = obtenerExistencia();
 
     $total = 0;
     foreach ($productos as $producto) {
-        $positivo = (float) $producto->existencia * (float) $producto->precioVenta;
-        $negativo = (float) $producto->existencia * (float) $producto->precioCompra;
-        $total += (float) $positivo - $negativo;
+        $ganancia = ($producto->precioVenta - $producto->precioCompra) * $producto->existencia;
+        $total += round($ganancia, 2);
     }
 
-    return $total;
+    return round($total, 2);
 }
 
-function calcularTotalInventario() {
+function calcularTotalInventario()
+{
     $productos = obtenerExistencia();
 
     $total = 0;
@@ -1030,24 +1359,27 @@ function calcularTotalInventario() {
     return $total;
 }
 
-function calcularNumeroTotalProductos() {
-	$productos = obtenerExistencia();
+function calcularNumeroTotalProductos()
+{
+    $productos = obtenerExistencia();
     $total = 0;
 
     foreach ($productos as $producto) {
         $total += $producto->existencia;
     }
 
-	return $total;
+    return $total;
 }
 
-function buscarProductoPorNombreOCodigo($producto) {
-	$sentencia = "SELECT * FROM productos WHERE (codigo = ? OR nombre LIKE ? OR codigo LIKE ?) LIMIT 10";
-	$parametros = [$producto, '%'.$producto.'%', '%'.$producto.'%'];
-	return selectPrepare($sentencia, $parametros);
+function buscarProductoPorNombreOCodigo($producto)
+{
+    $sentencia = "SELECT * FROM productos WHERE (codigo = ? OR nombre LIKE ? OR codigo LIKE ?) LIMIT 10";
+    $parametros = [$producto, '%' . $producto . '%', '%' . $producto . '%'];
+    return selectPrepare($sentencia, $parametros);
 }
 
-function registrarProducto($producto) {
+function registrarProducto($producto)
+{
     $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->proveedor];
@@ -1056,7 +1388,7 @@ function registrarProducto($producto) {
 
     if (floatval($producto->existencia) !== 0) {
         $idProducto = obtenerUltimoId('productos');
-        
+
         $entrada = new stdClass;
         $entrada->cantidad = $producto->existencia;
         $entrada->monto = $producto->monto;
@@ -1069,14 +1401,15 @@ function registrarProducto($producto) {
     return $resultado;
 }
 
-function obtenerProductos() {
-	$sentencia = "SELECT productos.*, IFNULL(categorias.nombreCategoria, 'NO ENCONTRADA') AS nombreCategoria, IFNULL(marcas.nombreMarca, 'NO ENCONTRADA') AS nombreMarca, IFNULL(proveedores.nombre, 'NO ENCONTRADO') AS nombreProveedor
+function obtenerProductos()
+{
+    $sentencia = "SELECT productos.*, IFNULL(categorias.nombreCategoria, 'NO ENCONTRADA') AS nombreCategoria, IFNULL(marcas.nombreMarca, 'NO ENCONTRADA') AS nombreMarca, IFNULL(proveedores.nombre, 'NO ENCONTRADO') AS nombreProveedor
 	FROM productos
 	LEFT JOIN categorias ON categorias.id = productos.categoria
 	LEFT JOIN marcas ON marcas.id = productos.marca
 	LEFT JOIN proveedores ON proveedores.id = productos.proveedor";
 
-	$productos = selectQuery($sentencia);
+    $productos = selectQuery($sentencia);
     $existencias = obtenerExistencia();
 
     foreach ($productos as $index => $producto) {
@@ -1086,25 +1419,28 @@ function obtenerProductos() {
     return $productos;
 }
 
-function obtenerProductoPorId($id) {
-	$sentencia = "SELECT * FROM productos WHERE id = ?";
-	$producto = selectRegresandoObjeto($sentencia, [$id]);
+function obtenerProductoPorId($id)
+{
+    $sentencia = "SELECT * FROM productos WHERE id = ?";
+    $producto = selectRegresandoObjeto($sentencia, [$id]);
     $producto->existencia = obtenerExistencia($producto->id)->existencia;
 
     return $producto;
 }
 
-function editarProducto($producto) {
-	$sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
+function editarProducto($producto)
+{
+    $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
 
     $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->proveedor, $producto->id];
 
-	return editar($sentencia, clean($parametros));
+    return editar($sentencia, clean($parametros));
 }
 
-function eliminarProducto($id) {
-	$sentencia = "DELETE FROM productos WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarProducto($id)
+{
+    $sentencia = "DELETE FROM productos WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
 /*
@@ -1120,86 +1456,212 @@ function eliminarProducto($id) {
 */
 //FUNCIONES DE LAS MARCAS
 
-function obtenerTotalesMarca() {
-	$sentencia = "SELECT marcas.nombreMarca, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
+function obtenerTotalesMarca()
+{
+    $sentencia = "SELECT marcas.nombreMarca, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
 	FROM productos_vendidos
 	INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	INNER JOIN marcas ON marcas.id = productos.marca
 	WHERE productos_vendidos.tipo = 'venta'
 	GROUP BY marcas.id";
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function obtenerTotalesCategoria() {
-	$sentencia = "SELECT categorias.nombreCategoria, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
+function obtenerTotalesCategoria()
+{
+    $sentencia = "SELECT categorias.nombreCategoria, IFNULL(SUM(productos_vendidos.precio * productos_vendidos.cantidad), 0) AS totalVentas
 	FROM productos_vendidos
 	INNER JOIN productos ON productos.id = productos_vendidos.idProducto
 	INNER JOIN categorias ON categorias.id = productos.categoria
 	WHERE productos_vendidos.tipo = 'venta'
 	GROUP BY categorias.id";
-	return selectQuery($sentencia);
+    return selectQuery($sentencia);
 }
 
-function registrarMarca($marca) {
-	$existe = verificarSiMarcaEstaRegistrada($marca->nombreMarca);
-	if($existe === 'true') return 'existe';
+function registrarMarca($marca)
+{
+    $existe = verificarSiMarcaEstaRegistrada($marca->nombreMarca);
+    if ($existe === 'true')
+        return 'existe';
 
-	$sentencia = "INSERT INTO marcas (nombreMarca) VALUES(?)";
-	$parametros = [strtoupper($marca->nombreMarca)];
-	return insertar($sentencia, $parametros);
+    $sentencia = "INSERT INTO marcas (nombreMarca) VALUES(?)";
+    $parametros = [strtoupper($marca->nombreMarca)];
+    return insertar($sentencia, $parametros);
 }
 
-function obtenerMarcas() {
-	$sentencia = "SELECT * FROM marcas";
-	return selectQuery($sentencia);
+function obtenerMarcas()
+{
+    $sentencia = "SELECT * FROM marcas";
+    return selectQuery($sentencia);
 }
 
-function editarMarca($marca) {
-	$sentencia = "UPDATE marcas SET nombreMarca = ? WHERE id = ?";
-	$parametros = [strtoupper($marca->nombreMarca), $marca->id];
-	return editar($sentencia, $parametros);
+function editarMarca($marca)
+{
+    $sentencia = "UPDATE marcas SET nombreMarca = ? WHERE id = ?";
+    $parametros = [strtoupper($marca->nombreMarca), $marca->id];
+    return editar($sentencia, $parametros);
 }
 
-function eliminarMarca($id) {
-	$sentencia = "DELETE FROM marcas WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarMarca($id)
+{
+    $sentencia = "DELETE FROM marcas WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
-function verificarSiMarcaEstaRegistrada($nombreMarca) {
-	$sentencia = "SELECT IF(  EXISTS(SELECT nombreMarca FROM marcas  WHERE nombreMarca = ? ),'true','false' ) AS resultado";
-	return selectRegresandoObjeto($sentencia, [strtoupper($nombreMarca)])->resultado;
+function verificarSiMarcaEstaRegistrada($nombreMarca)
+{
+    $sentencia = "SELECT IF(  EXISTS(SELECT nombreMarca FROM marcas  WHERE nombreMarca = ? ),'true','false' ) AS resultado";
+    return selectRegresandoObjeto($sentencia, [strtoupper($nombreMarca)])->resultado;
 }
 
 //FUNCIONES DE LAS CATEGORÍAS
 
-function registrarCategoria($categoria) {
-	$existe = verificarSiCategoriaEstaRegistrada($categoria->nombreCategoria);
-	if($existe === 'true') return 'existe';
+function registrarCategoria($categoria)
+{
+    $existe = verificarSiCategoriaEstaRegistrada($categoria->nombreCategoria);
+    if ($existe === 'true')
+        return 'existe';
 
-	$sentencia = "INSERT INTO categorias (nombreCategoria) VALUES(?)";
-	$parametros = [strtoupper($categoria->nombreCategoria)];
-	return insertar($sentencia, $parametros);
+    $sentencia = "INSERT INTO categorias (nombreCategoria) VALUES(?)";
+    $parametros = [strtoupper($categoria->nombreCategoria)];
+    return insertar($sentencia, $parametros);
 }
 
-function obtenerCategorias() {
-	$sentencia = "SELECT * FROM categorias";
-	return selectQuery($sentencia);
+function obtenerCategorias()
+{
+    $sentencia = "SELECT * FROM categorias";
+    return selectQuery($sentencia);
 }
 
-function editarCategoria($categoria) {
-	$sentencia = "UPDATE categorias SET nombreCategoria = ? WHERE id = ?";
-	$parametros = [strtoupper($categoria->nombreCategoria), $categoria->id];
-	return editar($sentencia, $parametros);
+function editarCategoria($categoria)
+{
+    $sentencia = "UPDATE categorias SET nombreCategoria = ? WHERE id = ?";
+    $parametros = [strtoupper($categoria->nombreCategoria), $categoria->id];
+    return editar($sentencia, $parametros);
 }
 
-function eliminarCategoria($id) {
-	$sentencia = "DELETE FROM categorias WHERE id = ?";
-	return eliminar($sentencia, $id);
+function eliminarCategoria($id)
+{
+    $sentencia = "DELETE FROM categorias WHERE id = ?";
+    return eliminar($sentencia, $id);
 }
 
-function verificarSiCategoriaEstaRegistrada($nombreCategoria) {
-	$sentencia = "SELECT IF(  EXISTS(SELECT nombreCategoria FROM categorias  WHERE nombreCategoria = ? ),'true','false' ) AS resultado";
-	return selectRegresandoObjeto($sentencia, [strtoupper($nombreCategoria)])->resultado;
+function verificarSiCategoriaEstaRegistrada($nombreCategoria)
+{
+    $sentencia = "SELECT IF(  EXISTS(SELECT nombreCategoria FROM categorias  WHERE nombreCategoria = ? ),'true','false' ) AS resultado";
+    return selectRegresandoObjeto($sentencia, [strtoupper($nombreCategoria)])->resultado;
+}
+
+function obtenerProductosDeVenta($id, $tipo)
+{
+    $sentencia = "SELECT *, CAST(productos_vendidos.cantidad AS DECIMAL(10,2)) AS cantidad
+            FROM productos_vendidos
+            LEFT JOIN productos ON productos.id = productos_vendidos.idProducto
+            WHERE productos_vendidos.idReferencia = ? AND productos_vendidos.tipo = ?";
+    $parametros = [$id, $tipo];
+    $productos = selectPrepare($sentencia, $parametros);
+
+    foreach ($productos as $producto) {
+        $producto->cantidad = (float) $producto->cantidad;
+    }
+
+    return $productos;
+}
+
+function obtenerVenta($id)
+{
+    $sentencia = "SELECT
+            ventas.id,
+            ventas.fecha,
+            ventas.total,
+            ventas.pagado,
+            ventas.simple,
+            ventas.idMetodo,
+            ventas.origen,
+            deliveries.costo as costoDelivery,
+            deliveries.gratis as deliveryGratis,
+            deliveries.idChofer as deliveryId,
+            metodos.nombre as nombreMetodo,
+            IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+            IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
+            clientes.telefono AS telefonoCliente,
+            clientes.direccion AS direccionCliente,
+            clientes.id AS clienteId
+        FROM ventas
+        LEFT JOIN clientes ON clientes.id = ventas.idCliente
+        LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
+        LEFT JOIN metodos ON metodos.id = ventas.idMetodo
+        LEFT JOIN deliveries ON deliveries.idVenta = ventas.id
+        LEFT JOIN productos_vendidos ON productos_vendidos.idReferencia = ventas.id
+        WHERE ventas.id = ?";
+
+    $venta = selectRegresandoObjeto($sentencia, [$id]);
+
+    if ($venta && $venta->costoDelivery) {
+        $venta->delivery = new stdClass;
+        $venta->delivery->costo = $venta->costoDelivery;
+        $venta->delivery->gratis = $venta->deliveryGratis;
+        unset($venta->costoDelivery);
+        unset($venta->deliveryGratis);
+    }
+
+    if ($venta) {
+        $venta->productos = obtenerProductosDeVenta($id, "venta");
+        $venta->cliente = obtenerClientePorId($venta->clienteId);
+    }
+
+    return $venta;
+}
+
+function obtenerTotalAbonos($id)
+{
+    $sentencia = "SELECT SUM(monto) AS total FROM abonos WHERE idCuenta = ?";
+    $total = (float) selectRegresandoObjeto($sentencia, [$id])->total;
+
+    return $total;
+}
+
+function obtenerApartadoCuenta($id, $tipo)
+{
+    $sentencia = "SELECT
+            cuentas.id,
+            cuentas.fecha,
+            cuentas.total,
+            cuentas.dias,
+            deliveries.costo as costoDelivery,
+            deliveries.gratis as deliveryGratis,
+            deliveries.idChofer as deliveryId,
+            IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+            IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
+            clientes.telefono AS telefonoCliente,
+            clientes.direccion AS direccionCliente,
+            clientes.id AS clienteId
+        FROM cuentas_apartados as cuentas
+        LEFT JOIN clientes ON clientes.id = cuentas.idCliente
+        LEFT JOIN usuarios ON usuarios.id = cuentas.idUsuario
+        LEFT JOIN deliveries ON deliveries.idVenta = cuentas.id
+        LEFT JOIN productos_vendidos ON productos_vendidos.idReferencia = cuentas.id
+        WHERE cuentas.id = ?";
+
+    $venta = selectRegresandoObjeto($sentencia, [$id]);
+
+
+
+    if ($venta && $venta->costoDelivery) {
+        $venta->delivery = new stdClass;
+        $venta->delivery->costo = $venta->costoDelivery;
+        $venta->delivery->gratis = $venta->deliveryGratis;
+        unset($venta->costoDelivery);
+        unset($venta->deliveryGratis);
+    }
+
+    if ($venta) {
+        $venta->productos = obtenerProductosDeVenta($id, $tipo);
+        $venta->cliente = obtenerClientePorId($venta->clienteId);
+        $venta->pagado = obtenerTotalAbonos($id);
+    }
+
+    return $venta;
 }
 
 /*
@@ -1214,76 +1676,86 @@ function verificarSiCategoriaEstaRegistrada($nombreCategoria) {
 
 */
 
-function obtenerUltimoId($tabla) {
-	$bd = conectarBD();
-	$sql = $bd->query("SELECT id FROM ".  $tabla ." ORDER BY id DESC LIMIT 1");
-	return $sql->fetchObject()->id;
+function obtenerUltimoId($tabla)
+{
+    $bd = conectarBD();
+    $sql = $bd->query("SELECT id FROM " . $tabla . " ORDER BY id DESC LIMIT 1");
+    return $sql->fetchObject()->id;
 }
 
-function insertar($sentencia, $parametros) {
-	$bd = conectarBD();
-	$sql = $bd->prepare($sentencia);
-	return $sql->execute($parametros);
+function insertar($sentencia, $parametros)
+{
+    $bd = conectarBD();
+    $sql = $bd->prepare($sentencia);
+    return $sql->execute($parametros);
 }
 
-function editar($sentencia, $parametros) {
-	$bd = conectarBD();
-	$sql = $bd->prepare($sentencia);
-	return $sql->execute($parametros);
+function editar($sentencia, $parametros)
+{
+    $bd = conectarBD();
+    $sql = $bd->prepare($sentencia);
+    return $sql->execute($parametros);
 }
 
-function eliminar($sentencia, $id) {
-	$bd = conectarBD();
-	$sql = $bd->prepare($sentencia);
-	return $sql->execute([$id]);
+function eliminar($sentencia, $id)
+{
+    $bd = conectarBD();
+    $sql = $bd->prepare($sentencia);
+    return $sql->execute([$id]);
 }
 
-function selectRegresandoObjeto($sentencia, $parametros = []) {
-	$bd = conectarBD();
-	$sql = $bd->prepare($sentencia);
-	$sql->execute($parametros);
-	return $sql->fetchObject();
+function selectRegresandoObjeto($sentencia, $parametros = [])
+{
+    $bd = conectarBD();
+    $sql = $bd->prepare($sentencia);
+    $sql->execute($parametros);
+    return $sql->fetchObject();
 }
 
-function selectQuery($sentencia) {
-	$bd = conectarBD();
-	$sql = $bd->query($sentencia);
-	return $sql->fetchAll();
+function selectQuery($sentencia)
+{
+    $bd = conectarBD();
+    $sql = $bd->query($sentencia);
+    return $sql->fetchAll();
 }
 
-function selectPrepare($sentencia, $parametros) {
-	$bd = conectarBD();
-	$sql = $bd->prepare($sentencia);
-	$sql->execute($parametros);
-	return $sql->fetchAll();
+function selectPrepare($sentencia, $parametros)
+{
+    $bd = conectarBD();
+    $sql = $bd->prepare($sentencia);
+    $sql->execute($parametros);
+    return $sql->fetchAll();
 }
 
-function conectarBD() {
- 	$host = $_ENV['DB_HOST'];
-	$db   = $_ENV['DB_NAME'];
-	$user = $_ENV['DB_USER'];
-	$pass = $_ENV['DB_PASSWORD'];
-	$charset = $_ENV['DB_CHARSET'];
+function conectarBD()
+{
+    $host = $_ENV['DB_HOST'];
+    $db = $_ENV['DB_NAME'];
+    $user = $_ENV['DB_USER'];
+    $pass = $_ENV['DB_PASSWORD'];
+    $charset = $_ENV['DB_CHARSET'];
 
-	$options = [
-	    \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-	    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-	    \PDO::ATTR_EMULATE_PREPARES   => false,
-	];
-	$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-	try {
-	     $pdo = new \PDO($dsn, $user, $pass, $options);
-	     return $pdo;
-	} catch (\PDOException $e) {
-	     throw new \PDOException($e->getMessage(), (int)$e->getCode());
-	}
- }
+    $options = [
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
+        \PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    try {
+        $pdo = new \PDO($dsn, $user, $pass, $options);
+        return $pdo;
+    } catch (\PDOException $e) {
+        throw new \PDOException($e->getMessage(), (int) $e->getCode());
+    }
+}
 
-function dd($value) {
+function dd($value)
+{
     error_log(gettype($value) . ' ' . var_export($value, true), 4);
 }
 
-function clean($array) {
+function clean($array)
+{
     $copy = $array;
 
     foreach ($copy as $key => $value) {
