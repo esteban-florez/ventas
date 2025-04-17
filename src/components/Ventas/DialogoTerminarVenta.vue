@@ -6,7 +6,7 @@
         <button type="button" class="delete" @click="$emit('close', 'venta')" />
       </header>
       <section class="modal-card-body">
-        <busqueda-cliente @seleccionado="onSeleccionado" />
+        <busqueda-cliente @seleccionado="onSeleccionado" :initialCliente="cliente.nombre ? cliente : null" />
         <b-field class="mt-3" label="Método de pago">
           <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
             <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
@@ -81,32 +81,71 @@ import { TIPOS_PAGO_SIMPLE, TIPOS_CLIENTE } from '@/consts'
 
 export default {
   name: 'DialogoTerminarVenta',
-  props: ['totalVenta', 'metodos', 'choferes'],
+  props: {
+    totalVenta: {
+      type: [String, Number],
+      default: 0
+    },
+    metodos: {
+      type: Array,
+      default: () => []
+    },
+    choferes: {
+      type: Array,
+      default: () => []
+    },
+    initialPagado: {
+      type: [String, Number],
+      default: ''
+    },
+    initialIdMetodo: {
+      type: [String, Number],
+      default: null
+    },
+    initialOrigen: {
+      type: String,
+      default: ''
+    },
+    initialCliente: {
+      type: Object,
+      default: () => ({})
+    },
+    initialDelivery: {
+      type: Object,
+      default: () => ({
+        costo: null,
+        destino: null,
+        gratis: false,
+        idChofer: null
+      })
+    },
+    initialChofer: {
+      type: Object,
+      default: () => ({
+        nombre: null,
+        ci: null,
+        tipo: null,
+        telefono: null
+      })
+    }
+  },
   components: { BusquedaCliente },
 
-  data: () => ({
-    pagado: '',
-    cambio: 0,
-    idMetodo: null,
-    origen: '',
-    cliente: {},
-    esDelivery: false,
-    nuevoChofer: false,
-    delivery: {
-      costo: null,
-      destino: null,
-      gratis: false,
-      idChofer: null,
-    },
-    chofer: {
-      nombre: null,
-      ci: null,
-      tipo: null,
-      telefono: null,
-    },
-    metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
-    tipos: TIPOS_CLIENTE,
-  }),
+  data() {
+    return {
+      pagado: this.initialPagado,
+      cambio: (this.initialPagado - this.totalVenta) ?? 0,
+      idMetodo: this.initialIdMetodo,
+      origen: this.initialOrigen,
+      cliente: {...this.initialCliente},
+      esDelivery: !this.initialDelivery,
+      nuevoChofer: false,
+      delivery: {...this.initialDelivery},
+      chofer: {...this.initialChofer},
+      metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
+      tipos: TIPOS_CLIENTE
+    }
+  },
 
   methods: {
     onSeleccionado(cliente) {

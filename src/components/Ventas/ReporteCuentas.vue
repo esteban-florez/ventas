@@ -11,7 +11,7 @@
     <div class="mt-2" v-if="cuentas.length > 0">
       <cartas-totales :totales="totalesGenerales" />
       <tabla-cuentas-apartados :datos="cuentas"
-        @imprimir="onGenerarComprobante" :printHref="printHref" />
+        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerCuentas" />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -137,7 +137,9 @@ export default {
           ]
           this.cargando = false
         })
-    }
+    },
+
+   
   }
 }
 </script>

@@ -14,9 +14,9 @@
           ${{ props.row.precio }}
         </span>
         <b-select class="wide" icon="tag-multiple" v-model="props.row.precio" required @input="$emit('precioCambiado')" v-if="!props.row.mayoreoAplicado">
-          <option v-for="precio in precios(props.row)" :key="precio" :value="precio">
-            {{ precio }}
-          </option>
+						<option v-for="precio in precios(props.row)" :key="precio" :value="precio">
+						{{ precio }}
+						</option>
         </b-select>
 			</b-table-column>
 

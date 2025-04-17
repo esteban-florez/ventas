@@ -267,26 +267,31 @@ export default {
 
 
     abrirDialogo(opcion) {
-      this.mostrarDialogo = true
-      switch (opcion) {
-        case "venta":
-          this.mostrarTerminarVenta = true
-          this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
-          break
-        case "cuenta":
-          this.mostrarAgregarCuenta = true
-          this.mostrarTerminarVenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
-          break
-        case "apartado":
-          this.mostrarAgregarApartado = true
-          this.mostrarAgregarCuenta = this.mostrarTerminarVenta = this.mostrarRegistrarCotizacion = false
-          break
-        case "cotiza":
-          this.mostrarRegistrarCotizacion = true
-          this.mostrarAgregarCuenta = this.mostrarTerminarVenta = this.mostrarAgregarApartado = false
-          break
-      }
-    },
+  // First close any existing dialog
+  this.mostrarTerminarVenta = false;
+  this.mostrarAgregarCuenta = false;
+  this.mostrarAgregarApartado = false;
+  this.mostrarRegistrarCotizacion = false;
+  
+  // Use $nextTick to ensure the previous dialog is completely gone
+  this.$nextTick(() => {
+    this.mostrarDialogo = true;
+    switch (opcion) {
+      case "venta":
+        this.mostrarTerminarVenta = true;
+        break;
+      case "cuenta":
+        this.mostrarAgregarCuenta = true;
+        break;
+      case "apartado":
+        this.mostrarAgregarApartado = true;
+        break;
+      case "cotiza":
+        this.mostrarRegistrarCotizacion = true;
+        break;
+    }
+  });
+},
 
     onCerrar(opcion) {
       this.mostrarDialogo = false
@@ -384,6 +389,8 @@ export default {
               producto.precio = precioMayoreo
               producto.mayoreoAplicado = true
               this.$buefy.toast.open('Mayoreo aplicado correctamente a ' + producto.nombre)
+
+              this.calcularTotal()
             }
           })
         } else {

@@ -71,6 +71,14 @@
           <b-button type="is-info" icon-left="ticket-outline"
             @click="generarComprobante(props.row)">Comprobante</b-button>
         </b-table-column>
+
+        <b-table-column field="acciones" label="Acciones" v-slot="props">
+          <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
+          :to="{ name: 'EditarVenta', params: { id: props.row.id } }" v-if="can('ventas.editar')">Editar</b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline"
+            @click="eliminarVenta(props.row)">Eliminar</b-button>
+        </b-table-column>
+
       </b-table>
     </div>
     <comprobante-compra :venta="this.ventaSeleccionada" :tipo="'venta'" v-if="mostrarComprobante"
@@ -78,6 +86,9 @@
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
+
+
+
 <script>
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
@@ -157,6 +168,74 @@ export default {
       })
     },
 
+    async guardarEdicionVenta() {
+      this.cargando = true
+      try {
+        const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
+          accion: 'editar_venta',
+          id: this.ventaEditando.id,
+          venta: this.ventaEditando
+        })
+        if (respuesta.success) {
+          this.$buefy.toast.open({
+            message: 'Venta editada correctamente',
+            type: 'is-success'
+          })
+          this.obtenerVentas()
+          this.mostrarModalEditar = false
+        } else {
+          this.$buefy.toast.open({
+            message: respuesta.message || 'No se pudo editar la venta',
+            type: 'is-danger'
+          })
+        }
+      } catch (e) {
+        this.$buefy.toast.open({
+          message: 'Error al editar la venta',
+          type: 'is-danger'
+        })
+      } finally {
+        this.cargando = false
+      }
+    },
+
+    async eliminarVenta(venta) {
+      this.$buefy.dialog.confirm({
+        message: '¿Estás seguro de que deseas eliminar esta venta?',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'is-danger',
+        onConfirm: async () => {
+          this.cargando = true
+          try {
+            const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
+              accion: 'eliminar_venta',
+              id: venta.id
+            })
+            if (respuesta || respuesta.success) {
+              this.$buefy.toast.open({
+                message: 'Venta eliminada correctamente',
+                type: 'is-success'
+              })
+              this.obtenerVentas()
+            } else {
+              this.$buefy.toast.open({
+                message: respuesta.message || 'No se pudo eliminar la venta',
+                type: 'is-danger'
+              })
+            }
+          } catch (e) {
+            this.$buefy.toast.open({
+              message: 'Error al eliminar la venta',
+              type: 'is-danger'
+            })
+          } finally {
+            this.cargando = false
+          }
+        }
+      })
+    },
+
     confirmarEnvioCliente() {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
@@ -230,3 +309,4 @@ export default {
   }
 }
 </script>
+

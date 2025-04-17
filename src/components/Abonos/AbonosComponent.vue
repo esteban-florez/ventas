@@ -50,10 +50,14 @@
         </b-table-column>
 
         <b-table-column field="ticket" label="Comprobante" v-slot="props">
+          <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
+          :to="{ name: 'EditarAbono', params: { id: props.row.id } }" v-if="can('abonos.editar')">Editar</b-button>
           <b-button type="is-info" @click="generarComprobante(props)">
             <b-icon icon="ticket-outline">
             </b-icon>
           </b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline"
+            @click="eliminarAbono(props.row)">Eliminar</b-button>
         </b-table-column>
       </b-table>
     </template>
@@ -91,6 +95,43 @@ export default {
       localStorage.setItem('comprobante-abono', JSON.stringify(datos))
       const ruta = this.$router.resolve({ name: 'PDFAbono' })
       window.open(ruta.href, '_blank')
+    },
+
+    async eliminarAbono(abono) {
+      this.$buefy.dialog.confirm({
+        message: '¿Estás seguro de que deseas eliminar este abono?',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'is-danger',
+        onConfirm: async () => {
+          this.cargando = true
+          try {
+            const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
+              accion: 'eliminar_abono',
+              id: abono.id
+            })
+            if (respuesta || respuesta.success) {
+              this.$buefy.toast.open({
+                message: 'Abono eliminado correctamente',
+                type: 'is-success'
+              })
+              this.obtenerAbonos()
+            } else {
+              this.$buefy.toast.open({
+                message: respuesta.message || 'No se pudo eliminar el abono',
+                type: 'is-danger'
+              })
+            }
+          } catch (e) {
+            this.$buefy.toast.open({
+              message: 'Error al eliminar el abono',
+              type: 'is-danger'
+            })
+          } finally {
+            this.cargando = false
+          }
+        }
+      })
     },
 
     async obtenerAbonos() {

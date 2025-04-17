@@ -12,7 +12,7 @@
     <div class="mt-2" v-if="apartados.length > 0">
       <cartas-totales :totales="totalesGenerales" />
       <tabla-cuentas-apartados :datos="apartados"
-        @imprimir="onGenerarComprobante" :printHref="printHref" />
+        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerApartados" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
       v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />

@@ -10,7 +10,7 @@
         />
 			</header>
 			<section class="modal-card-body">
-				<busqueda-cliente @seleccionado="onSeleccionado" />
+				<busqueda-cliente @seleccionado="onSeleccionado" :initialCliente="cliente.nombre ? cliente : null" />
 				<b-field class="mt-3" label="Vence en">
           <b-select class="wide" icon="tag-multiple" v-model="dias" required>
             <option value="" disabled>Seleccionar...</option>
@@ -19,7 +19,7 @@
             </option>
           </b-select>
 				</b-field>
-        <b-field class="mt-3" label="Método de pago">
+        <b-field v-if="!id" class="mt-3" label="Método de pago">
           <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
             <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
               {{ metodo }}
@@ -38,7 +38,7 @@
         <div style="display: contents" v-if="esDelivery">
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
           <b-field class="mt-1" label="Costo del delivery">
-            <b-input min="0.5" step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
+            <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
           </b-field>
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
             ¿Delivery gratis para el cliente?
@@ -74,7 +74,7 @@
             <b-input type="number" placeholder="Ej. 30000000" v-model="chofer.ci" required></b-input>
           </b-field>
         </div>
-        <b-field class="mt-3" label="El cliente paga con">
+        <b-field v-if="!id" class="mt-3" label="El cliente paga con">
           <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado"></b-input>
         </b-field>
 				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
@@ -103,35 +103,79 @@
 
 	export default{
 		name:"DialogoAgregarCuenta",
-		props: ['totalVenta', 'choferes', 'metodos', 'tipo'],
+    props: {
+      id: {
+        type: Boolean,
+        default: false
+      },
+      tipo: {
+        type: String,
+        default: null
+      },
+      totalVenta: {
+        type: [String, Number],
+        default: 0
+      },
+      metodos: {
+        type: Array,
+        default: () => []
+      },
+      choferes: {
+        type: Array,
+        default: () => []
+      },
+      initialPagado: {
+        type: Number,
+        default: 0
+      },
+      initialCliente: {
+        type: Object,
+        default: () => ({})
+      },
+      initialDias: {
+        type: Number,
+        default: 0
+      },
+      initialDelivery: {
+        type: Object,
+        default: () => ({
+          costo: null,
+          destino: null,
+          gratis: false,
+          idChofer: null
+        })
+      },
+      initialChofer: {
+        type: Object,
+        default: () => ({
+          nombre: null,
+          ci: null,
+          tipo: null,
+          telefono: null
+        })
+      }
+    },
+
 		components: { BusquedaCliente },
 
-		data: () => ({
-			pagado: "",
-      dias: "",
-			cliente: {},
-      idMetodo: null,
-      origen: '',
-      esDelivery: false,
-      nuevoChofer: false,
-      clase: '',
-      titulo: '',
-      delivery: {
-        costo: null,
-        destino: null,
-        gratis: false,
-        idChofer: null,
-      },
-      chofer: {
-        nombre: null,
-        ci: null,
-        tipo: null,
-        telefono: null,
-      },
-      DIAS: DIAS,
-      metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
-      tipos: TIPOS_CLIENTE,
-		}),
+		data() {
+      return {
+        pagado: this.initialPagado,
+        idMetodo: this.initialIdMetodo,
+        origen: this.initialOrigen,
+        cliente: {...this.initialCliente},
+        esDelivery: !this.initialDelivery,
+        nuevoChofer: false,
+        delivery: {...this.initialDelivery},
+        chofer: {...this.initialChofer},
+        dias: this.initialDias || 0,
+        clase: '',
+        titulo: '',
+        DIAS: DIAS,
+        metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
+        tipos: TIPOS_CLIENTE,
+      }
+		},
 
     mounted() {
       this.clase = `has-background-${this.tipo === 'cuenta' ? 'info' : 'dark'}`
@@ -140,7 +184,11 @@
 
     computed: {
       porPagar() {
-        return parseFloat(this.totalVenta - this.pagado) ?? 0
+        const secureInitialPagado = isNaN(this.initialPagado) ? 0 : this.initialPagado
+        const secureTotalVenta = isNaN(this.initialtotalVenta) ? 0 : this.initialtotalVenta
+        const securePagado = isNaN(this.initialpagado) ? 0 : this.initialpagado
+        const result = parseFloat(secureInitialPagado - secureTotalVenta - securePagado);
+        return result
       },
       esSimple() {
         return this.metodosSimples.includes(this.idMetodo)

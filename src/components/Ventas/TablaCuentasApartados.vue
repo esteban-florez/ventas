@@ -78,11 +78,21 @@
           </b-icon>
         </b-button>
       </b-table-column>
+
+      <b-table-column field="acciones" label="Acciones" v-slot="props">
+        <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
+          :to="{ name: 'EditarCuenta', params: { id: props.row.id }, query: { tipo: linkTipo } }" 
+          v-if="can('cuentas.editar')">Editar</b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline"
+            @click="eliminarCuenta(props.row)">Eliminar</b-button>
+        </b-table-column>
     </b-table>
   </section>
 </template>
 <script>
+import HttpService from '@/Servicios/HttpService'
 import TablaProductosVendidos from './TablaProductosVendidos'
+
 export default {
   name: "TablaProductosApartados",
   props: ["datos", "printHref"],
@@ -104,9 +114,49 @@ export default {
     generarComprobante(item) {
       this.$emit("imprimir", item)
     },
+
+    async eliminarCuenta(cuenta) {
+      this.$buefy.dialog.confirm({
+        message: '¿Estás seguro de que deseas eliminar esta cuenta?',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'is-danger',
+        onConfirm: async () => {
+          this.cargando = true
+          try {
+            const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
+              accion: 'eliminar_cuenta',
+              id: cuenta.id
+            })
+            if (respuesta || respuesta.success) {
+              this.$buefy.toast.open({
+                message: 'Cuenta eliminada correctamente',
+                type: 'is-success'
+              })
+              this.$emit('actualizar-cuentas')
+            } else {
+              this.$buefy.toast.open({
+                message: respuesta.message || 'No se pudo eliminar la cuenta',
+                type: 'is-danger'
+              })
+            }
+          } catch (e) {
+            this.$buefy.toast.open({
+              message: 'Error al eliminar la cuenta',
+              type: 'is-danger'
+            })
+          } finally {
+            this.cargando = false
+          }
+        }
+      })
+    },
   },
 
   computed: {
+    linkTipo() {
+      return this.$route.name === 'ReporteApartados' ? 'apartado' : 'cuenta';
+    },
     tipo() {
       if (this.datos) {
         return this.datos[0].tipo
