@@ -8,7 +8,7 @@
 
       <div class="parrafo">
         <p>
-          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de <b>${{ abono.monto }}</b>, tras lo cual su el monto restante es de <b>${{ cuenta.porPagar }}</b>.
+          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de <b>${{ abono.monto }}</b>, tras lo cual su monto restante es de <b>${{ cuenta.porPagar }}</b>.
         </p>
       </div>
 
@@ -41,6 +41,7 @@ export default {
     abono: null,
     nombre: '',
     telefono: '',
+    datosNegocio: true,
   }),
 
   async mounted() {
