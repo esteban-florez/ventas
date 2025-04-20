@@ -6,6 +6,13 @@
       <b-breadcrumb-item active>Cotizaciones</b-breadcrumb-item>
     </b-breadcrumb>
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
+    <div class="field mt-4">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <busqueda-cliente @seleccionado="onSeleccionado" @deseleccionado="onDeseleccionado" />
+        </div>
+      </div>
+    </div>
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado cotizaciones :('"
       :subtitulo="'Aquí aparecerán las cotizaciones registradas'" v-if="cotizaciones.length < 1" />
     <div class="mt-2" v-if="cotizaciones.length > 0">
@@ -75,7 +82,9 @@
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
+
 <script>
+import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import TablaProductosVendidos from './TablaProductosVendidos'
@@ -84,7 +93,7 @@ import HttpService from '../../Servicios/HttpService'
 
 export default {
   name: "ReporteCotizaciones",
-  components: { BusquedaEnFecha, MensajeInicial, TablaProductosVendidos, ComprobanteCompra },
+  components: { BusquedaEnFecha, MensajeInicial, TablaProductosVendidos, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -106,6 +115,7 @@ export default {
     cotizacionSeleccionada: null,
     mostrarComprobante: false,
     enviarCliente: false,
+    clienteId: null,
   }),
 
   mounted() {
@@ -118,6 +128,10 @@ export default {
 
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
+
+      if (this.clienteId) {
+        entries.push(['clienteId', this.clienteId])
+      }
 
       if (entries.length === 0) return href
 
@@ -203,7 +217,10 @@ export default {
     obtenerCotizaciones() {
       this.cargando = true
       let payload = {
-        filtros: this.filtros,
+        filtros: {
+          ...this.filtros,
+          clienteId: this.clienteId || null
+        },
         accion: 'obtener_cotizaciones'
       }
       HttpService.obtenerConConsultas('ventas.php', payload)
@@ -211,7 +228,24 @@ export default {
           this.cotizaciones = resultado.cotizaciones
           this.cargando = false
         })
-    }
+    },
+
+    onDeseleccionado() {
+      this.clienteId = null
+      this.obtenerCotizaciones()
+    },
+
+    onSeleccionado(cliente) {
+      this.clienteId = cliente.id
+
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+
+      this.debounceTimeout = setTimeout(() => {
+        this.obtenerCotizaciones();
+      }, 500);
+    },
   }
 }
 </script>

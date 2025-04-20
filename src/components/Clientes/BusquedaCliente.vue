@@ -41,6 +41,7 @@
 		methods: {
 			deseleccionarCliente(){
 				this.clienteSeleccionado = null
+				this.$emit('deseleccionado')
 			},
 			seleccionarCliente(opcion) {
 				if(!opcion) return

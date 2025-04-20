@@ -8,11 +8,9 @@
 
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
     <div class="field mt-4">
-      <label class="label">Filtrar por cliente</label>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" v-model="clienteSearchTerm" 
-                placeholder="Escribe el nombre del cliente..." @input="onSearchInput" />
+          <busqueda-cliente @seleccionado="onSeleccionado" @deseleccionado="onDeseleccionado" />
         </div>
       </div>
     </div>
@@ -28,7 +26,9 @@
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
+
 <script>
+import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
@@ -39,7 +39,7 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteApartados",
-  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, ComprobanteCompra },
+  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -54,9 +54,7 @@ export default {
     apartadoSeleccionado: null,
     mostrarComprobante: false,
     enviarCliente: false,
-    clienteSearchTerm: "",
-    clienteFiltrado: null,
-    apartadosOriginales: []
+    clienteId: null,
   }),
 
   mounted() {
@@ -70,8 +68,8 @@ export default {
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
 
-      if (this.clienteFiltrado) {
-        entries.push(['cliente', this.clienteFiltrado])
+      if (this.clienteId) {
+        entries.push(['clienteId', this.clienteId])
       }
 
       if (entries.length === 0) return href
@@ -140,7 +138,7 @@ export default {
       let payload = {
         filtros: {
           ...this.filtros,
-          cliente: this.clienteFiltrado || null
+          clienteId: this.clienteId || null
         },
         accion: 'obtener_apartados'
       }
@@ -161,39 +159,21 @@ export default {
         })
     },
 
-    onSearchInput() {
+    onDeseleccionado() {
+      this.clienteId = null
+      this.obtenerApartados()
+    },
+
+    onSeleccionado(cliente) {
+      this.clienteId = cliente.id
+
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
-      
-      if (!this.clienteSearchTerm.trim()) {
-        this.limpiarFiltroCliente();
-        return;
-      }
-      
+
       this.debounceTimeout = setTimeout(() => {
-        this.aplicarFiltroCliente();
+        this.obtenerApartados();
       }, 500);
-    },
-
-    aplicarFiltroCliente() {
-      if (!this.clienteSearchTerm) {
-        this.apartados = [...this.apartadosOriginales];
-        this.clienteFiltrado = null;
-        return;
-      }
-
-      const searchTerm = this.clienteSearchTerm.toLowerCase();
-      this.apartados = this.apartadosOriginales.filter(apartado => 
-        apartado.nombreCliente.toLowerCase().includes(searchTerm)
-      );
-      this.clienteFiltrado = this.clienteSearchTerm;
-    },
-
-    limpiarFiltroCliente() {
-      this.clienteSearchTerm = "";
-      this.apartados = [...this.apartadosOriginales];
-      this.clienteFiltrado = null;
     },
   }
 }

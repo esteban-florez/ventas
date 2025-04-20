@@ -7,11 +7,9 @@
     </b-breadcrumb>
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
     <div class="field mt-4">
-      <label class="label">Filtrar por cliente</label>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" v-model="clienteSearchTerm" 
-                placeholder="Escribe el nombre del cliente..." @input="onSearchInput" />
+          <busqueda-cliente @seleccionado="onSeleccionado" @deseleccionado="onDeseleccionado" />
         </div>
       </div>
     </div>
@@ -27,7 +25,9 @@
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
+
 <script>
+import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
@@ -38,7 +38,7 @@ import ComprobanteCompra from './ComprobanteCompra'
 
 export default {
   name: "ReporteCuentas",
-  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, ComprobanteCompra },
+  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -53,9 +53,7 @@ export default {
     mostrarComprobante: false,
     porPagar: 0,
     enviarCliente: false,
-    clienteSearchTerm: "",
-    clienteFiltrado: null,
-    cuentasOriginales: []
+    clienteId: null
   }),
 
   mounted() {
@@ -69,8 +67,8 @@ export default {
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
 
-      if (this.clienteFiltrado) {
-        entries.push(['cliente', this.clienteFiltrado])
+      if (this.clienteId) {
+        entries.push(['clienteId', this.clienteId])
       }
 
       if (entries.length === 0) return href
@@ -137,7 +135,7 @@ export default {
       this.cargando = true
       this.filtros = {
         ...this.filtros,
-        cliente: this.clienteFiltrado || null
+        clienteId: this.clienteId || null
       }
 
       let payload = {
@@ -147,7 +145,6 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.cuentas = resultado.cuentas
-          this.cuentasOriginales = resultado.cuentas
 
           this.totalesGenerales = [
             { nombre: "# Cuentas", total: this.cuentas.length, icono: "wallet", clase: "has-text-primary" },
@@ -161,42 +158,22 @@ export default {
         })
     },
 
-    onSearchInput() {
+    onDeseleccionado() {
+      this.clienteId = null
+      this.obtenerCuentas()
+    },
+
+    onSeleccionado(cliente) {
+      this.clienteId = cliente.id
+
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
-      
-      if (!this.clienteSearchTerm.trim()) {
-        this.limpiarFiltroCliente();
-        return;
-      }
-      
+
       this.debounceTimeout = setTimeout(() => {
-        this.aplicarFiltroCliente();
+        this.obtenerCuentas();
       }, 500);
     },
-
-    aplicarFiltroCliente() {
-      if (!this.clienteSearchTerm) {
-        this.cuentas = [...this.cuentasOriginales];
-        this.clienteFiltrado = null;
-        return;
-      }
-
-      const searchTerm = this.clienteSearchTerm.toLowerCase();
-      this.cuentas = this.cuentasOriginales.filter(cuenta => 
-        cuenta.nombreCliente.toLowerCase().includes(searchTerm)
-      );
-      this.clienteFiltrado = this.clienteSearchTerm;
-    },
-
-    limpiarFiltroCliente() {
-      this.clienteSearchTerm = "";
-      this.cuentas = [...this.cuentasOriginales];
-      this.clienteFiltrado = null;
-    },
-
-   
   }
 }
 </script>

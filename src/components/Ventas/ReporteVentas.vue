@@ -7,11 +7,9 @@
     </b-breadcrumb>
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
     <div class="field mt-4">
-      <label class="label">Filtrar por cliente</label>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" v-model="clienteSearchTerm" 
-                placeholder="Escribe el nombre del cliente..." @input="onSearchInput" />
+          <busqueda-cliente @seleccionado="onSeleccionado" @deseleccionado="onDeseleccionado" />
         </div>
       </div>
     </div>
@@ -96,9 +94,8 @@
   </section>
 </template>
 
-
-
 <script>
+import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
@@ -109,7 +106,7 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteVentas",
-  components: { BusquedaEnFecha, TablaProductosVendidos, MensajeInicial, CartasTotales, ComprobanteCompra },
+  components: { BusquedaEnFecha, TablaProductosVendidos, MensajeInicial, CartasTotales, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -132,9 +129,7 @@ export default {
     mostrarComprobante: false,
     ventaSeleccionada: null,
     enviarCliente: false,
-    clienteSearchTerm: "",
-    clienteFiltrado: null,
-    ventasOriginales: []
+    clienteId: null,
   }),
 
   mounted() {
@@ -148,8 +143,8 @@ export default {
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
 
-      if (this.clienteFiltrado) {
-        entries.push(['cliente', this.clienteFiltrado])
+      if (this.clienteId) {
+        entries.push(['clienteId', this.clienteId])
       }
 
       if (entries.length === 0) return href
@@ -305,7 +300,7 @@ export default {
         filtros: {
           fechaInicio: this.filtros.fechaInicio || null,
           fechaFin: this.filtros.fechaFin || null,
-          cliente: this.clienteFiltrado || null
+          clienteId: this.clienteId || null
         },
         accion: 'obtener_ventas'
       }
@@ -313,7 +308,6 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.ventas = resultado.ventas
-          this.ventasOriginales = resultado.ventas
 
           this.totalesGenerales = [
             { nombre: "No. Ventas", total: this.ventas.length, icono: "cart", clase: "has-text-primary" },
@@ -325,39 +319,21 @@ export default {
         })
     },
 
-     onSearchInput() {
+    onDeseleccionado() {
+      this.clienteId = null
+      this.obtenerVentas()
+    },
+
+    onSeleccionado(cliente) {
+      this.clienteId = cliente.id
+
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
-      
-      if (!this.clienteSearchTerm.trim()) {
-        this.limpiarFiltroCliente();
-        return;
-      }
-      
+
       this.debounceTimeout = setTimeout(() => {
-        this.aplicarFiltroCliente();
+        this.obtenerVentas();
       }, 500);
-    },
-
-    aplicarFiltroCliente() {
-      if (!this.clienteSearchTerm) {
-        this.ventas = [...this.ventasOriginales];
-        this.clienteFiltrado = null;
-        return;
-      }
-
-      const searchTerm = this.clienteSearchTerm.toLowerCase();
-      this.ventas = this.ventasOriginales.filter(venta => 
-        venta.nombreCliente.toLowerCase().includes(searchTerm)
-      );
-      this.clienteFiltrado = this.clienteSearchTerm;
-    },
-
-    limpiarFiltroCliente() {
-      this.clienteSearchTerm = "";
-      this.ventas = [...this.ventasOriginales];
-      this.clienteFiltrado = null;
     },
   }
 }

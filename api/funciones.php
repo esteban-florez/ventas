@@ -156,6 +156,12 @@ function obtenerTotalVentas($filtros)
     $sentencia = "SELECT IFNULL(SUM(total), 0) AS totalVentas FROM ventas";
     $parametros = [];
 
+    if ($filtros->clienteId) {
+        $sentencia .= " LEFT JOIN clientes ON clientes.id = ventas.idCliente ";
+        $sentencia .= " WHERE clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
         $parametros = [$filtros->fechaInicio, $filtros->fechaFin];
@@ -166,57 +172,94 @@ function obtenerTotalVentas($filtros)
 
 function obtenerTotalCuentasApartados($filtros, $tipo)
 {
-    $sentencia = "SELECT IFNULL(SUM(total), 0) AS total FROM cuentas_apartados WHERE tipo = ?";
-    $parametros = [$tipo];
+    $sentencia = "SELECT IFNULL(SUM(total), 0) AS total FROM cuentas_apartados";
+    $parametros = [];
+
+    if ($filtros->clienteId) {
+        $sentencia .= " LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente";
+        $sentencia .= " WHERE clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
+        $sentencia .= " AND cuentas_apartados.tipo = ?";
+    } else {
+        $sentencia .= " WHERE cuentas_apartados.tipo = ?";
+    }
+
+    array_push($parametros, $tipo);
 
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
         array_push($parametros, $filtros->fechaInicio);
         array_push($parametros, $filtros->fechaFin);
     }
+
     return selectRegresandoObjeto($sentencia, $parametros)->total;
 }
 
 function obtenerTotalPorPagarCuentasApartados($filtros, $tipo)
 {
-    $sentencia1 = "SELECT IFNULL(SUM(total), 0) AS positivo FROM cuentas_apartados WHERE tipo = ?";
+    $sentencia1 = "SELECT IFNULL(SUM(total), 0) AS positivo FROM cuentas_apartados";
+    $parametros1 = [$tipo];
+
     $sentencia2 = "SELECT IFNULL(SUM(monto), 0) AS negativo FROM abonos
-        INNER JOIN cuentas_apartados
-        ON cuentas_apartados.id = abonos.idCuenta
-        AND cuentas_apartados.tipo = ?";
+        INNER JOIN cuentas_apartados ON cuentas_apartados.id = abonos.idCuenta";
+    $parametros2 = [$tipo];
 
-    $parametros = [$tipo];
+    $condicion1 = " WHERE cuentas_apartados.tipo = ?";
+    $condicion2 = " AND cuentas_apartados.tipo = ?";
 
-    if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentenciaFiltros = " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+    if ($filtros->clienteId) {
+        $join = " LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente";
+        $filtroCliente = " AND clientes.id = ?";
 
-        $sentencia1 .= $sentenciaFiltros;
-        $sentencia2 .= $sentenciaFiltros;
+        $sentencia1 .= "$join $condicion1 $filtroCliente";
+        $sentencia2 .= "$join $condicion2 $filtroCliente";
 
-        array_push($parametros, $filtros->fechaInicio);
-        array_push($parametros, $filtros->fechaFin);
+        array_push($parametros1, $filtros->clienteId);
+        array_push($parametros2, $filtros->clienteId);
+    } else {
+        $sentencia1 .= $condicion1;
+        $sentencia2 .= $condicion2;
     }
 
-    $positivo = selectRegresandoObjeto($sentencia1, $parametros)->positivo;
-    $negativo = selectRegresandoObjeto($sentencia2, $parametros)->negativo;
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $dateFilter = " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+
+        $sentencia1 .= $dateFilter;
+        $sentencia2 .= $dateFilter;
+
+        array_push($parametros1, $filtros->fechaInicio, $filtros->fechaFin);
+        array_push($parametros2, $filtros->fechaInicio, $filtros->fechaFin);
+    }
+
+    $positivo = selectRegresandoObjeto($sentencia1, $parametros1)->positivo;
+    $negativo = selectRegresandoObjeto($sentencia2, $parametros2)->negativo;
+
+    dd([$negativo, $positivo, $sentencia1, $sentencia2]);
 
     return $positivo - $negativo;
 }
 
 function obtenerPagosCuentasApartados($filtros, $tipo)
 {
-    $sentencia = "SELECT IFNULL(SUM(monto), 0) AS totalPagos FROM abonos
+    $sentencia = "SELECT IFNULL(SUM(abonos.monto), 0) AS totalPagos FROM abonos
         INNER JOIN cuentas_apartados
         ON cuentas_apartados.id = abonos.idCuenta
         AND cuentas_apartados.tipo = ?";
 
     $parametros = [$tipo];
 
+    if ($filtros->clienteId) {
+        $sentencia .= " LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente";
+        $sentencia .= " WHERE clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
         array_push($parametros, $filtros->fechaInicio);
         array_push($parametros, $filtros->fechaFin);
     }
+
 
     return selectRegresandoObjeto($sentencia, $parametros)->totalPagos;
 }
@@ -241,9 +284,9 @@ function obtenerCuentasApartados($filtros, $tipo)
 
     $parametros = [$tipo];
 
-    if ($filtros->cliente) {
-        $sentencia .= " AND clientes.nombre LIKE CONCAT('%', ?, '%')";
-        array_push($parametros, $filtros->cliente);
+    if ($filtros->clienteId) {
+        $sentencia .= " AND clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
     }
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
@@ -281,6 +324,11 @@ function obtenerCotizaciones($filtros, $tipo)
 
     $parametros = [];
 
+    if ($filtros->clienteId) {
+        $sentencia .= " AND clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
         array_push($parametros, $filtros->fechaInicio);
@@ -304,9 +352,9 @@ function obtenerVentas($filtros)
         LEFT JOIN deliveries ON deliveries.idVenta = ventas.id";
 
     $parametros = [];
-    if ($filtros->cliente) {
-        $sentencia .= " WHERE clientes.nombre LIKE CONCAT('%', ?, '%')";
-        array_push($parametros, $filtros->cliente);
+    if ($filtros->clienteId) {
+        $sentencia .= " WHERE clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
     }
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
