@@ -155,16 +155,20 @@ function obtenerTotalVentas($filtros)
 {
     $sentencia = "SELECT IFNULL(SUM(total), 0) AS totalVentas FROM ventas";
     $parametros = [];
+    $tieneWhere = false;
 
     if ($filtros->clienteId) {
-        $sentencia .= " LEFT JOIN clientes ON clientes.id = ventas.idCliente ";
+        $sentencia .= " LEFT JOIN clientes ON clientes.id = ventas.idCliente";
         $sentencia .= " WHERE clientes.id = ?";
         array_push($parametros, $filtros->clienteId);
+        $tieneWhere = true;
     }
 
     if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
-        $parametros = [$filtros->fechaInicio, $filtros->fechaFin];
+        $sentencia .= $tieneWhere ? " AND " : " WHERE ";
+        $sentencia .= "DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
     }
 
     return selectRegresandoObjeto($sentencia, $parametros)->totalVentas;
@@ -233,8 +237,6 @@ function obtenerTotalPorPagarCuentasApartados($filtros, $tipo)
 
     $positivo = selectRegresandoObjeto($sentencia1, $parametros1)->positivo;
     $negativo = selectRegresandoObjeto($sentencia2, $parametros2)->negativo;
-
-    dd([$negativo, $positivo, $sentencia1, $sentencia2]);
 
     return $positivo - $negativo;
 }
@@ -357,7 +359,8 @@ function obtenerVentas($filtros)
         array_push($parametros, $filtros->clienteId);
     }
     if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
+        $sentencia .= ($filtros->clienteId ? " AND " : " WHERE ")
+            . " DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
         array_push($parametros, $filtros->fechaInicio);
         array_push($parametros, $filtros->fechaFin);
     }
@@ -412,6 +415,89 @@ function obtenerProductosCotizados($id)
 	LEFT JOIN productos ON productos.id =  productos_cotizados.idProducto
 	WHERE productos_cotizados.idCotizacion = ?";
     $parametros = [$id];
+    return selectPrepare($sentencia, $parametros);
+}
+
+function obtenerVentasFiltradas($filtros)
+{
+    $sentencia = "SELECT 
+        CASE 
+            WHEN v.idMetodo IS NOT NULL THEN m.nombre
+            WHEN v.simple IS NOT NULL THEN v.simple
+        END AS metodo_pago,
+        COUNT(*) AS ventas_totales,
+        SUM(v.pagado) AS total_pagado
+    FROM 
+        ventas v
+    LEFT JOIN 
+        metodos m ON v.idMetodo = m.id";
+
+    $parametros = [];
+
+    if ($filtros->clienteId) {
+        $sentencia .= " LEFT JOIN clientes c ON c.id = v.idCliente";
+        $sentencia .= " WHERE c.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $condicion = $filtros->clienteId ? " AND" : " WHERE";
+        $sentencia .= "$condicion DATE(v.fecha) >= ? AND DATE(v.fecha) <= ?";
+        array_push($parametros, $filtros->fechaInicio, $filtros->fechaFin);
+    }
+
+    $sentencia .= " GROUP BY 
+        CASE 
+            WHEN v.idMetodo IS NOT NULL THEN m.nombre
+            WHEN v.simple IS NOT NULL THEN v.simple
+        END
+    ORDER BY 
+        metodo_pago";
+
+    return selectPrepare($sentencia, $parametros);
+}
+
+function obtenerCuentasApartadosFiltrados($filtros, $tipo)
+{
+    $sentencia = "SELECT 
+        CASE 
+            WHEN a.idMetodo IS NOT NULL THEN m.nombre
+            WHEN a.simple IS NOT NULL THEN a.simple
+        END AS metodo_pago,
+        COUNT(DISTINCT ca.id) AS cuentas_apartados_totales,
+        SUM(a.monto) AS total_pagado
+    FROM 
+        cuentas_apartados ca
+    INNER JOIN
+        abonos a ON a.idCuenta = ca.id
+    LEFT JOIN
+        metodos m ON a.idMetodo = m.id";
+
+    if ($filtros->clienteId) {
+        $sentencia .= " LEFT JOIN clientes c ON c.id = ca.idCliente";
+    }
+
+    $sentencia .= " WHERE ca.tipo = ?";
+    $parametros = [$tipo];
+
+    if ($filtros->clienteId) {
+        $sentencia .= " AND c.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND DATE(ca.fecha) >= ? AND DATE(ca.fecha) <= ?";
+        array_push($parametros, $filtros->fechaInicio, $filtros->fechaFin);
+    }
+
+    $sentencia .= " GROUP BY 
+        CASE 
+            WHEN a.idMetodo IS NOT NULL THEN m.nombre
+            WHEN a.simple IS NOT NULL THEN a.simple
+        END
+    ORDER BY 
+        metodo_pago";
+
     return selectPrepare($sentencia, $parametros);
 }
 

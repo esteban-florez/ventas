@@ -18,8 +18,9 @@
       :subtitulo="'Aquí aparecerán los apartados registrados'" v-if="apartados.length < 1" />
     <div class="mt-2" v-if="apartados.length > 0">
       <cartas-totales :totales="totalesGenerales" />
+      <cartas-totales-filtradas :metodosPago="apartadosFiltrados" />
       <tabla-cuentas-apartados :datos="apartados"
-        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerApartados" />
+        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
       v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -32,6 +33,7 @@ import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
+import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas'
 import TablaCuentasApartados from './TablaCuentasApartados'
 import ComprobanteCompra from './ComprobanteCompra'
 import HttpService from '../../Servicios/HttpService'
@@ -39,7 +41,7 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteApartados",
-  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, ComprobanteCompra, BusquedaCliente },
+  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -55,6 +57,7 @@ export default {
     mostrarComprobante: false,
     enviarCliente: false,
     clienteId: null,
+    apartadosFiltrados: []
   }),
 
   mounted() {
@@ -145,7 +148,15 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.apartados = resultado.apartados
-          this.apartadosOriginales = resultado.apartados
+          this.apartadosFiltrados = resultado.apartadosFiltrados.map(apartado => {
+            return {
+              nombre: apartado.metodo_pago,
+              total: `$ ${apartado.total_pagado}`,
+              icono: 'credit-card-outline',
+              clase: 'has-text-info',
+              cantidad: apartado.cuentas_apartados_totales,
+            }
+          })
 
           this.totalesGenerales = [
             { nombre: "# Apartados", total: this.apartados.length, icono: "wallet-travel", clase: "has-text-primary" },
@@ -158,6 +169,18 @@ export default {
           this.cargando = false
         })
     },
+
+    guardarCuentasApartadosFiltrados() {
+      const apartadosFiltrados = this.apartadosFiltrados.map(apartado => {
+        return {
+          nombre: apartado.nombre,
+          total: apartado.total,
+          cantidad: apartado.cantidad,
+        }
+      })
+      localStorage.setItem('metodos_pago', JSON.stringify(apartadosFiltrados));
+    },
+
 
     onDeseleccionado() {
       this.clienteId = null

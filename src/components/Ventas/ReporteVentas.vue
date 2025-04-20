@@ -17,6 +17,7 @@
       :subtitulo="'Aquí aparecerán las ventas registradas'" v-if="ventas.length < 1" />
     <div class="mt-2" v-if="ventas.length > 0">
       <cartas-totales :totales="totalesGenerales" />
+      <cartas-totales-filtradas :metodosPago="ventasFiltradas" />
       <div class="columns">
         <div class="column">
           <b-select v-model="perPage">
@@ -27,7 +28,7 @@
           </b-select>
         </div>
         <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" :href="printHref" target="__blank" rel="noopener noreferrer">
+          <b-button type="is-primary" tag="a" :href="printHref" @click="guardarVentasFiltradas" target="__blank" rel="noopener noreferrer">
             Imprimir
           </b-button>
         </div>
@@ -99,6 +100,7 @@ import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
+import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas'
 import TablaProductosVendidos from './TablaProductosVendidos'
 import ComprobanteCompra from './ComprobanteCompra'
 import HttpService from '../../Servicios/HttpService'
@@ -106,7 +108,7 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteVentas",
-  components: { BusquedaEnFecha, TablaProductosVendidos, MensajeInicial, CartasTotales, ComprobanteCompra, BusquedaCliente },
+  components: { BusquedaEnFecha, TablaProductosVendidos, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {
@@ -130,6 +132,7 @@ export default {
     ventaSeleccionada: null,
     enviarCliente: false,
     clienteId: null,
+    ventasFiltradas: []
   }),
 
   mounted() {
@@ -308,6 +311,15 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.ventas = resultado.ventas
+          this.ventasFiltradas = resultado.ventasFiltradas.map(venta => {
+            return {
+              nombre: venta.metodo_pago,
+              total: `$ ${venta.total_pagado}`,
+              icono: 'credit-card-outline',
+              clase: 'has-text-info',
+              cantidad: venta.ventas_totales,
+            }
+          })
 
           this.totalesGenerales = [
             { nombre: "No. Ventas", total: this.ventas.length, icono: "cart", clase: "has-text-primary" },
@@ -317,6 +329,17 @@ export default {
           ]
           this.cargando = false
         })
+    },
+
+    guardarVentasFiltradas() {
+      const ventasFiltradas = this.ventasFiltradas.map(venta => {
+        return {
+          nombre: venta.nombre,
+          total: venta.total,
+          cantidad: venta.cantidad,
+        }
+      })
+      localStorage.setItem('metodos_pago', JSON.stringify(ventasFiltradas));
     },
 
     onDeseleccionado() {

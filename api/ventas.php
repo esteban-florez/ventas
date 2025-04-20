@@ -33,7 +33,8 @@ switch ($accion) {
 		echo json_encode(
 			[
 				"totalVentas" => obtenerTotalVentas($payload->filtros),
-				"ventas" => obtenerVentas($payload->filtros)
+				"ventas" => obtenerVentas($payload->filtros),
+				"ventasFiltradas" => obtenerVentasFiltradas($payload->filtros)
 			]
 		);
 		break;
@@ -44,7 +45,8 @@ switch ($accion) {
 				"totalPagos" => obtenerPagosCuentasApartados($payload->filtros, 'cuenta'),
 				"totalCuentas" => obtenerTotalCuentasApartados($payload->filtros, 'cuenta'),
 				"totalPorPagar" => obtenerTotalPorPagarCuentasApartados($payload->filtros, 'cuenta'),
-				"cuentas" => obtenerCuentasApartados($payload->filtros, 'cuenta')
+				"cuentas" => obtenerCuentasApartados($payload->filtros, 'cuenta'),
+				"cuentasFiltradas" => obtenerCuentasApartadosFiltrados($payload->filtros, 'cuenta')
 			]
 		)
 		;
@@ -56,7 +58,8 @@ switch ($accion) {
 				"totalPagos" => obtenerPagosCuentasApartados($payload->filtros, 'apartado'),
 				"totalApartados" => obtenerTotalCuentasApartados($payload->filtros, 'apartado'),
 				"totalPorPagar" => obtenerTotalPorPagarCuentasApartados($payload->filtros, 'apartado'),
-				"apartados" => obtenerCuentasApartados($payload->filtros, 'apartado')
+				"apartados" => obtenerCuentasApartados($payload->filtros, 'apartado'),
+				"apartadosFiltrados" => obtenerCuentasApartadosFiltrados($payload->filtros, 'apartado')
 			]
 		);
 		break;
