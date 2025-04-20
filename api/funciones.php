@@ -241,6 +241,10 @@ function obtenerCuentasApartados($filtros, $tipo)
 
     $parametros = [$tipo];
 
+    if ($filtros->cliente) {
+        $sentencia .= " AND clientes.nombre LIKE CONCAT('%', ?, '%')";
+        array_push($parametros, $filtros->cliente);
+    }
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
         array_push($parametros, $filtros->fechaInicio);
@@ -300,6 +304,10 @@ function obtenerVentas($filtros)
         LEFT JOIN deliveries ON deliveries.idVenta = ventas.id";
 
     $parametros = [];
+    if ($filtros->cliente) {
+        $sentencia .= " WHERE clientes.nombre LIKE CONCAT('%', ?, '%')";
+        array_push($parametros, $filtros->cliente);
+    }
     if ($filtros->fechaInicio && $filtros->fechaFin) {
         $sentencia .= " WHERE DATE(ventas.fecha) >= ? AND DATE(ventas.fecha) <= ?";
         array_push($parametros, $filtros->fechaInicio);

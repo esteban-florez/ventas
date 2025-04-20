@@ -7,6 +7,15 @@
     </b-breadcrumb>
 
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
+    <div class="field mt-4">
+      <label class="label">Filtrar por cliente</label>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" v-model="clienteSearchTerm" 
+                placeholder="Escribe el nombre del cliente..." @input="onSearchInput" />
+        </div>
+      </div>
+    </div>
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado apartados :('"
       :subtitulo="'Aquí aparecerán los apartados registrados'" v-if="apartados.length < 1" />
     <div class="mt-2" v-if="apartados.length > 0">
@@ -45,6 +54,9 @@ export default {
     apartadoSeleccionado: null,
     mostrarComprobante: false,
     enviarCliente: false,
+    clienteSearchTerm: "",
+    clienteFiltrado: null,
+    apartadosOriginales: []
   }),
 
   mounted() {
@@ -57,6 +69,10 @@ export default {
 
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
+
+      if (this.clienteFiltrado) {
+        entries.push(['cliente', this.clienteFiltrado])
+      }
 
       if (entries.length === 0) return href
 
@@ -122,12 +138,16 @@ export default {
     obtenerApartados() {
       this.cargando = true
       let payload = {
-        filtros: this.filtros,
+        filtros: {
+          ...this.filtros,
+          cliente: this.clienteFiltrado || null
+        },
         accion: 'obtener_apartados'
       }
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.apartados = resultado.apartados
+          this.apartadosOriginales = resultado.apartados
 
           this.totalesGenerales = [
             { nombre: "# Apartados", total: this.apartados.length, icono: "wallet-travel", clase: "has-text-primary" },
@@ -139,7 +159,42 @@ export default {
           ]
           this.cargando = false
         })
-    }
+    },
+
+    onSearchInput() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+      
+      if (!this.clienteSearchTerm.trim()) {
+        this.limpiarFiltroCliente();
+        return;
+      }
+      
+      this.debounceTimeout = setTimeout(() => {
+        this.aplicarFiltroCliente();
+      }, 500);
+    },
+
+    aplicarFiltroCliente() {
+      if (!this.clienteSearchTerm) {
+        this.apartados = [...this.apartadosOriginales];
+        this.clienteFiltrado = null;
+        return;
+      }
+
+      const searchTerm = this.clienteSearchTerm.toLowerCase();
+      this.apartados = this.apartadosOriginales.filter(apartado => 
+        apartado.nombreCliente.toLowerCase().includes(searchTerm)
+      );
+      this.clienteFiltrado = this.clienteSearchTerm;
+    },
+
+    limpiarFiltroCliente() {
+      this.clienteSearchTerm = "";
+      this.apartados = [...this.apartadosOriginales];
+      this.clienteFiltrado = null;
+    },
   }
 }
 </script>

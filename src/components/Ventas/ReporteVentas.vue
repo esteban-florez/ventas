@@ -6,6 +6,15 @@
       <b-breadcrumb-item active>Ventas</b-breadcrumb-item>
     </b-breadcrumb>
     <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
+    <div class="field mt-4">
+      <label class="label">Filtrar por cliente</label>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input" type="text" v-model="clienteSearchTerm" 
+                placeholder="Escribe el nombre del cliente..." @input="onSearchInput" />
+        </div>
+      </div>
+    </div>
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado ventas :('"
       :subtitulo="'Aquí aparecerán las ventas registradas'" v-if="ventas.length < 1" />
     <div class="mt-2" v-if="ventas.length > 0">
@@ -123,6 +132,9 @@ export default {
     mostrarComprobante: false,
     ventaSeleccionada: null,
     enviarCliente: false,
+    clienteSearchTerm: "",
+    clienteFiltrado: null,
+    ventasOriginales: []
   }),
 
   mounted() {
@@ -135,6 +147,10 @@ export default {
 
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
+
+      if (this.clienteFiltrado) {
+        entries.push(['cliente', this.clienteFiltrado])
+      }
 
       if (entries.length === 0) return href
 
@@ -289,6 +305,7 @@ export default {
         filtros: {
           fechaInicio: this.filtros.fechaInicio || null,
           fechaFin: this.filtros.fechaFin || null,
+          cliente: this.clienteFiltrado || null
         },
         accion: 'obtener_ventas'
       }
@@ -296,6 +313,7 @@ export default {
       HttpService.obtenerConConsultas('ventas.php', payload)
         .then(resultado => {
           this.ventas = resultado.ventas
+          this.ventasOriginales = resultado.ventas
 
           this.totalesGenerales = [
             { nombre: "No. Ventas", total: this.ventas.length, icono: "cart", clase: "has-text-primary" },
@@ -305,7 +323,42 @@ export default {
           ]
           this.cargando = false
         })
-    }
+    },
+
+     onSearchInput() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+      
+      if (!this.clienteSearchTerm.trim()) {
+        this.limpiarFiltroCliente();
+        return;
+      }
+      
+      this.debounceTimeout = setTimeout(() => {
+        this.aplicarFiltroCliente();
+      }, 500);
+    },
+
+    aplicarFiltroCliente() {
+      if (!this.clienteSearchTerm) {
+        this.ventas = [...this.ventasOriginales];
+        this.clienteFiltrado = null;
+        return;
+      }
+
+      const searchTerm = this.clienteSearchTerm.toLowerCase();
+      this.ventas = this.ventasOriginales.filter(venta => 
+        venta.nombreCliente.toLowerCase().includes(searchTerm)
+      );
+      this.clienteFiltrado = this.clienteSearchTerm;
+    },
+
+    limpiarFiltroCliente() {
+      this.clienteSearchTerm = "";
+      this.ventas = [...this.ventasOriginales];
+      this.clienteFiltrado = null;
+    },
   }
 }
 </script>

@@ -67,6 +67,7 @@ export default {
       filtros: {
         fechaInicio: this.$route.query.fechaInicio || null,
         fechaFin: this.$route.query.fechaFin || null,
+        cliente: this.$route.query.cliente || null,
       },
     }
 
