@@ -184,7 +184,7 @@ export default {
         .then(marcas => {
           this.marcas = marcas
         })
-    },
+    },                  
 
     obtenerCategorias() {
       let payload = {
