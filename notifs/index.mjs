@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 
 app.post('/ws-api/pdf', async (req, res) => {
   log.status('Recibiendo peticion de archivos...')
-  const phone = req.query.numero.slice(1)
+  const phone = req.query.numero
   const base64 = req.body.pdf
 
   if (!base64 || !phone) {
@@ -119,7 +119,7 @@ app.post('/ws-api/producto', async (req, res) => {
     const WhatsApp = await connect()
     for (const { telefono } of clientes) {
       try {
-        await WhatsApp.message(telefono.slice(1), message)
+        await WhatsApp.message(telefono, message)
         await delay(2000)
       } catch (error) {
         log.error(`Error enviando alerta de nuevo producto a ${telefono}: ${error}`)

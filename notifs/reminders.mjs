@@ -20,9 +20,8 @@ export function getReminderMessages(cuentas) {
     if (!outdated || !debt) continue
     
     log.status(`Cuenta por notificar: ${cuenta.id}`)
-    const phone = telefonoCliente.slice(1)
     const message = formatMessage(cuenta, date)
-    messages.push({ phone, text: message })
+    messages.push({ phone: telefonoCliente, text: message })
   }
 
   return messages

@@ -2,7 +2,15 @@ import { WhatsAppClient } from 'easy-baileys'
 import { logger } from './logger.mjs'
 
 const log = logger()
-const jid = phone => `58${phone}@s.whatsapp.net`
+
+const jid = phone => {
+  const result = phone[0] === '0'
+    ? '58' + phone.slice(1)
+    : phone
+
+  return `${result}@s.whatsapp.net`
+}
+
 const MANUAL_DISCONNECT = 'manual-disconnect'
 
 const WhatsApp = {
@@ -40,7 +48,7 @@ export async function connect() {
         const { connection, qr, lastDisconnect } = event
 
         if (!paired && qr) {
-          const number = Number(`58${process.env.WHATSAPP_PHONE}`)
+          const number = Number(process.env.WHATSAPP_PHONE)
           const code = await client.getPairingCode(number)
           const formatted = `${code.slice(0, 4)}-${code.slice(4)}`
           log.status(`Codigo de conexion a WhatsApp: ${formatted}`)
