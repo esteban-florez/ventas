@@ -11,7 +11,7 @@ export const UNIDADES = {
   ton: "Toneladas",
   ml: "Mililitros",
   lt: "Litros",
-  cj: "Cajas",
+  cj: "Caja",
   paq: "Paquetes",
 }
 
