@@ -20,7 +20,7 @@ export const DIAS = [7, 10, 15]
 export const TIPOS_PAGO_SIMPLE = {
   punto: "Punto de Venta",
   dolar: "Efectivo ($)",
-  bolivar: "Efectivo (Bs)",
+  Credito: "Credito",
 }
 
 export const TIPOS_PAGO_CRUD = {
