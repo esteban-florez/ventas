@@ -198,6 +198,7 @@
 		methods: {
       onSeleccionado(cliente) {
         this.cliente = cliente
+        this.delivery.destino = cliente.direccion
 			},
 
       manejarEsDelivery() {
