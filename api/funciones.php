@@ -1198,7 +1198,7 @@ function obtenerChoferes()
 
 function obtenerChoferesPorNombre($nombre)
 {
-    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id)";
+    $pagado = "SELECT IFNULL(SUM(monto),0) FROM pagos_choferes WHERE pagos_choferes.idChofer = choferes.id";
     $sentencia = "SELECT choferes.*,
         (IFNULL(SUM(deliveries.costo),0) - ($pagado)) as deuda
         FROM choferes
@@ -1206,7 +1206,7 @@ function obtenerChoferesPorNombre($nombre)
         LEFT JOIN pagos_choferes ON pagos_choferes.idChofer = choferes.id
         WHERE choferes.nombre LIKE ?
         GROUP BY choferes.id;";
-    $parametros = ["%" . $nombre . "%"];
+    $parametros = ["%{$nombre}%"];
     return selectPrepare($sentencia, $parametros);
 }
 
@@ -1237,13 +1237,31 @@ function registrarPagoChofer($pago)
     return insertar($sentencia, $parametros);
 }
 
-function obtenerDeliveries()
+function obtenerDeliveries($filtros)
 {
-    $sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer
+    $sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer, 
+        COALESCE(ventas.fecha, cuentas.fecha) as fecha
         FROM deliveries
-        LEFT JOIN choferes ON deliveries.idChofer = choferes.id;";
+        LEFT JOIN choferes ON deliveries.idChofer = choferes.id
+        LEFT JOIN ventas ON deliveries.idVenta = ventas.id
+        LEFT JOIN cuentas_apartados AS cuentas ON deliveries.idCuenta = cuentas.id";
 
-    return selectQuery($sentencia);
+    $parametros = [];
+    if ($filtros->choferId) {
+        $sentencia .= " WHERE deliveries.idChofer = ?";
+        array_push($parametros, $filtros->choferId);
+    }
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= ($filtros->choferId ? ' AND ' : ' WHERE ')
+            . " (DATE(COALESCE(ventas.fecha, cuentas.fecha)) >= ? 
+            AND DATE(COALESCE(ventas.fecha, cuentas.fecha)) <= ?)";
+        array_push($parametros, $filtros->fechaInicio, $filtros->fechaFin);
+    }
+
+    $sentencia .= " ORDER BY COALESCE(ventas.fecha, cuentas.fecha) DESC";
+
+    return selectPrepare($sentencia, $parametros);
 }
 
 /* PROVEEDORES */

@@ -51,6 +51,7 @@ import { PERMISOS_RUTAS } from "@/consts"
 import EditarVenta from "@/components/Ventas/EditarVenta.vue"
 import EditarCuenta from "@/components/Ventas/EditarCuenta.vue"
 import EditarAbono from "@/components/Abonos/EditarAbono.vue"
+import PDFDeliveries from "@/components/PDF/PDFDeliveries.vue"
 
 Vue.use(VueRouter)
 
@@ -294,6 +295,11 @@ const routes = [
     path: "/editar-abono/:id",
     name: "EditarAbono",
     component: EditarAbono,
+  },
+  {
+    path: "/pdf/deliveries",
+    name: "PDFDeliveries",
+    component: PDFDeliveries,
   },
 ]
 
