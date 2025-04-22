@@ -212,7 +212,7 @@ export default {
           })
         })
 
-        this.$router.push('/reporte-cuentas')
+        this.$router.push('/reporte-ventas')
     },
 
     confirmarEnvioCliente() {
