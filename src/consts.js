@@ -152,7 +152,10 @@ export const PERMISOS = {
   "ventas.realizar_abono": "Registrar abono",
   "vistas.historial": "Ver movimientos",
   "ventas.editar": "Editar venta",
+  "ventas.eliminar": "Eliminar venta",
   "cuentas.editar": "Editar cuenta",
+  "cuentas.eliminar": "Eliminar cuenta",
+  "apartados.eliminar": "Eliminar apartado",
   "apartados.editar": "Editar apartado",
   "abonos.editar": "Editar abono",
 }

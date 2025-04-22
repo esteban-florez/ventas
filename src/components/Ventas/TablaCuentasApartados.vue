@@ -84,7 +84,7 @@
           :to="{ name: 'EditarCuenta', params: { id: props.row.id }, query: { tipo: linkTipo } }" 
           v-if="can('cuentas.editar')">Editar</b-button>
           <b-button type="is-danger" icon-left="trash-can-outline"
-            @click="eliminarCuenta(props.row)">Eliminar</b-button>
+            @click="eliminarCuenta(props.row)" v-if="can('apartados.eliminar','cuentas.eliminar')">Eliminar</b-button>
         </b-table-column>
     </b-table>
   </section>

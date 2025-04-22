@@ -83,8 +83,8 @@
         <b-table-column field="acciones" label="Acciones" v-slot="props">
           <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
           :to="{ name: 'EditarVenta', params: { id: props.row.id } }" v-if="can('ventas.editar')">Editar</b-button>
-          <b-button type="is-danger" icon-left="trash-can-outline"
-            @click="eliminarVenta(props.row)">Eliminar</b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline" 
+            @click="eliminarVenta(props.row)" v-if="can('ventas.eliminar')">Eliminar</b-button>
         </b-table-column>
 
       </b-table>
