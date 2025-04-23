@@ -154,6 +154,12 @@ export default {
           clase: 'has-text-primary',
         },
         {
+          nombre: 'N0 Factura',
+          total: cuentaApartado.id,
+          icono: 'account',
+          clase: 'has-text-primary',
+        },
+        {
           nombre: 'Monto total',
           total: Number(cuentaApartado.total).toFixed(2),
           icono: 'cash',

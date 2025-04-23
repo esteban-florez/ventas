@@ -5,7 +5,12 @@
       <p><b>Monto total:</b> {{ cuentaApartado.total }}</p>
       <p><b>Monto pagado:</b> {{ cuentaApartado.pagado }}</p>
       <p><b>Monto por pagar:</b> {{ cuentaApartado.pagado }}</p>
+      <span></span>
       <p><b>Nombre del cliente:</b> {{ cuentaApartado.nombreCliente }}</p>
+      <p><b>N0 Factura:</b> {{ cuentaApartado.id }}</p>
+    </div>
+    <div class="container">
+      <p><b>N0 Factura:</b> {{ cuentaApartado.id }}</p>
     </div>
     <div v-if="abonos.length > 0">
       <b-table class="box" :data="abonos">
