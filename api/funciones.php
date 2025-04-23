@@ -598,7 +598,8 @@ function editarApartadoCuenta($id, $cuenta, $tipo)
         if (isset($productosActuales[$idProducto])) {
             $cantidadNueva = $productosActuales[$idProducto];
             $productoEncontrado = array_filter($cuenta->productos, fn($p) => $p->id == $idProducto);
-            $precioNuevo = reset($productoEncontrado)->precio;
+            $producto = reset($productoEncontrado);
+            $precioNuevo = $producto->precio ?? $producto->precioVenta;
             if ($cantidadNueva != $cantidadAnterior || $precioNuevo != $precio) {
                 $sentenciaActualizar = "UPDATE productos_vendidos SET cantidad = ?, precio = ? WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
                 editar($sentenciaActualizar, [$cantidadNueva, $precioNuevo, $id, $idProducto, $tipo]);
@@ -612,9 +613,19 @@ function editarApartadoCuenta($id, $cuenta, $tipo)
 
     // Insertar nuevos productos
     foreach ($productosActuales as $idProducto => $cantidadNueva) {
+        $producto = array_filter($cuenta->productos, fn($p) => $p->id == $idProducto);
+        $producto = reset($producto);
+        $precio = $producto->precio ?? $producto->precioVenta;
+
         $sentenciaInsertar = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
-        $producto = array_filter($cuenta->productos, fn($p) => $p->id == $idProducto)[0];
-        $parametrosInsertar = [date('Y-m-d H:i:s'), $cantidadNueva, $producto->precio, $idProducto, $id, 'venta'];
+        $parametrosInsertar = [
+            date('Y-m-d H:i:s'),
+            $cantidadNueva,
+            $precio,
+            $idProducto,
+            $id,
+            $tipo
+        ];
         insertar($sentenciaInsertar, $parametrosInsertar);
     }
 
@@ -622,7 +633,7 @@ function editarApartadoCuenta($id, $cuenta, $tipo)
     if (isset($cuenta->delivery)) {
         // Eliminar delivery anterior
         $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
-        eliminar($sentenciaEliminarDelivery, $id);
+        eliminar($sentenciaEliminarDelivery, [$id]);
 
         // Registrar nuevo delivery
         registrarDelivery($cuenta, 'idVenta', $id);
@@ -647,25 +658,31 @@ function editarVenta($id, $venta)
     $resultado = editar($sentencia, clean($parametros));
 
     // Obtener productos vendidos anteriores
-    $sentenciaObtener = "SELECT idProducto, cantidad FROM productos_vendidos WHERE idReferencia = ? AND tipo = ?";
+    $sentenciaObtener = "SELECT idProducto, cantidad, precio FROM productos_vendidos WHERE idReferencia = ? AND tipo = ?";
     $productosAnteriores = selectPrepare($sentenciaObtener, [$id, 'venta']);
 
     // Crear un mapa de productos actuales
     $productosActuales = [];
     foreach ($venta->productos as $producto) {
-        $productosActuales[$producto->id] = $producto->cantidad;
+        $productosActuales[$producto->id] = [
+            'cantidad' => $producto->cantidad,
+            'precio' => $producto->precio ?? $producto->precioVenta ?? null
+        ];
     }
 
     // Actualizar, eliminar o insertar productos
     foreach ($productosAnteriores as $productoAnterior) {
         $idProducto = $productoAnterior->idProducto;
         $cantidadAnterior = $productoAnterior->cantidad;
+        $precioAnterior = $productoAnterior->precio;
 
         if (isset($productosActuales[$idProducto])) {
-            $cantidadNueva = $productosActuales[$idProducto];
-            if ($cantidadNueva != $cantidadAnterior) {
-                $sentenciaActualizar = "UPDATE productos_vendidos SET cantidad = ? WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
-                editar($sentenciaActualizar, [$cantidadNueva, $id, $idProducto, 'venta']);
+            $cantidadNueva = $productosActuales[$idProducto]['cantidad'];
+            $precioNuevo = $productosActuales[$idProducto]['precio'];
+
+            if ($cantidadNueva != $cantidadAnterior || $precioNuevo != $precioAnterior) {
+                $sentenciaActualizar = "UPDATE productos_vendidos SET cantidad = ?, precio = ? WHERE idReferencia = ? AND idProducto = ? AND tipo = ?";
+                editar($sentenciaActualizar, [$cantidadNueva, $precioNuevo, $id, $idProducto, 'venta']);
             }
             unset($productosActuales[$idProducto]);
         } else {
@@ -675,23 +692,45 @@ function editarVenta($id, $venta)
     }
 
     // Insertar nuevos productos
-    foreach ($productosActuales as $idProducto => $cantidadNueva) {
+    foreach ($productosActuales as $idProducto => $datosProducto) {
+        $producto = current(array_filter($venta->productos, fn($p) => $p->id == $idProducto));
+        $precio = $producto->precio ?? $producto->precioVenta;
+
         $sentenciaInsertar = "INSERT INTO productos_vendidos (fecha, cantidad, precio, idProducto, idReferencia, tipo) VALUES (?,?,?,?,?,?)";
-        $producto = array_filter($venta->productos, fn($p) => $p->id == $idProducto)[0];
-        $parametrosInsertar = [date('Y-m-d H:i:s'), $cantidadNueva, $producto->precio, $idProducto, $id, 'venta'];
+        $parametrosInsertar = [
+            date('Y-m-d H:i:s'),
+            $datosProducto['cantidad'],
+            $precio,
+            $idProducto,
+            $id,
+            'venta'
+        ];
         insertar($sentenciaInsertar, $parametrosInsertar);
     }
 
-    // Actualizar delivery si existe
+    // Update delivery if it exists
     if (isset($venta->delivery)) {
-        // Eliminar delivery anterior
-        $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
-        eliminar($sentenciaEliminarDelivery, $id);
+        // Check if a delivery already exists
+        $sentenciaVerificarDelivery = "SELECT COUNT(*) AS count FROM deliveries WHERE idVenta = ?";
+        $existeDelivery = selectRegresandoObjeto($sentenciaVerificarDelivery, [$id])->count > 0;
 
-        // Registrar nuevo delivery
-        registrarDelivery($venta, 'idVenta', $id);
+        if ($existeDelivery) {
+            // Update existing delivery
+            dd($venta->delivery);
+            $sentenciaActualizarDelivery = "UPDATE deliveries SET costo = ?, destino = ?, gratis = ?, idChofer = ? WHERE idVenta = ?";
+            $parametrosActualizarDelivery = [
+                $venta->delivery->costo,
+                $venta->delivery->destino,
+                intval($venta->delivery->gratis),
+                $venta->delivery->idChofer,
+                $id
+            ];
+            editar($sentenciaActualizarDelivery, $parametrosActualizarDelivery);
+        } else {
+            // Register new delivery
+            registrarDelivery($venta, 'idVenta', $id);
+        }
     }
-
     return $resultado;
 }
 
@@ -1879,7 +1918,8 @@ function eliminar($sentencia, $id)
 {
     $bd = conectarBD();
     $sql = $bd->prepare($sentencia);
-    return $sql->execute([$id]);
+    $parametros = is_array($id) ? $id : [$id];
+    return $sql->execute($parametros);
 }
 
 function selectRegresandoObjeto($sentencia, $parametros = [])

@@ -28,7 +28,7 @@
           <b-field class="mt-1" label="Costo del delivery">
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
           </b-field>
-          <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
+          <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="manejarDeliveryGratis">
             ¿Delivery gratis para el cliente?
           </b-switch>
           <b-field label="Destino del delivery">
@@ -63,7 +63,7 @@
           </b-field>
         </div>
         <b-field class="mt-3" label="El cliente paga con">
-          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" @input="calcularCambio" required></b-input>
+          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
         </b-field>
         <p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
         <p class="is-size-1 has-text-weight-bold">Cambio ${{ cambio }}</p>
@@ -134,13 +134,15 @@ export default {
   data() {
     return {
       pagado: this.initialPagado,
-      cambio: (this.initialPagado - this.totalVenta) ?? 0,
       idMetodo: this.initialIdMetodo,
       origen: this.initialOrigen,
       cliente: {...this.initialCliente},
       esDelivery: this.initialDelivery?.idChofer != null,
       nuevoChofer: false,
-      delivery: {...this.initialDelivery},
+      delivery: {
+        ...this.initialDelivery,
+        gratis: Boolean(this.initialDelivery?.gratis)
+      },
       chofer: {...this.initialChofer},
       metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
       tipos: TIPOS_CLIENTE
@@ -161,8 +163,8 @@ export default {
       this.$emit('actualizar', 'costoDelivery', this.delivery.costo)
     },
 
-    calcularCambio() {
-      this.cambio = parseFloat(this.pagado - this.totalVenta)
+    manejarDeliveryGratis() {
+      this.$emit('actualizar', 'deliveryGratis', this.delivery.gratis);
     },
 
     terminarVenta() {
@@ -194,13 +196,22 @@ export default {
       }
 
       this.$emit('terminar', payload)
-    }
+    },
+
   },
 
   computed: {
     esSimple: function () {
       return this.metodosSimples.includes(this.idMetodo)
+    },
+    cambio: {
+      get() {
+        return this.totalVenta - this.pagado;
+      },
+      set(value) {
+        this.pagado = this.totalVenta - value;
+      }
     }
-  }
+  },
 }
 </script>

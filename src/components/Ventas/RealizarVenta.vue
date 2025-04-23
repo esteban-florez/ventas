@@ -267,36 +267,35 @@ export default {
 
 
     abrirDialogo(opcion) {
-  // First close any existing dialog
-  this.mostrarTerminarVenta = false;
-  this.mostrarAgregarCuenta = false;
-  this.mostrarAgregarApartado = false;
-  this.mostrarRegistrarCotizacion = false;
-  
-  // Use $nextTick to ensure the previous dialog is completely gone
-  this.$nextTick(() => {
-    this.mostrarDialogo = true;
-    switch (opcion) {
-      case "venta":
-        this.mostrarTerminarVenta = true;
-        break;
-      case "cuenta":
-        this.mostrarAgregarCuenta = true;
-        break;
-      case "apartado":
-        this.mostrarAgregarApartado = true;
-        break;
-      case "cotiza":
-        this.mostrarRegistrarCotizacion = true;
-        break;
-    }
-  });
-},
+      this.mostrarTerminarVenta = false;
+      this.mostrarAgregarCuenta = false;
+      this.mostrarAgregarApartado = false;
+      this.mostrarRegistrarCotizacion = false;
+      
+      this.$nextTick(() => {
+        this.mostrarDialogo = true;
+        switch (opcion) {
+          case "venta":
+            this.mostrarTerminarVenta = true;
+            break;
+          case "cuenta":
+            this.mostrarAgregarCuenta = true;
+            break;
+          case "apartado":
+            this.mostrarAgregarApartado = true;
+            break;
+          case "cotiza":
+            this.mostrarRegistrarCotizacion = true;
+            break;
+        }
+      });
+    },
 
     onCerrar(opcion) {
       this.mostrarDialogo = false
-      if (opcion === 'venta' || opcion === 'cuenta' || opcion === 'apartado' || opcion === 'cotiza')
+      if (opcion === 'venta' || opcion === 'cuenta' || opcion === 'apartado' || opcion === 'cotiza') {
         this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
+      }
     },
 
     onQuitar(id) {
@@ -425,6 +424,17 @@ export default {
       }
 
       this.total = total
+    },
+  },
+
+  watch: {
+    mostrarDialogo(newValue) {
+      if (!newValue) {
+        this.costoDelivery = 0
+        this.deliveryGratis = false
+        this.esDelivery = false
+        this.calcularTotal()
+      }
     }
   }
 }

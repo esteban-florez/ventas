@@ -104,10 +104,13 @@ export default {
       this.metodo = venta.simple
       this.pagado = parseFloat(venta.pagado)
       this.id = venta.id,
+      this.costoDelivery = venta.delivery?.costo || 0,
+      this.esDelivery = venta.delivery != null,
+      this.deliveryGratis = venta.delivery?.gratis,
       this.delivery = venta.delivery ? {
         costo: venta.delivery.costo,
         destino: venta.direccionCliente,
-        gratis: !venta.delivery.gratis,
+        gratis: venta.delivery.gratis,
         idChofer: venta.deliveryId
       } : null
     })
@@ -382,7 +385,7 @@ export default {
       if (this.esDelivery && !this.deliveryGratis && !isNaN(costo)) {
         total += costo
       }
-
+      
       this.total = total
     }
   }
