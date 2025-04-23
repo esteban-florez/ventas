@@ -184,10 +184,9 @@
 
     computed: {
       porPagar() {
-        const secureInitialPagado = isNaN(this.initialPagado) ? 0 : this.initialPagado
-        const secureTotalVenta = isNaN(this.initialtotalVenta) ? 0 : this.initialtotalVenta
-        const securePagado = isNaN(this.initialpagado) ? 0 : this.initialpagado
-        const result = parseFloat(secureInitialPagado - secureTotalVenta - securePagado);
+        const secureTotalVenta = isNaN(this.totalVenta) ? 0 : this.totalVenta
+        const securePagado = isNaN(this.pagado) ? 0 : this.pagado
+        const result = parseFloat(secureTotalVenta - securePagado);
         return result
       },
       esSimple() {
