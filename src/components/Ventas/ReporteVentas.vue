@@ -47,10 +47,6 @@
           {{ props.row.nombreCliente }}
         </b-table-column>
 
-        <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
-          {{ props.row.nombreUsuario }}
-        </b-table-column>
-
         <b-table-column field="pagado" label="Pago" sortable v-slot="props">
           ${{ props.row.pagado }}
         </b-table-column>
@@ -69,10 +65,6 @@
 
         <b-table-column field="origen" label="Origen" sortable v-slot="props">
           {{ props.row.origen || 'N/A' }}
-        </b-table-column>
-
-        <b-table-column field="productos" label="Productos" sortable v-slot="props">
-          <tabla-productos-vendidos :productos="props.row.productos" />
         </b-table-column>
 
         <b-table-column field="ticket" label="Comprobante" v-slot="props">
@@ -101,14 +93,13 @@ import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
 import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas'
-import TablaProductosVendidos from './TablaProductosVendidos'
 import ComprobanteCompra from './ComprobanteCompra'
 import HttpService from '../../Servicios/HttpService'
 import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteVentas",
-  components: { BusquedaEnFecha, TablaProductosVendidos, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
+  components: { BusquedaEnFecha, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
     filtros: {

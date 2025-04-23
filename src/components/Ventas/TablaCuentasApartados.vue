@@ -21,36 +21,25 @@
       :default-sort-direction="defaultSortDirection" :pagination-rounded="isPaginationRounded" :sort-icon="sortIcon"
       :sort-icon-size="sortIconSize" default-sort="user.first_name" aria-next-label="Next page"
       aria-previous-label="Previous page" aria-page-label="Page" aria-current-label="Current page">
-      <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+      
+      <b-table-column field="id" label="N0 Factura" sortable searchable v-slot="props">
+        {{ props.row.id }}
       </b-table-column>
 
       <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
         {{ props.row.nombreCliente }}
       </b-table-column>
 
-      <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
-        {{ props.row.nombreUsuario }}
-      </b-table-column>
-
-      <b-table-column field="pagado" label="Pago" sortable v-slot="props">
-        <span class="has-text-info has-text-weight-bold">${{ props.row.pagado }}</span>
+      <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
+      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
       </b-table-column>
 
       <b-table-column field="porPagar" label="Por pagar" sortable v-slot="props">
         <span class="has-text-danger has-text-weight-bold"> ${{ props.row.porPagar }}</span>
       </b-table-column>
 
-      <b-table-column field="total" label="Total" sortable v-slot="props">
-        <b>${{ props.row.total }}</b>
-      </b-table-column>
-
       <b-table-column field="dias" label="Duración" sortable v-slot="props" v-if="datos[0].tipo === 'cuenta'">
         {{ props.row.dias }} días
-      </b-table-column>
-
-      <b-table-column field="productos" label="Productos" sortable v-slot="props">
-        <tabla-productos-vendidos :productos="props.row.productos" />
       </b-table-column>
 
       <b-table-column field="estado" label="Estado" sortable searchable v-slot="props">
@@ -91,12 +80,9 @@
 </template>
 <script>
 import HttpService from '@/Servicios/HttpService'
-import TablaProductosVendidos from './TablaProductosVendidos'
 
 export default {
-  name: "TablaProductosApartados",
   props: ["datos", "printHref"],
-  components: { TablaProductosVendidos },
 
   data: () => ({
     isPaginated: true,
@@ -111,6 +97,9 @@ export default {
   }),
 
   methods: {
+
+    
+
     cargarRegistrosFiltrados() {
       this.$emit('cargarRegistrosFiltrados')
     },

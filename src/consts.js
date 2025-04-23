@@ -12,7 +12,7 @@ export const UNIDADES = {
   ml: "Mililitros",
   lt: "Litros",
   cj: "Caja",
-  paq: "Paquetes",
+  paq: "Paquete",
 }
 
 export const DIAS = [7, 10, 15]
