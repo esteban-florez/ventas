@@ -7,19 +7,22 @@
         <div class="box">
           <h1 class="title is-1 has-text-centered is-family-monospace">Todo Ofertas Caracas</h1>
           <img src="../../assets/ofertacaracas.jpg" width="200" style="display: block; margin:0 auto;">
-          <b-field label="Nombre de usuario">
-            <b-input icon="shield-account" type="text" placeholder="Ej. paco" v-model="usuario.usuario"></b-input>
-          </b-field>
-          <b-field label="Contraseña">
-            <b-input type="password" placeholder="Contraseña" v-model="usuario.password" password-reveal>
-            </b-input>
-          </b-field>
-          <b-button type="is-primary" size="is-large" icon-left="check" @click="iniciarSesion">Ingresar</b-button>
+          <form @submit.prevent="iniciarSesion">
+            <b-field label="Nombre de usuario">
+              <b-input icon="shield-account" type="text" placeholder="Ej. paco" v-model="usuario.usuario"></b-input>
+            </b-field>
+            <b-field label="Contraseña">
+              <b-input type="password" placeholder="Contraseña" v-model="usuario.password" password-reveal>
+              </b-input>
+            </b-field>
+            <b-button type="is-primary" size="is-large" icon-left="check" @click="iniciarSesion" native-type="submit">Ingresar</b-button>
+          </form>
         </div>
       </div>
     </div>
   </section>
 </template>
+
 <script>
 import HttpService from '../../Servicios/HttpService'
 
