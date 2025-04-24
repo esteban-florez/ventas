@@ -9,9 +9,9 @@
                                 <h3 class="subtitle is-spaced">{{ item.nombre }}</h3>
                                 <h1 class="title">
                                     <div>
-                                        <!-- Si el valor es numérico, formatea como monto -->
-                                        <span v-if="typeof item.total === 'number'">
-                                            {{ formatoMonto(item.total) }}
+                                        <!-- Solo mostrar el formato de monto si es número o string numérico -->
+                                        <span v-if="typeof item.total === 'number' || (!isNaN(Number(item.total)) && item.total !== '' && item.total !== null)">
+                                            {{ formatoMonto(Number(item.total)) }}
                                         </span>
                                         <span v-else>
                                             {{ item.total }}
@@ -34,14 +34,14 @@
     </div>
 </template>
 <script>
-    import Utiles from '../../Servicios/Utiles'
-    export default {
-        name: "CartasTotales",
-        props: ["totales"],
-        methods: {
-            formatoMonto(valor) {
-                return Utiles.formatoMonto(valor)
-            }
+import Utiles from '../../Servicios/Utiles'
+export default {
+    name: "CartasTotales",
+    props: ["totales"],
+    methods: {
+        formatoMonto(valor) {
+            return Utiles.formatoMonto(valor)
         }
     }
+}
 </script>

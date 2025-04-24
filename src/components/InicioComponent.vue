@@ -87,11 +87,11 @@
             </b-table-column>
 
             <b-table-column field="unidades" label="Unidades vendidas" v-slot="props">
-              {{ props.row.unidades }}
+              ${{ formatoMonto(props.row.unidades) }}
             </b-table-column>
 
             <b-table-column field="total" label="Total ventas" v-slot="props">
-              ${{ props.row.total }}
+              ${{ formatoMonto(props.row.total) }}
             </b-table-column>
 
             <b-table-column field="progreso" label="Progreso" v-slot="props">
@@ -253,11 +253,11 @@ export default {
 
     crearCartas(ingresos) {
       this.ingresos = [
-        { nombre: "Total ingresos", total: '$' + ingresos.totalIngresos, icono: "currency-usd", clase: "has-text-success" },
-        { nombre: "Ingresos hoy", total: '$' + ingresos.ingresosHoy, icono: "calendar", clase: "has-text-primary" },
-        { nombre: "Ingresos semana", total: '$' + ingresos.ingresosSemana, icono: "calendar-range", clase: "has-text-info" },
-        { nombre: "Ingresos mes", total: '$' + ingresos.ingresosMes, icono: "calendar-month", clase: "has-text-dark" },
-        { nombre: "Ingresos pendientes", total: '$' + ingresos.ingresosPendientes, icono: "alert", clase: "has-text-danger" },
+        { nombre: "Total ingresos", total: ingresos.totalIngresos, icono: "currency-usd", clase: "has-text-success" },
+        { nombre: "Ingresos hoy", total: ingresos.ingresosHoy, icono: "calendar", clase: "has-text-primary" },
+        { nombre: "Ingresos semana", total: ingresos.ingresosSemana, icono: "calendar-range", clase: "has-text-info" },
+        { nombre: "Ingresos mes", total: ingresos.ingresosMes, icono: "calendar-month", clase: "has-text-dark" },
+        { nombre: "Ingresos pendientes", total: ingresos.ingresosPendientes, icono: "alert", clase: "has-text-danger" },
       ]
     },
 
@@ -283,6 +283,10 @@ export default {
 
     crearGraficaVentasMarcas(array) {
       Utiles.generarGrafica('line', array, "#contenedor-marcas", "#grafica-marcas", "grafica-marcas")
+    },
+
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
     }
   }
 }
