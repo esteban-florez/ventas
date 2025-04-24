@@ -11,7 +11,12 @@
         </div>
         <div class="column is-flex is-justify-content-end">
           <b-button type="is-primary" tag="a" :href="printHref" @click="cargarRegistrosFiltrados" target="__blank" rel="noopener noreferrer">
-            Imprimir
+            Imprimir Cuentas
+          </b-button>
+        </div>
+        <div class="column is-flex is-justify-content-end">
+          <b-button type="is-primary" icon-left="printer" @click="imprimir">
+            Imprimir todos los abonos
           </b-button>
         </div>
       </div>
@@ -82,7 +87,7 @@
 import HttpService from '@/Servicios/HttpService'
 
 export default {
-  props: ["datos", "printHref", "formatoMonto"],
+  props: ["datos", "printHref", "formatoMonto", "filtros"],
 
   data: () => ({
     isPaginated: true,
@@ -148,6 +153,13 @@ export default {
           }
         }
       })
+    },
+
+    imprimir() {
+      // Usa la prop filtros, no this.filtros
+      localStorage.setItem('filtros-abonos', JSON.stringify(this.filtros || {}))
+      const ruta = this.$router.resolve({ name: 'PDFTodosAbonos' })
+      window.open(ruta.href, '_blank')
     },
   },
 

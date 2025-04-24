@@ -96,6 +96,10 @@ switch ($accion) {
 		echo json_encode(registrarAbono($payload->abono));
 		break;
 
+	case 'obtener_todos_abonos':
+		echo json_encode(obtenerTodosLosAbonosFiltrados($payload->filtros));
+		break;
+
 	case 'historial':
 		echo json_encode(obtenerHistorialInventario($payload->proveedor));
 		break;

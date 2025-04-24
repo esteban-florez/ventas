@@ -18,10 +18,12 @@
     <div class="mt-2" v-if="cuentas.length > 0">
       <cartas-totales :totales="totalesGenerales" :formatoMonto="formatoMonto" />
       <cartas-totales-filtradas :metodosPago="cuentasFiltradas" :formatoMonto="formatoMonto" />
-      <tabla-cuentas-apartados :datos="cuentas"
+      <tabla-cuentas-apartados
+        :datos="cuentas"
+        :printHref="printHref"
         :formatoMonto="formatoMonto"
-        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerCuentas"
-        @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
+        :filtros="filtrosCompletos"
+      />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -82,6 +84,13 @@ export default {
       const params = new URLSearchParams(filtros).toString()
       return `${href}?${params}`
     },
+    filtrosCompletos() {
+      return {
+        ...this.filtros,
+        clienteId: this.clienteId || null,
+        clienteNombre: this.clienteSeleccionado ? this.clienteSeleccionado.nombre : null
+      }
+    }
   },
 
   methods: {

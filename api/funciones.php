@@ -925,6 +925,41 @@ function obtenerCuentaApartado($id)
 
 /* Abonos */
 
+function obtenerTodosLosAbonosFiltrados($filtros)
+{
+    $sql = "SELECT 
+        abonos.*, 
+        metodos.nombre AS metodo, 
+        cuentas_apartados.tipo, 
+        cuentas_apartados.id AS idCuenta, 
+        clientes.nombre AS nombreCliente
+    FROM abonos
+    LEFT JOIN metodos ON abonos.idMetodo = metodos.id
+    LEFT JOIN cuentas_apartados ON abonos.idCuenta = cuentas_apartados.id
+    LEFT JOIN clientes ON cuentas_apartados.idCliente = clientes.id
+    WHERE 1=1";
+
+    $parametros = [];
+
+    if (!empty($filtros->clienteId)) {
+        $sql .= " AND clientes.id = ?";
+        $parametros[] = $filtros->clienteId;
+    }
+    if (!empty($filtros->fechaInicio) && !empty($filtros->fechaFin)) {
+        $sql .= " AND (DATE(abonos.fecha) >= ? AND DATE(abonos.fecha) <= ?)";
+        $parametros[] = $filtros->fechaInicio;
+        $parametros[] = $filtros->fechaFin;
+    }
+    if (!empty($filtros->tipo)) {
+        $sql .= " AND cuentas_apartados.tipo = ?";
+        $parametros[] = $filtros->tipo;
+    }
+
+    $sql .= " ORDER BY abonos.fecha DESC";
+
+    return selectPrepare($sql, $parametros);
+}
+
 function obtenerAbonosPorCuentaApartado($id)
 {
     $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
