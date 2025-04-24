@@ -8,7 +8,7 @@
         @precioCambiado="calcularTotal" />
       <div class="notification is-primary mt-3">
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
-          Total ${{ total }}
+          Total ${{ total.toFixed(2) }}
         </p>
         <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
