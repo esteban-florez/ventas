@@ -33,11 +33,7 @@
 			</b-table-column>
 
 			<b-table-column field="subtotal" label="Subtotal" v-slot="props">
-<<<<<<< HEAD
-				<b>${{ formatoMonto(props.row.precio * props.row.cantidad) }}</b>
-=======
-				<b>${{ (props.row.precio * props.row.cantidad).toFixed(2) }}</b>
->>>>>>> 70e0b202801913e5e151590033cb4a8fbbcf18f3
+				<b>${{ formatoMonto(props.row.precio * props.row.cantidad).toFixed(2) }}</b>
 			</b-table-column>
 
 			<b-table-column field="quitar" label="Quitar" v-slot="props">
