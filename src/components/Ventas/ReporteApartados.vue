@@ -84,6 +84,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
     },
@@ -151,7 +155,7 @@ export default {
           this.apartadosFiltrados = resultado.apartadosFiltrados.map(apartado => {
             return {
               nombre: apartado.metodo_pago,
-              total: `$ ${apartado.total_pagado}`,
+              total: `$ ${this.formatoMonto(apartado.total_pagado)}`,
               icono: 'credit-card-outline',
               clase: 'has-text-info',
               cantidad: apartado.cuentas_apartados_totales,
@@ -160,11 +164,11 @@ export default {
 
           this.totalesGenerales = [
             { nombre: "# Apartados", total: this.apartados.length, icono: "wallet-travel", clase: "has-text-primary" },
-            { nombre: "Total ", total: '$' + resultado.totalApartados, icono: "cash-fast", clase: "has-text-success" },
-            { nombre: "Por pagar", total: '$' + resultado.totalPorPagar, icono: "alert", clase: "has-text-danger" },
-            { nombre: "Pagos", total: '$' + resultado.totalPagos, icono: "account-cash", clase: "has-text-grey-light" },
+            { nombre: "Total ", total: '$' + this.formatoMonto(resultado.totalApartados), icono: "cash-fast", clase: "has-text-success" },
+            { nombre: "Por pagar", total: '$' + this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Pagos", total: '$' + this.formatoMonto(resultado.totalPagos), icono: "account-cash", clase: "has-text-grey-light" },
             { nombre: "# Productos", total: Utiles.calcularProductosVendidos(this.apartados), icono: "package-variant", clase: "has-text-warning" },
-            { nombre: "Ganancia", total: '$' + Utiles.calcularTotalGanancia(this.apartados), icono: "currency-usd", clase: "has-text-info" }
+            { nombre: "Ganancia", total: '$' + this.formatoMonto(Utiles.calcularTotalGanancia(this.apartados)), icono: "currency-usd", clase: "has-text-info" }
           ]
           this.cargando = false
         })

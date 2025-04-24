@@ -8,7 +8,7 @@
         @precioCambiado="calcularTotal" />
       <div class="notification is-primary mt-3">
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
-          Total ${{ total }}
+          Total ${{ formatoMonto(total) }}
         </p>
          <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
@@ -47,6 +47,7 @@ import ComprobanteCompra from './ComprobanteCompra'
 import MensajeInicial from '../Extras/MensajeInicial'
 import AyudanteSesion from '../../Servicios/AyudanteSesion'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'EditarCuenta',
@@ -119,6 +120,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
     },

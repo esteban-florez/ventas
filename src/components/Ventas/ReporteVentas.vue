@@ -48,15 +48,15 @@
         </b-table-column>
 
         <b-table-column field="pagado" label="Pago" sortable v-slot="props">
-          ${{ props.row.pagado }}
+          ${{ formatoMonto(props.row.pagado) }}
         </b-table-column>
 
         <b-table-column field="Cambio" label="Cambio" sortable v-slot="props">
-          ${{ props.row.pagado - props.row.total }}
+          ${{ formatoMonto(props.row.pagado - props.row.total) }}
         </b-table-column>
 
         <b-table-column field="total" label="Total" sortable v-slot="props">
-          <b>${{ props.row.total }}</b>
+          <b>${{ formatoMonto(props.row.total) }}</b> 
         </b-table-column>
 
         <b-table-column field="metodo" label="Método de pago" sortable v-slot="props">
@@ -150,6 +150,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
     },
@@ -305,7 +309,7 @@ export default {
           this.ventasFiltradas = resultado.ventasFiltradas.map(venta => {
             return {
               nombre: venta.metodo_pago,
-              total: `$ ${venta.total_pagado}`,
+              total: `$ ${this.formatoMonto(venta.total_pagado)}`,
               icono: 'credit-card-outline',
               clase: 'has-text-info',
               cantidad: venta.ventas_totales,
@@ -314,8 +318,8 @@ export default {
 
           this.totalesGenerales = [
             { nombre: "No. Ventas", total: this.ventas.length, icono: "cart", clase: "has-text-primary" },
-            { nombre: "Total ventas", total: '$' + resultado.totalVentas, icono: "cash-fast", clase: "has-text-success" },
-            { nombre: "Ganancia", total: '$' + Utiles.calcularTotalGanancia(this.ventas), icono: "currency-usd", clase: "has-text-info" },
+            { nombre: "Total ventas", total: '$' + this.formatoMonto(resultado.totalVentas), icono: "cash-fast", clase: "has-text-success" },
+            { nombre: "Ganancia", total: '$' + this.formatoMonto(Utiles.calcularTotalGanancia(this.ventas)), icono: "currency-usd", clase: "has-text-info" },
             { nombre: "Productos vendidos", total: Utiles.calcularProductosVendidos(this.ventas), icono: "package-variant", clase: "has-text-danger" },
           ]
           this.cargando = false

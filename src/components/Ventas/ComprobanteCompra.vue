@@ -38,23 +38,23 @@
           <tr v-for="(producto, index) in venta.productos" :key="index">
             <td>{{ producto.codigo }}</td>
             <td>{{ producto.nombre }}</td>
-            <td>{{ producto.cantidad }}</td>
+            <td>{{ formatoMonto(producto.cantidad) }}</td>
             <td>{{ producto.unidad }}</td>
-            <td>${{ producto.precio }}</td>
-            <td>${{ f(producto.precio * producto.cantidad) }}</td>
+            <td>${{ formatoMonto(producto.precio) }}</td>
+            <td>${{ formatoMonto(producto.precio * producto.cantidad) }}</td>
           </tr>
         </tbody>
       </table>
 
       <div class="pago-container">
         <div class="pago-info">
+          <p><b>Total:</b> ${{ formatoMonto(venta.total) }}</p>
           <p v-if="venta.delivery && !venta.delivery.gratis"><b>
-            Delivery:</b>${{ f(venta.delivery.costo) }}
+            Delivery:</b>${{ formatoMonto(venta.delivery.costo) }}
           </p>
-          <p><b>Total:</b> ${{ f(venta.total) }}</p>
-          <p v-if="!cotiza"><b>Su pago:</b> ${{ f(venta.pagado) }}</p>
-          <p v-if="tipoVenta"><b>Cambio:</b> ${{ f(venta.pagado - venta.total) }}</p>
-          <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ f(porPagar) }}</p>
+          <p v-if="!cotiza"><b>Su pago:</b> ${{ formatoMonto(venta.pagado) }}</p>
+          <p v-if="tipoVenta"><b>Cambio:</b> ${{ formatoMonto(venta.pagado - venta.total) }}</p>
+          <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ formatoMonto(porPagar) }}</p>
         </div>
       </div>
 
@@ -70,6 +70,7 @@
 <script>
 import Printd from 'printd'
 import html2pdf from 'html2pdf.js'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'ComprobanteCompra',
@@ -223,8 +224,9 @@ export default {
       }
     },
 
-    f(number) {
-      return Number(number).toFixed(2)
+    formatoMonto(valor) {
+      // Usa el formato global de montos
+      return Utiles.formatoMonto(valor)
     },
 
     async imprimir() {

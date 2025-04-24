@@ -23,7 +23,7 @@
       </b-table-column>
 
       <b-table-column field="deuda" label="Deuda" sortable searchable v-slot="props">
-        ${{ props.row.deuda.toFixed(2) }}
+        ${{ formatoMonto(props.row.deuda) }}
       </b-table-column>
 
       <b-table-column field="pagar" label="Pagar" v-slot="props" v-if="can('proveedores.pagar_proveedor')">
@@ -53,6 +53,7 @@
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import AyudanteSesion from '@/Servicios/AyudanteSesion'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'ProveedoresComponent',
@@ -68,6 +69,9 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     obtenerProveedores() {
       this.cargando = true
       let payload = {

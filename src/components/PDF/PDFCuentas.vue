@@ -8,7 +8,7 @@
           {{ props.row.nombre }}
         </b-table-column>
         <b-table-column field="total" label="Total" v-slot="props">
-          $ {{ props.row.total }}
+          $ {{ formatoMonto(props.row.total) }}
         </b-table-column>
       </b-table>
 
@@ -30,10 +30,10 @@
         </b-table-column>
         <b-table-column field="estado" label="Estado" v-slot="props">
           <span class="tag is-success is-large" v-if="props.row.porPagar < 1">LIQUIDADO</span>
-          <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">PENDIENTE</span>
+          <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">VENCIDA</span>
         </b-table-column>
         <b-table-column field="porPagar" label="Por pagar" v-slot="props">
-          <span class="has-text-danger has-text-weight-bold"> ${{ props.row.porPagar }}</span>
+          <span class="has-text-danger has-text-weight-bold"> ${{ formatoMonto(props.row.porPagar) }}</span>
         </b-table-column>
       </b-table>
       
@@ -42,7 +42,7 @@
       
       <b-table class="box" :data="cuentasFiltradasTotal">
         <b-table-column field="totalPorPagar" label="Monto total por pagar" v-slot="props">
-          ${{ props.row.totalPorPagar }}
+          ${{ formatoMonto(props.row.totalPorPagar) }}
         </b-table-column>
       </b-table>
 
@@ -55,7 +55,8 @@
 
 <script>
 import Printd from 'printd'
-import HttpService from '@/Servicios/HttpService';
+import HttpService from '@/Servicios/HttpService'
+import Utiles from '@/Servicios/Utiles'
 
 export default {
   name: 'PDFCuentas',
@@ -78,10 +79,9 @@ export default {
         if (!agrupados[item.nombre]) {
           agrupados[item.nombre] = { nombre: item.nombre, total: 0 };
         }
-        // Si el total viene como string con símbolo, lo limpiamos
         let monto = item.total;
         if (typeof monto === 'string') {
-          monto = monto.replace(/[^0-9.-]+/g, '');
+          monto = monto.replace(/[^0-9,-]+/g, '').replace(',', '.');
         }
         agrupados[item.nombre].total += Number(monto || 0);
       });
@@ -90,6 +90,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     async fetchSalesData() {
       this.cuentasFiltradas = JSON.parse(localStorage.getItem('metodos_pago') || '[]');
       localStorage.removeItem('metodos_pago');

@@ -39,7 +39,7 @@
       </b-table-column>
 
       <b-table-column field="deuda" label="Deuda Total" sortable searchable v-slot="props">
-        ${{ Number(props.row.deuda).toFixed(2) || 0..toFixed(2) }}
+        ${{ formatoMonto(props.row.deuda) }}
       </b-table-column>
 
       <b-table-column field="acciones" label="Acciones" v-slot="props">
@@ -59,6 +59,7 @@
 <script>
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ChoferesComponent",
@@ -75,6 +76,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     obtenerChoferes() {
       this.cargando = true
       let payload = {

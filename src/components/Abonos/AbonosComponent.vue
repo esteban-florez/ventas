@@ -34,11 +34,11 @@
       <b-table class="box" :data="abonos" :per-page="perPage" :paginated="true" :pagination-simple="false"
         :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
-      </b-table-column>
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+        </b-table-column>
 
         <b-table-column field="monto" label="Monto" sortable searchable v-slot="props">
-          ${{ props.row.monto }}
+          ${{ formatoMonto(props.row.monto) }}
         </b-table-column>
 
         <b-table-column field="metodo" label="Método de pago" sortable searchable v-slot="props">
@@ -51,7 +51,7 @@
 
         <b-table-column field="ticket" label="Comprobante" v-slot="props">
           <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
-          :to="{ name: 'EditarAbono', params: { id: props.row.id } }" v-if="can('abonos.editar')">Editar</b-button>
+            :to="{ name: 'EditarAbono', params: { id: props.row.id } }" v-if="can('abonos.editar')">Editar</b-button>
           <b-button type="is-info" @click="generarComprobante(props)">
             <b-icon icon="ticket-outline">
             </b-icon>
@@ -68,7 +68,8 @@
 import MensajeInicial from '../Extras/MensajeInicial'
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
-import CartasTotales from '../Extras/CartasTotales.vue';
+import CartasTotales from '../Extras/CartasTotales.vue'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "AbonosComponent",
@@ -90,6 +91,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     generarComprobante({ row }) {
       const datos = { abono: row, cuenta: this.cuentaApartado }
       localStorage.setItem('comprobante-abono', JSON.stringify(datos))
@@ -161,19 +166,19 @@ export default {
         },
         {
           nombre: 'Monto total',
-          total: Number(cuentaApartado.total).toFixed(2),
+          total: this.formatoMonto(cuentaApartado.total),
           icono: 'cash',
           clase: 'has-text-info',
         },
         {
           nombre: 'Monto pagado',
-          total: Number(cuentaApartado.pagado).toFixed(2),
+          total: this.formatoMonto(cuentaApartado.pagado),
           icono: 'check-circle',
           clase: 'has-text-success',
         },
         {
           nombre: 'Monto por pagar',
-          total: Number(cuentaApartado.porPagar).toFixed(2),
+          total: this.formatoMonto(cuentaApartado.porPagar),
           icono: 'clock',
           clase: 'has-text-danger',
         },

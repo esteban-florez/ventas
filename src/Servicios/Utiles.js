@@ -82,6 +82,11 @@ const Utiles = {
     return totales
   },
 
+  formatoMonto(valor) {
+    if (isNaN(valor)) return valor
+    return Number(valor).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  },
+
   validarDatos(datos) {
     let errores = []
     for (let [clave, valor] of Object.entries(datos)) {

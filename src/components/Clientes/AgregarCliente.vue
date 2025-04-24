@@ -8,19 +8,20 @@
             <b-breadcrumb-item tag='router-link' to="/clientes">Clientes</b-breadcrumb-item>
             <b-breadcrumb-item active>Agregar cliente</b-breadcrumb-item>
         </b-breadcrumb>
-        <form-cliente :cliente="datosCliente" @registrar="onRegistrar"/>
+        <form-cliente :cliente="datosCliente" @registrar="onRegistrar" :formatoMonto="formatoMonto"/>
         <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
     </section>
 </template>
 <script>
     import FormCliente from './FormCliente'
     import HttpService from '../../Servicios/HttpService'
+    import Utiles from '../../Servicios/Utiles'
 
     export default{
         name: "AgregarCliente",
         components: { FormCliente },
 
-        data: ()=>({
+        data: () => ({
             cargando: false,
             datosCliente: {
                 nombre: "",
@@ -32,6 +33,9 @@
         }),
 
         methods: {
+            formatoMonto(valor) {
+                return Utiles.formatoMonto(valor)
+            },
             onRegistrar(cliente){
                 this.cargando = true
                 let payload = {

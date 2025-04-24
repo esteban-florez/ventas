@@ -27,6 +27,9 @@
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
           <b-field class="mt-1" label="Costo del delivery">
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
+            <span v-if="delivery.costo">
+              ({{ formatoMonto(delivery.costo) }})
+            </span>
           </b-field>
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="manejarDeliveryGratis">
             ¿Delivery gratis para el cliente?
@@ -64,9 +67,12 @@
         </div>
         <b-field class="mt-3" label="El cliente paga con">
           <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
+          <span v-if="pagado">
+            ({{ formatoMonto(pagado) }})
+          </span>
         </b-field>
-        <p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
-        <p class="is-size-1 has-text-weight-bold">Cambio ${{ cambio }}</p>
+        <p class="is-size-1 has-text-weight-bold">Total ${{ formatoMonto(totalVenta) }}</p>
+        <p class="is-size-1 has-text-weight-bold">Cambio ${{ formatoMonto(cambio) }}</p>
       </section>
       <footer class="modal-card-foot">
         <b-button label="Cancelar" icon-left="cancel" size="is-medium" @click="$emit('close', 'venta')" />
@@ -78,6 +84,7 @@
 <script>
 import BusquedaCliente from '../Clientes/BusquedaCliente'
 import { TIPOS_PAGO_SIMPLE, TIPOS_CLIENTE } from '@/consts'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'DialogoTerminarVenta',
@@ -150,6 +157,9 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     onSeleccionado(cliente) {
       this.cliente = cliente
       this.delivery.destino = cliente.direccion

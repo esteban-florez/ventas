@@ -8,7 +8,7 @@
     <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
       Datos del proveedor
     </h3>
-    <cartas-totales :totales="datosProveedor" />
+    <cartas-totales :totales="datosProveedor" :formatoMonto="formatoMonto" />
     <hr>
     <mensaje-inicial :titulo="'No se han registrado pagos'" :subtitulo="'Haz click el botón de la esquina para registrar un nuevo pago'" v-if="pagos.length < 1" />
     <template v-else>
@@ -28,11 +28,11 @@
       <b-table class="box" :data="pagos" :per-page="perPage" :paginated="true" :pagination-simple="false"
         :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
-      </b-table-column>
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+        </b-table-column>
 
         <b-table-column field="monto" label="Monto" sortable searchable v-slot="props">
-          ${{ props.row.monto }}
+          ${{ formatoMonto(props.row.monto) }}
         </b-table-column>
 
         <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
@@ -49,6 +49,7 @@ import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import CartasTotales from '../Extras/CartasTotales.vue';
 import AyudanteSesion from '@/Servicios/AyudanteSesion';
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "PagosComponent",
@@ -67,6 +68,9 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     async obtenerPagos() {
       this.cargando = true
       let payload = {
@@ -88,19 +92,19 @@ export default {
         },
         {
           nombre: 'Monto total',
-          total: Number(proveedor.total).toFixed(2),
+          total: proveedor.total,
           icono: 'cash',
           clase: 'has-text-info',
         },
         {
           nombre: 'Monto pagado',
-          total: Number(proveedor.pagado).toFixed(2),
+          total: proveedor.pagado,
           icono: 'check-circle',
           clase: 'has-text-success',
         },
         {
           nombre: 'Monto por pagar',
-          total: Number(proveedor.deuda).toFixed(2),
+          total: proveedor.deuda,
           icono: 'clock',
           clase: 'has-text-danger',
         },
@@ -109,7 +113,6 @@ export default {
       this.cargando = false
     },
 
-    
     pagar() {
       this.$buefy.dialog.prompt({
         message: '¿Cual es el monto del pago que vas a registrar?',

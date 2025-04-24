@@ -17,11 +17,15 @@
 			<button class="delete" @click="deseleccionarCliente"></button>
 			<p>Cliente: <b>{{ clienteSeleccionado.nombre }}</b></p>
 			<p>Teléfono: <b>{{ clienteSeleccionado.telefono }}</b></p>
+			<p v-if="clienteSeleccionado.deuda !== undefined">
+				Deuda: <b>${{ formatoMonto(clienteSeleccionado.deuda) }}</b>
+			</p>
 		</div>
 	</section>
 </template>
 <script>
 	import HttpService from '../../Servicios/HttpService'
+	import Utiles from '../../Servicios/Utiles'
 
 	export default{
 		name: "BusquedaCliente",
@@ -39,6 +43,9 @@
 		}),
 
 		methods: {
+			formatoMonto(valor) {
+				return Utiles.formatoMonto(valor)
+			},
 			deseleccionarCliente(){
 				this.clienteSeleccionado = null
 				this.$emit('deseleccionado')

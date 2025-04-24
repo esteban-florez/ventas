@@ -4,8 +4,8 @@
     <div v-if="cotizaciones.length > 0">
       <b-table class="box" :data="cotizaciones">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
-      </b-table-column>
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+        </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
           {{ props.row.nombreCliente }}
@@ -16,11 +16,11 @@
         </b-table-column>
 
         <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" v-slot="props">
-        {{ new Date(props.row.hasta ).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') }}
+          {{ new Date(props.row.hasta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') }}
         </b-table-column>
 
         <b-table-column field="total" label="Total" v-slot="props">
-          <b>${{ props.row.total }}</b>
+          <b>${{ formatoMonto(props.row.total) }}</b>
         </b-table-column>
 
         <b-table-column field="productos" label="Productos" v-slot="props">
@@ -38,6 +38,7 @@
 import Printd from 'printd'
 import TablaProductosVendidos from '../Ventas/TablaProductosVendidos.vue';
 import HttpService from '@/Servicios/HttpService';
+import Utiles from '@/Servicios/Utiles';
 
 export default {
   name: 'PDFCotizaciones',
@@ -46,6 +47,12 @@ export default {
   data: () => ({
     cotizaciones: [],
   }),
+
+  methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(Number(valor))
+    }
+  },
 
   mounted() {
     document.body.style.opacity = '0'

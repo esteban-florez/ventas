@@ -47,7 +47,7 @@
       </b-table-column>
 
       <b-table-column field="costo" label="Costo" sortable searchable v-slot="props">
-        {{ props.row.costo }}
+        ${{ formatoMonto(props.row.costo) }}
       </b-table-column>
 
       <b-table-column field="gratis" label="Envío gratis" sortable searchable v-slot="props">
@@ -71,6 +71,7 @@ import MensajeInicial from '../Extras/MensajeInicial'
 import CartasTotales from '../Extras/CartasTotales'
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "DeliveriesComponent",
@@ -120,6 +121,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     obtenerDeliveries() {
       this.cargando = true
       let payload = {

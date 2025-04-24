@@ -6,13 +6,14 @@
       <b-breadcrumb-item tag='router-link' to="/choferes">Choferes</b-breadcrumb-item>
       <b-breadcrumb-item active>Editar chofer</b-breadcrumb-item>
     </b-breadcrumb>
-    <form-chofer :chofer="datosChofer" @registrar="onEditar" v-if="datosChofer" />
+    <form-chofer :chofer="datosChofer" @registrar="onEditar" :formatoMonto="formatoMonto" v-if="datosChofer" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
 <script>
 import HttpService from '../../Servicios/HttpService'
 import FormChofer from './FormChofer'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "EditarChofer",
@@ -50,6 +51,9 @@ export default {
         })
         this.$router.push({ name: 'ChoferesComponent' })
       }
+    },
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
     }
   }
 }

@@ -8,7 +8,7 @@
         @precioCambiado="calcularTotal" />
       <div class="notification is-primary mt-3">
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
-          Total ${{ total }}
+          Total ${{ formatoMonto(total) }}
         </p>
          <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
@@ -45,6 +45,7 @@ import ComprobanteCompra from './ComprobanteCompra'
 import MensajeInicial from '../Extras/MensajeInicial'
 import AyudanteSesion from '../../Servicios/AyudanteSesion'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'EditarVenta',
@@ -117,6 +118,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
     },
@@ -144,12 +149,6 @@ export default {
 
       let tipo = venta.tipo
       this.ventaRealizada.tipo = tipo
-      this.ventaRealizada.pagado = venta.pagado
-      this.ventaRealizada.simple = venta.simple
-      this.ventaRealizada.origen = venta.origen
-      this.ventaRealizada.idMetodo = venta.idMetodo
-      this.ventaRealizada.delivery = venta.delivery
-      this.ventaRealizada.chofer = venta.chofer
       this.ventaRealizada.pagado = venta.pagado
       this.ventaRealizada.simple = venta.simple
       this.ventaRealizada.origen = venta.origen

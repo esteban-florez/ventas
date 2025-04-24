@@ -6,12 +6,20 @@
       <b-breadcrumb-item tag='router-link' to="/inventario">Inventario</b-breadcrumb-item>
       <b-breadcrumb-item active>Editar producto</b-breadcrumb-item>
     </b-breadcrumb>
-    <form-producto :productoProp="datosProducto" @registrado="onEditar" v-if="datosProducto" :editar="true" />
+    <form-producto
+      :productoProp="datosProducto"
+      @registrado="onEditar"
+      v-if="datosProducto"
+      :editar="true"
+      :formatoMonto="formatoMonto"
+    />
   </section>
 </template>
 <script>
 import HttpService from '../../Servicios/HttpService'
 import FormProducto from './FormProducto'
+import Utiles from '../../Servicios/Utiles'
+
 export default {
   name: "EditarProducto",
   components: { FormProducto },
@@ -32,6 +40,9 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     async onEditar(datosProducto) {
       this.cargando = true
       const resultado = await HttpService.editar('productos.php', {

@@ -42,6 +42,12 @@
         {{ props.row.tipo }}
       </b-table-column>
 
+      <b-table-column field="monto" label="Monto" sortable searchable v-slot="props">
+        <span v-if="props.row.monto !== undefined">
+          ${{ formatoMonto(props.row.monto) }}
+        </span>
+      </b-table-column>
+
       <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
       {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
       </b-table-column>
@@ -64,6 +70,7 @@
 <script>
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'HistorialComponent',
@@ -101,6 +108,9 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     obtenerMovimientos() {
       this.cargando = true
       let payload = {

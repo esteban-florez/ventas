@@ -8,13 +8,14 @@
             <b-breadcrumb-item tag='router-link' to="/clientes">Clientes</b-breadcrumb-item>
             <b-breadcrumb-item active>Editar cliente</b-breadcrumb-item>
         </b-breadcrumb>
-        <form-cliente :cliente="datosCliente" @registrar="onEditar" v-if="datosCliente" />
+        <form-cliente :cliente="datosCliente" @registrar="onEditar" :formatoMonto="formatoMonto" v-if="datosCliente" />
         <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
     </section>
 </template>
 <script>
     import HttpService from '../../Servicios/HttpService'
     import FormCliente from './FormCliente'
+    import Utiles from '../../Servicios/Utiles'
 
     export default{
         name: "EditaCliente",
@@ -37,6 +38,9 @@
         },
 
         methods: {
+            formatoMonto(valor) {
+                return Utiles.formatoMonto(valor)
+            },
             async onEditar(datosCliente){
                 this.cargando = true
                 const resultado = await HttpService.editar('clientes.php',{

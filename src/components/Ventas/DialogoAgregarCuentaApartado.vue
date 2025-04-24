@@ -39,6 +39,9 @@
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
           <b-field class="mt-1" label="Costo del delivery">
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
+            <span v-if="delivery.costo">
+              ({{ formatoMonto(delivery.costo) }})
+            </span>
           </b-field>
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
             ¿Delivery gratis para el cliente?
@@ -76,9 +79,12 @@
         </div>
         <b-field v-if="!id" class="mt-3" label="El cliente paga con">
           <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado"></b-input>
+          <span v-if="pagado">
+            ({{ formatoMonto(pagado) }})
+          </span>
         </b-field>
-				<p class="is-size-1 has-text-weight-bold">Total ${{ totalVenta }}</p>
-				<p class="is-size-1 has-text-weight-bold">Por Pagar ${{ porPagar }}</p>
+				<p class="is-size-1 has-text-weight-bold">Total ${{ formatoMonto(totalVenta) }}</p>
+				<p class="is-size-1 has-text-weight-bold">Por Pagar ${{ formatoMonto(porPagar) }}</p>
 			</section>
 			<footer class="modal-card-foot">
 				<b-button
@@ -100,6 +106,7 @@
 <script>
 	import BusquedaCliente from '../Clientes/BusquedaCliente'
   import { DIAS, TIPOS_CLIENTE, TIPOS_PAGO_SIMPLE } from '@/consts'
+  import Utiles from '../../Servicios/Utiles'
 
 	export default{
 		name:"DialogoAgregarCuenta",
@@ -195,6 +202,9 @@
     },
 
 		methods: {
+      formatoMonto(valor) {
+        return Utiles.formatoMonto(valor)
+      },
       onSeleccionado(cliente) {
         this.cliente = cliente
         this.delivery.destino = cliente.direccion

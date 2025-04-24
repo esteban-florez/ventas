@@ -58,7 +58,7 @@
 
         <b-table-column field="estado" label="Estado" v-slot="props">
           <span class="tag is-success is-large" v-if="props.row.porPagar < 1">LIQUIDADO</span>
-          <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">PENDIENTE</span>
+          <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">VENCIDA</span>
         </b-table-column>
       </b-table>
     </div>

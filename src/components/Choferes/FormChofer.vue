@@ -16,6 +16,9 @@
     <b-field label="Cédula/RIF">
       <b-input type="number" placeholder="Ej. 30000000" v-model="datosChofer.ci"></b-input>
     </b-field>
+    <b-field v-if="typeof datosChofer.deuda !== 'undefined'" label="Deuda actual">
+      <b-input :value="formatoMonto(datosChofer.deuda)" icon="currency-usd" readonly></b-input>
+    </b-field>
     <div class="buttons has-text-centered mt-3">
       <b-button type="is-primary" size="is-large" icon-left="check" @click="registrar">Registrar</b-button>
       <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/choferes">Cancelar</b-button>
@@ -30,7 +33,7 @@
 
 	export default {
 		name: "FormChofer",
-		props: ["chofer"],
+		props: ["chofer", "formatoMonto"],
 		components: { ErroresComponent },
 
 		data: () => ({
@@ -46,7 +49,6 @@
 
 		mounted() {
       const copia = structuredClone(this.chofer)
-      delete copia.deuda
 			this.datosChofer = copia
 		},
 

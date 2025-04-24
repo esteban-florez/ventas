@@ -7,7 +7,7 @@
       <b-breadcrumb-item active>Realizar abono</b-breadcrumb-item>
     </b-breadcrumb>
     <p class="is-size-5 has-text-weight-semibold">
-      Deuda total: ${{ porPagar.toFixed(2) }}
+      Deuda total: ${{ formatoMonto(porPagar) }}
     </p>
     <hr class="my-2">
     <b-switch class="mb-3" v-model="liquidar" @input="fijarMonto">
@@ -32,7 +32,7 @@
       </b-field>
       <hr class="mb-2 mt-4">
       <p class="is-size-5 has-text-weight-semibold">
-        Restante después del abono: ${{ restante.toFixed(2) }}
+        Restante después del abono: ${{ formatoMonto(restante) }}
       </p>
       <div class="buttons has-text-centered mt-5">
         <b-button native-type="submit" type="is-primary" icon-left="check">Registrar</b-button>
@@ -45,6 +45,7 @@
 <script>
 import { TIPOS_PAGO_SIMPLE } from '@/consts'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'RealizarAbono',
@@ -72,6 +73,10 @@ export default {
       } else {
         this.monto = null
       }
+    },
+
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
     },
 
     async obtenerDatos() {
@@ -120,6 +125,7 @@ export default {
 
       this.$router.push({
         name: 'AbonosComponent',
+        params: { id: this.$route.params.id }
       })
 
       this.$buefy.toast.open({

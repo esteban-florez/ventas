@@ -19,6 +19,9 @@
     <b-field label="Dirección">
       <b-input type="text" placeholder="Ej. Calle 25, Casa 10, Ciudad, Estado" v-model="datosCliente.direccion"></b-input>
     </b-field>
+    <b-field v-if="typeof datosCliente.deuda !== 'undefined'" label="Deuda actual">
+      <b-input :value="formatoMonto(datosCliente.deuda)" icon="currency-usd" readonly></b-input>
+    </b-field>
     <div class="buttons has-text-centered mt-3">
       <b-button type="is-primary" size="is-large" icon-left="check" @click="registrar">Registrar</b-button>
       <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/clientes">Cancelar</b-button>
@@ -33,7 +36,7 @@
 
 	export default {
 		name: "FormCliente",
-		props: ["cliente"],
+		props: ["cliente", "formatoMonto"],
 		components: { ErroresComponent },
 
 		data:()=>({

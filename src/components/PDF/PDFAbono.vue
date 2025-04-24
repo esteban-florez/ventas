@@ -8,7 +8,9 @@
 
       <div class="parrafo">
         <p>
-          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de <b>${{ abono.monto }}</b>, tras lo cual su monto restante es de <b>${{ cuenta.porPagar }}</b>.
+          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de 
+          <b>${{ formatoMonto(abono.monto) }}</b>, tras lo cual su monto restante es de 
+          <b>${{ formatoMonto(cuenta.porPagar) }}</b>.
         </p>
       </div>
 
@@ -31,6 +33,7 @@
 
 <script>
 import Printd from 'printd'
+import Utiles from '@/Servicios/Utiles'
 
 export default {
   name: 'PDFAbono',
@@ -43,6 +46,12 @@ export default {
     telefono: '',
     datosNegocio: true,
   }),
+
+  methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    }
+  },
 
   async mounted() {
     const { VUE_APP_OWNER_NAME, VUE_APP_OWNER_PHONE } = process.env
@@ -96,7 +105,7 @@ export default {
           }
         `])
       })
-},
+  },
 
   computed: {
     fecha() {

@@ -9,7 +9,14 @@
                 <div class="is-widget-label">
                   <h3 class="subtitle is-spaced">{{ item.nombre }}</h3>
                   <h1 class="title">
-                    <div>{{ item.total }}</div>
+                    <div>
+                      <span v-if="typeof item.total === 'number'">
+                        {{ formatoMonto(item.total) }}
+                      </span>
+                      <span v-else>
+                        {{ item.total }}
+                      </span>
+                    </div>
                   </h1>
                 </div>
                 <div class="level-item has-widget-icon">
@@ -29,7 +36,8 @@
 </template>
 
 <script>
-	
+import Utiles from '../../Servicios/Utiles'
+
 export default {
   name: "CartasTotalesFiltradas",
   props: ["metodosPago"],
@@ -42,7 +50,11 @@ export default {
       }
       return chunks;
     }
+  },
+  methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    }
   }
 }
-
 </script>

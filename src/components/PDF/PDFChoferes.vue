@@ -20,7 +20,7 @@
         </b-table-column>
 
         <b-table-column field="deuda" label="Deuda Total" v-slot="props">
-          ${{ Number(props.row.deuda).toFixed(2) || 0..toFixed(2) }}
+          ${{ formatoMontoLocal(props.row.deuda) }}
         </b-table-column>
       </b-table>
     </div>
@@ -32,7 +32,8 @@
 
 <script>
 import Printd from 'printd'
-import HttpService from '@/Servicios/HttpService';
+import HttpService from '@/Servicios/HttpService'
+import Utiles from '@/Servicios/Utiles'
 
 export default {
   name: 'PDFChoferes',
@@ -40,6 +41,13 @@ export default {
   data: () => ({
     choferes: [],
   }),
+
+  methods: {
+    formatoMontoLocal(valor) {
+      // Convierte a número por si viene como string
+      return Utiles.formatoMonto(Number(valor))
+    }
+  },
 
   mounted() {
     document.body.style.opacity = '0'

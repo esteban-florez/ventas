@@ -11,11 +11,11 @@
 
 			<b-table-column field="precio" label="Precio" v-slot="props">
         <span v-if="props.row.mayoreoAplicado">
-          ${{ props.row.precio }}
+          ${{ formatoMonto(props.row.precio) }}
         </span>
         <b-select class="wide" icon="tag-multiple" v-model="props.row.precio" required @input="$emit('precioCambiado')" v-if="!props.row.mayoreoAplicado">
 						<option v-for="precio in precios(props.row)" :key="precio" :value="precio">
-						{{ precio }}
+						{{ formatoMonto(precio) }}
 						</option>
         </b-select>
 			</b-table-column>
@@ -33,7 +33,7 @@
 			</b-table-column>
 
 			<b-table-column field="subtotal" label="Subtotal" v-slot="props">
-				<b>${{ props.row.precio * props.row.cantidad }}</b>
+				<b>${{ formatoMonto(props.row.precio * props.row.cantidad) }}</b>
 			</b-table-column>
 
 			<b-table-column field="quitar" label="Quitar" v-slot="props">
@@ -41,12 +41,11 @@
 					Quitar
 				</b-button>
 			</b-table-column>
-
-
 		</b-table>
 </template>
 <script>
 import { UNIDADES } from '@/consts';
+import Utiles from '../../Servicios/Utiles'
 
 	export default {
 		name: "TablaProductos",
@@ -70,6 +69,10 @@ import { UNIDADES } from '@/consts';
         return [precioVenta, precioVenta2, precioVenta3]
           .filter(precio => !!Number(precio))
       },
+
+      formatoMonto(valor) {
+        return Utiles.formatoMonto(valor)
+      }
 		}
 	}
 </script>

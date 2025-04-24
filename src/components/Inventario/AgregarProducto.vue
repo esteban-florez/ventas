@@ -6,7 +6,7 @@
       <b-breadcrumb-item tag='router-link' to="/inventario">Inventario</b-breadcrumb-item>
       <b-breadcrumb-item active>Agregar producto</b-breadcrumb-item>
     </b-breadcrumb>
-    <form-producto @registrado="onRegistrado" :editar="false" />
+    <form-producto @registrado="onRegistrado" :editar="false" :formatoMonto="formatoMonto" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -14,6 +14,7 @@
 import FormProducto from './FormProducto.vue'
 import HttpService from '../../Servicios/HttpService'
 import AyudateSesion from '@/Servicios/AyudanteSesion'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: 'AgregarProducto',
@@ -24,6 +25,9 @@ export default {
   }),
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
     onRegistrado(producto) {
       console.log(producto)
       this.cargando = true

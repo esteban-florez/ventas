@@ -35,7 +35,7 @@
       </b-table-column>
 
       <b-table-column field="porPagar" label="Por pagar" sortable v-slot="props">
-        <span class="has-text-danger has-text-weight-bold"> ${{ props.row.porPagar }}</span>
+        <span class="has-text-danger has-text-weight-bold"> ${{ formatoMontoLocal(props.row.porPagar) }}</span>
       </b-table-column>
 
       <b-table-column field="dias" label="Duración" sortable v-slot="props" v-if="datos[0].tipo === 'cuenta'">
@@ -44,7 +44,7 @@
 
       <b-table-column field="estado" label="Estado" sortable searchable v-slot="props">
         <span class="tag is-success is-large" v-if="props.row.porPagar < 1">LIQUIDADO</span>
-        <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">PENDIENTE</span>
+        <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">VENCIDA</span>
       </b-table-column>
 
       <b-table-column field="abonos" label="Abonos" v-slot="props">
@@ -82,7 +82,7 @@
 import HttpService from '@/Servicios/HttpService'
 
 export default {
-  props: ["datos", "printHref"],
+  props: ["datos", "printHref", "formatoMonto"],
 
   data: () => ({
     isPaginated: true,
@@ -106,6 +106,11 @@ export default {
 
     generarComprobante(item) {
       this.$emit("imprimir", item)
+    },
+
+    formatoMontoLocal(valor) {
+      // Usa la función recibida como prop para formatear el monto
+      return this.formatoMonto ? this.formatoMonto(valor) : valor
     },
 
     async eliminarCuenta(cuenta) {

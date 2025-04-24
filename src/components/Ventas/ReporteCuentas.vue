@@ -16,11 +16,12 @@
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado cuentas :('"
       :subtitulo="'Aquí aparecerán las cuentas registradas'" v-if="cuentas.length < 1" />
     <div class="mt-2" v-if="cuentas.length > 0">
-      <cartas-totales :totales="totalesGenerales" />
-      <cartas-totales-filtradas :metodosPago="cuentasFiltradas" />
+      <cartas-totales :totales="totalesGenerales" :formatoMonto="formatoMonto" />
+      <cartas-totales-filtradas :metodosPago="cuentasFiltradas" :formatoMonto="formatoMonto" />
       <tabla-cuentas-apartados :datos="cuentas"
+        :formatoMonto="formatoMonto"
         @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerCuentas"
-          @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
+        @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -84,6 +85,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     onImpreso(resultado) {
       this.mostrarComprobante = resultado
     },
@@ -152,7 +157,7 @@ export default {
           this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta => {
             return {
               nombre: cuenta.metodo_pago,
-              total: `$ ${cuenta.total_pagado}`,
+              total: Number(cuenta.total_pagado), // Guardar como número
               icono: 'credit-card-outline',
               clase: 'has-text-info',
               cantidad: cuenta.cuentas_apartados_totales,
@@ -161,11 +166,11 @@ export default {
 
           this.totalesGenerales = [
             { nombre: "# Cuentas", total: this.cuentas.length, icono: "wallet", clase: "has-text-primary" },
-            { nombre: "Total ", total: '$' + resultado.totalCuentas, icono: "cash-fast", clase: "has-text-success" },
-            { nombre: "Por pagar", total: '$' + resultado.totalPorPagar, icono: "alert", clase: "has-text-danger" },
-            { nombre: "Pagos", total: '$' + resultado.totalPagos, icono: "account-cash", clase: "has-text-grey-light" },
+            { nombre: "Total ", total: this.formatoMonto(resultado.totalCuentas), icono: "cash-fast", clase: "has-text-success" },
+            { nombre: "Por pagar", total: this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Pagos", total: this.formatoMonto(resultado.totalPagos), icono: "account-cash", clase: "has-text-grey-light" },
             { nombre: "# Productos", total: Utiles.calcularProductosVendidos(this.cuentas), icono: "package-variant", clase: "has-text-warning" },
-            { nombre: "Ganancia", total: '$' + Utiles.calcularTotalGanancia(this.cuentas), icono: "currency-usd", clase: "has-text-info" }
+            { nombre: "Ganancia", total: this.formatoMonto(Utiles.calcularTotalGanancia(this.cuentas)), icono: "currency-usd", clase: "has-text-info" }
           ]
           this.cargando = false
         })

@@ -52,6 +52,7 @@
 <script>
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
+import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ClientesComponent",
@@ -68,6 +69,10 @@ export default {
   },
 
   methods: {
+    formatoMonto(valor) {
+      return Utiles.formatoMonto(valor)
+    },
+
     async eliminar(idCliente) {
       this.$buefy.dialog.confirm({
         title: 'Eliminar cliente',
