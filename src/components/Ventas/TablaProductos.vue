@@ -23,7 +23,7 @@
 			<b-table-column field="cantidad" label="Cantidad" v-slot="props">
         <div style="display: flex; align-items: center; gap: 1rem;">
           <b-field class="mb-0">
-            <b-numberinput @input="aumentar(props.row)" min="1" :max="props.row.existencia" v-model="props.row.cantidad" style="width: 13em">
+            <b-numberinput @input="aumentar(props.row)" min="0.1" step="0.01" :max="props.row.existencia" v-model="props.row.cantidad" style="width: 13em">
             </b-numberinput>
           </b-field>
           <span>
@@ -33,7 +33,11 @@
 			</b-table-column>
 
 			<b-table-column field="subtotal" label="Subtotal" v-slot="props">
+<<<<<<< HEAD
 				<b>${{ formatoMonto(props.row.precio * props.row.cantidad) }}</b>
+=======
+				<b>${{ (props.row.precio * props.row.cantidad).toFixed(2) }}</b>
+>>>>>>> 70e0b202801913e5e151590033cb4a8fbbcf18f3
 			</b-table-column>
 
 			<b-table-column field="quitar" label="Quitar" v-slot="props">

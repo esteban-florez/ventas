@@ -8,7 +8,11 @@
         @precioCambiado="calcularTotal" />
       <div class="notification is-primary mt-3">
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
+<<<<<<< HEAD
           Total ${{ formatoMonto(total) }}
+=======
+          Total ${{ total.toFixed(2) }}
+>>>>>>> 70e0b202801913e5e151590033cb4a8fbbcf18f3
         </p>
         <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
