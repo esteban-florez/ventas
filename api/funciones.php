@@ -523,19 +523,23 @@ function registrarDelivery($venta, $relacion, $id)
 {
     $delivery = $venta->delivery;
 
-    if ($delivery->idChofer === '0') {
-        $chofer = $venta->chofer;
-        $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
-        $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci];
+    // Permitir que idChofer sea un array de IDs
+    $choferes = is_array($delivery->idChofer) ? $delivery->idChofer : [$delivery->idChofer];
+
+    foreach ($choferes as &$idChofer) {
+        if ($idChofer === '0') {
+            $chofer = $venta->chofer;
+            $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
+            $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci];
+            insertar($sentencia, clean($parametros));
+            $idChofer = obtenerUltimoId('choferes');
+        }
+
+        $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
+        $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
-        $delivery->idChofer = obtenerUltimoId('choferes');
     }
-
-    $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
-    $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $delivery->idChofer, $id];
-
-    insertar($sentencia, clean($parametros));
-}
+} 
 
 function vender($venta)
 {
@@ -928,6 +932,7 @@ function obtenerCuentaApartado($id)
 function obtenerTodosLosAbonosFiltrados($filtros)
 {
     $sql = "SELECT 
+        DATE_FORMAT(abonos.fecha, '%Y-%m-%dT%H:%i:%s') AS fecha,
         abonos.*, 
         metodos.nombre AS metodo, 
         cuentas_apartados.tipo, 
@@ -962,7 +967,7 @@ function obtenerTodosLosAbonosFiltrados($filtros)
 
 function obtenerAbonosPorCuentaApartado($id)
 {
-    $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
+    $abonos = selectPrepare("SELECT DATE_FORMAT(abonos.fecha, '%Y-%m-%dT%H:%i:%s') AS fecha, abonos.*, metodos.nombre AS metodo FROM abonos
         LEFT JOIN metodos ON abonos.idMetodo = metodos.id
         WHERE abonos.idCuenta = ?", [$id]);
 
@@ -1489,10 +1494,10 @@ function editarRol($datos)
 
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 
 |       ||    _ |  |       ||      | |  | |  ||       ||       ||       ||       |
-|    _  ||   | ||  |   _   ||  _    ||  | |  ||       ||_     _||   _   ||  _____|
+|    _  ||   | ||  |   _   ||  _    ||  | |  ||       ||_     _||    ___||    ___|
 |   |_| ||   |_||_ |  | |  || | |   ||  |_|  ||       |  |   |  |  | |  || |_____ 
-|    ___||    __  ||  |_|  || |_|   ||       ||      _|  |   |  |  |_|  ||_____  |
-|   |    |   |  | ||       ||       ||       ||     |_   |   |  |       | _____| |
+|    ___||    __  ||  |_|  || |_|   ||       ||      _|  |   |  |    ___||_____  |
+|   |    |   |  | ||       ||       ||       ||     |_   |   |  |   |___  _____| |
 |___|    |___|  |_||_______||______| |_______||_______|  |___|  |_______||_______|
 
 */

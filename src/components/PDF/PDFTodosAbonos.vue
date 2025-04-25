@@ -16,7 +16,7 @@
           ${{ formatoMonto(props.row.total) }}
         </b-table-column>
       </b-table>
-
+  
       <br />
       <br />
 
@@ -25,7 +25,7 @@
           {{ props.row.idCuenta }}
         </b-table-column>
         <b-table-column field="fecha" label="Fecha" v-slot="props">
-          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-') }}
+          {{ formatoFechaCaracas(props.row.fecha) }}
         </b-table-column>
         <b-table-column field="metodo" label="Método" v-slot="props">
           {{ props.row.metodo || props.row.simple }}
@@ -101,6 +101,13 @@ export default {
   methods: {
     formatoMonto(valor) {
       return Utiles.formatoMonto(valor)
+    },
+    formatoFechaCaracas(fecha) {
+      // Forzar la fecha como Caracas (-04:00)
+      return new Date(fecha.replace(' ', 'T') + '-04:00').toLocaleDateString(
+        'es-ES',
+        { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }
+      ).replace(/\//g, '-')
     },
     agruparPorMetodo(abonos) {
       const agrupados = {}

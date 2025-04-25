@@ -61,8 +61,7 @@
 
       <b-table-column field="ticket" label="Comprobante" v-slot="props">
         <b-button type="is-info" @click="generarComprobante(props.row)">
-          <b-icon icon="ticket-outline">
-          </b-icon>
+          <b-icon icon="ticket-outline"></b-icon>
         </b-button>
       </b-table-column>
 
@@ -153,7 +152,7 @@ export default {
           }
         }
       })
-    },
+    },  
 
     imprimir() {
       // Usa la prop filtros, no this.filtros

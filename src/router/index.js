@@ -267,7 +267,7 @@ const routes = [
     component: PDFAbono,
   },
   {
-    path: "/pdf/todos-abonos",
+    path: "/pdf/todos-abonos", 
     name: "PDFTodosAbonos",
     component: () => import("@/components/PDF/PDFTodosAbonos.vue"),
   },

@@ -23,6 +23,7 @@
         :printHref="printHref"
         :formatoMonto="formatoMonto"
         :filtros="filtrosCompletos"
+        @imprimir="onGenerarComprobante"
       />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
@@ -82,7 +83,7 @@ export default {
 
       const filtros = Object.fromEntries(entries)
       const params = new URLSearchParams(filtros).toString()
-      return `${href}?${params}`
+      return `${href}?${params}`   
     },
     filtrosCompletos() {
       return {
@@ -107,7 +108,6 @@ export default {
       const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
         accion: 'por_pagar', id: cuenta.id,
       })
-
       this.porPagar = porPagar
 
       this.$buefy.dialog.confirm({
