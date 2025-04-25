@@ -198,7 +198,14 @@ export default {
 
       HttpService.registrar('ventas.php', datos)
         .then(id => {
-          if (!id) return
+          if (!id) {
+            this.cargando = false
+            this.$buefy.toast.open({
+              type: 'is-danger',
+              message: 'Error al registrar la venta. Verifica los datos.'
+            });
+            return;
+          }
 
           this.productos = []
           this.total = 0

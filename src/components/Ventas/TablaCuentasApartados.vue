@@ -48,8 +48,9 @@
       </b-table-column>
 
       <b-table-column field="estado" label="Estado" sortable searchable v-slot="props">
-        <span class="tag is-success is-large" v-if="props.row.porPagar < 1">LIQUIDADO</span>
-        <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">VENCIDA</span>
+        <span class="tag is-success is-large" v-if="obtenerEstadoCuenta(props.row) === 'LIQUIDADO'">LIQUIDADO</span>
+        <span class="tag is-warning is-large" v-if="obtenerEstadoCuenta(props.row) === 'VIGENTE'">VIGENTE</span>
+        <span class="tag is-danger is-large" v-if="obtenerEstadoCuenta(props.row) === 'VENCIDA'">VENCIDA</span>
       </b-table-column>
 
       <b-table-column field="abonos" label="Abonos" v-slot="props">
@@ -159,6 +160,17 @@ export default {
       localStorage.setItem('filtros-abonos', JSON.stringify(this.filtros || {}))
       const ruta = this.$router.resolve({ name: 'PDFTodosAbonos' })
       window.open(ruta.href, '_blank')
+    },
+
+    obtenerEstadoCuenta(cuenta) {
+      if (cuenta.porPagar < 1) return 'LIQUIDADO'
+      const fechaCreacion = new Date(cuenta.fecha.replace(' ', 'T'))
+      const fechaVencimiento = new Date(fechaCreacion)
+      fechaVencimiento.setDate(fechaVencimiento.getDate() + Number(cuenta.dias || 0))
+      const hoy = new Date()
+      hoy.setHours(0,0,0,0)
+      if (hoy > fechaVencimiento) return 'VENCIDA'
+      return 'VIGENTE'
     },
   },
 

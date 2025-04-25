@@ -41,7 +41,7 @@
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
             <span v-if="delivery.costo">
               ({{ formatoMonto(delivery.costo) }})
-            </span>
+            </span> 
           </b-field>
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
             ¿Delivery gratis para el cliente?
@@ -50,13 +50,26 @@
             <b-input placeholder="Calle, casa, barrio, ciudad, estado" v-model="delivery.destino" required></b-input>
           </b-field>
           <b-field label="Chofer del delivery">
-            <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="delivery.idChofer" required>
+            <b-select
+              class="wide"
+              placeholder="Seleccionar..."
+              icon="tag-multiple"
+              v-model="delivery.idChofer"
+              :multiple="true"
+              required
+            >
               <option value="0">Registrar nuevo chofer</option>
               <option v-for="chofer in choferes" :key="chofer.id" :value="chofer.id">
                 {{ chofer.nombre }} ({{ chofer.tipo[0] }}-{{ chofer.ci }})
               </option>
             </b-select>
           </b-field>
+        </div>
+        <div style="display: contents;" v-if="esDelivery && delivery.idChofer && delivery.idChofer.includes('0')">
+          <!-- Formulario de nuevo chofer aquí -->
+        </div>
+        <div style="display: contents;" v-if="esDelivery && delivery.idChofer === '0'">
+          <!-- Formulario de nuevo chofer -->
         </div>
         <div style="display: contents;" v-if="esDelivery && delivery.idChofer === '0' ">
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del chofer</h4>
@@ -173,7 +186,11 @@
         cliente: {...this.initialCliente},
         esDelivery: !this.initialDelivery,
         nuevoChofer: false,
-        delivery: {...this.initialDelivery},
+        delivery: {
+          ...this.initialDelivery,
+          idChofer: this.initialDelivery?.idChofer ?? null,
+          gratis: Boolean(this.initialDelivery?.gratis)
+        },
         chofer: {...this.initialChofer},
         dias: this.initialDias || 0,
         clase: '',

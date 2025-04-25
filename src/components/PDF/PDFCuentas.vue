@@ -28,9 +28,10 @@
         <b-table-column field="dias" label="Duración" v-slot="props">
           {{ props.row.dias }} días
         </b-table-column>
-        <b-table-column field="estado" label="Estado" v-slot="props">
-          <span class="tag is-success is-large" v-if="props.row.porPagar < 1">LIQUIDADO</span>
-          <span class="tag is-danger is-large" v-if="props.row.porPagar > 0">VENCIDA</span>
+        <b-table-column field="estado" label="Estado" sortable searchable v-slot="props">
+          <span class="tag is-success is-large" v-if="obtenerEstadoCuenta(props.row) === 'LIQUIDADO'">LIQUIDADO</span>
+          <span class="tag is-warning is-large" v-if="obtenerEstadoCuenta(props.row) === 'VIGENTE'">VIGENTE</span>
+          <span class="tag is-danger is-large" v-if="obtenerEstadoCuenta(props.row) === 'VENCIDA'">VENCIDA</span>
         </b-table-column>
         <b-table-column field="porPagar" label="Por pagar" v-slot="props">
           <span class="has-text-danger has-text-weight-bold"> ${{ formatoMonto(props.row.porPagar) }}</span>
@@ -133,6 +134,17 @@ export default {
           d.print(table, ['/pdf.css']);
         }, 100);
       });
+    },
+
+    obtenerEstadoCuenta(cuenta) {
+      if (cuenta.porPagar < 1) return 'LIQUIDADO'
+      const fechaCreacion = new Date(cuenta.fecha.replace(' ', 'T'))
+      const fechaVencimiento = new Date(fechaCreacion)
+      fechaVencimiento.setDate(fechaVencimiento.getDate() + Number(cuenta.dias || 0))
+      const hoy = new Date()
+      hoy.setHours(0,0,0,0)
+      if (hoy > fechaVencimiento) return 'VENCIDA'
+      return 'VIGENTE'
     }
   },
 

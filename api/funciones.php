@@ -522,12 +522,11 @@ function obtenerCuentasApartadosFiltrados($filtros, $tipo)
 function registrarDelivery($venta, $relacion, $id)
 {
     $delivery = $venta->delivery;
-
-    // Permitir que idChofer sea un array de IDs
     $choferes = is_array($delivery->idChofer) ? $delivery->idChofer : [$delivery->idChofer];
 
-    foreach ($choferes as &$idChofer) {
-        if ($idChofer === '0') {
+    foreach ($choferes as $idChofer) {
+        // Si es '0', registrar nuevo chofer
+        if ($idChofer === '0' || $idChofer === 0) {
             $chofer = $venta->chofer;
             $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
             $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci];
@@ -539,7 +538,7 @@ function registrarDelivery($venta, $relacion, $id)
         $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
     }
-} 
+}
 
 function vender($venta)
 {
@@ -932,7 +931,6 @@ function obtenerCuentaApartado($id)
 function obtenerTodosLosAbonosFiltrados($filtros)
 {
     $sql = "SELECT 
-        DATE_FORMAT(abonos.fecha, '%Y-%m-%dT%H:%i:%s') AS fecha,
         abonos.*, 
         metodos.nombre AS metodo, 
         cuentas_apartados.tipo, 
@@ -967,7 +965,7 @@ function obtenerTodosLosAbonosFiltrados($filtros)
 
 function obtenerAbonosPorCuentaApartado($id)
 {
-    $abonos = selectPrepare("SELECT DATE_FORMAT(abonos.fecha, '%Y-%m-%dT%H:%i:%s') AS fecha, abonos.*, metodos.nombre AS metodo FROM abonos
+    $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
         LEFT JOIN metodos ON abonos.idMetodo = metodos.id
         WHERE abonos.idCuenta = ?", [$id]);
 
@@ -1007,8 +1005,8 @@ function actualizarAbono($abono)
 /*                                                                                                  
  __   __  _______  __   __  _______  ______    ___   _______  _______ 
 |  | |  ||       ||  | |  ||   _   ||    _ |  |   | |       ||       |
-|  | |  ||  _____||  | |  ||  |_|  ||   | ||  |   | |   _   ||  _____|
-|  |_|  || |_____ |  |_|  ||       ||   |_||_ |   | |  | |  || |_____ 
+|  |_|  ||  _____||  | |  ||  |_|  ||   | ||  |   | |   _   ||  _____|
+|       || |_____ |  |_|  ||       ||   |_||_ |   | |  | |  || |_____ 
 |       ||_____  ||       ||       ||    __  ||   | |  |_|  ||_____  |
 |       | _____| ||       ||   _   ||   |  | ||   | |       | _____| |
 |_______||_______||_______||__| |__||___|  |_||___| |_______||_______|
@@ -1495,9 +1493,9 @@ function editarRol($datos)
  _______  ______    _______  ______   __   __  _______  _______  _______  _______ 
 |       ||    _ |  |       ||      | |  | |  ||       ||       ||       ||       |
 |    _  ||   | ||  |   _   ||  _    ||  | |  ||       ||_     _||    ___||    ___|
-|   |_| ||   |_||_ |  | |  || | |   ||  |_|  ||       |  |   |  |  | |  || |_____ 
-|    ___||    __  ||  |_|  || |_|   ||       ||      _|  |   |  |    ___||_____  |
-|   |    |   |  | ||       ||       ||       ||     |_   |   |  |   |___  _____| |
+|   |_| ||   |_||_ |  | |  || | |   ||  |_|  ||       |  |   |  |   |___ |   | __ 
+|    ___||    __  ||  |_|  || |_|   ||       ||      _|  |   |  |    ___||   ||  |
+|   |    |   |  | ||       ||       ||       ||     |_   |   |  |   |___ |   |_| |
 |___|    |___|  |_||_______||______| |_______||_______|  |___|  |_______||_______|
 
 */

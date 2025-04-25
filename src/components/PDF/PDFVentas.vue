@@ -73,12 +73,10 @@
 
 <script>
 import Printd from 'printd'
-import TablaProductosVendidos from '../Ventas/TablaProductosVendidos.vue';
 import HttpService from '@/Servicios/HttpService';
 
 export default {
   name: 'PDFVentas',
-  components: { TablaProductosVendidos },
 
   data: () => ({
     ventas: [],
