@@ -53,8 +53,9 @@
           </b-select>
         </b-field>
         </div>
-        <div style="display: contents;" v-if="esDelivery && delivery.idChofer && delivery.idChofer.includes('0')">
+        <div v-if="esDelivery && delivery.idChofer && delivery.idChofer.includes('0')">
           <!-- Formulario de nuevo chofer -->
+          <!-- ...campos del nuevo chofer... -->
         </div>
         <div style="display: contents;" v-if="esDelivery && delivery.idChofer === '0' ">
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del chofer</h4>
@@ -154,11 +155,19 @@ export default {
       idMetodo: this.initialIdMetodo,
       origen: this.initialOrigen,
       cliente: {...this.initialCliente},
-      esDelivery: this.initialDelivery?.idChofer != null,
+      esDelivery: !!(this.initialDelivery && (
+        (Array.isArray(this.initialDelivery.idChofer) && this.initialDelivery.idChofer.length > 0) ||
+        (typeof this.initialDelivery.idChofer === 'string' && this.initialDelivery.idChofer !== '') ||
+        (typeof this.initialDelivery.idChofer === 'number' && this.initialDelivery.idChofer)
+      )),
       nuevoChofer: false,
       delivery: {
         ...this.initialDelivery,
-        idChofer: this.initialDelivery?.idChofer ?? null,
+        idChofer: Array.isArray(this.initialDelivery?.idChofer)
+          ? this.initialDelivery.idChofer
+          : (this.initialDelivery?.idChofer !== null && this.initialDelivery?.idChofer !== undefined
+              ? [this.initialDelivery.idChofer]
+              : []),
         gratis: Boolean(this.initialDelivery?.gratis)
       },
       chofer: {...this.initialChofer},

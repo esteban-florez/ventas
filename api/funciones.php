@@ -711,29 +711,15 @@ function editarVenta($id, $venta)
         insertar($sentenciaInsertar, $parametrosInsertar);
     }
 
-    // Update delivery if it exists
-    if (isset($venta->delivery)) {
-        // Check if a delivery already exists
-        $sentenciaVerificarDelivery = "SELECT COUNT(*) AS count FROM deliveries WHERE idVenta = ?";
-        $existeDelivery = selectRegresandoObjeto($sentenciaVerificarDelivery, [$id])->count > 0;
+    // Eliminar todos los deliveries anteriores asociados a esta venta
+    $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
+    eliminar($sentenciaEliminarDelivery, [$id]);
 
-        if ($existeDelivery) {
-            // Update existing delivery
-            dd($venta->delivery);
-            $sentenciaActualizarDelivery = "UPDATE deliveries SET costo = ?, destino = ?, gratis = ?, idChofer = ? WHERE idVenta = ?";
-            $parametrosActualizarDelivery = [
-                $venta->delivery->costo,
-                $venta->delivery->destino,
-                intval($venta->delivery->gratis),
-                $venta->delivery->idChofer,
-                $id
-            ];
-            editar($sentenciaActualizarDelivery, $parametrosActualizarDelivery);
-        } else {
-            // Register new delivery
-            registrarDelivery($venta, 'idVenta', $id);
-        }
+    // Registrar los nuevos deliveries (pueden ser varios choferes)
+    if (isset($venta->delivery)) {
+        registrarDelivery($venta, 'idVenta', $id);
     }
+
     return $resultado;
 }
 
