@@ -508,9 +508,9 @@ function registrarDelivery($venta, $relacion, $id)
             insertar($sentencia, clean($parametros));
             $idChofer = obtenerUltimoId('choferes');
         }
-        
+
         $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
-        $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
+        $parametros = [$delivery->gratis ? 0 : $delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
     }
 }
