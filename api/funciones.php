@@ -284,90 +284,18 @@ function obtenerPagosCuentasApartados($filtros, $tipo)
     return selectRegresandoObjeto($sentencia, $parametros)->totalPagos;
 }
 
-function obtenerCuentasApartados($filtros, $tipo)
-{
-    $sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
-        cuentas_apartados.tipo, cuentas_apartados.total,
-        deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis,
-        cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
-        (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
-        IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
-        IFNULL(clientes.telefono, '') AS telefonoCliente,
-        IFNULL(clientes.direccion, '') AS direccionCliente,
-        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
-		FROM cuentas_apartados
-		LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
-		LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
-        LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
-        LEFT JOIN deliveries ON deliveries.idCuenta = cuentas_apartados.id
-		WHERE cuentas_apartados.tipo = ?";
-
-    $parametros = [$tipo];
-
-    if ($filtros->clienteId) {
-        $sentencia .= " AND clientes.id = ?";
-        array_push($parametros, $filtros->clienteId);
-    }
-    if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
-        array_push($parametros, $filtros->fechaInicio);
-        array_push($parametros, $filtros->fechaFin);
-    }
-
-    $sentencia .= "
-        GROUP BY cuentas_apartados.id
-        ORDER BY cuentas_apartados.id DESC
-    ";
-
-    $cuentas = selectPrepare($sentencia, $parametros);
-
-    foreach ($cuentas as $cuenta) {
-        if ($cuenta->costoDelivery) {
-            $cuenta->delivery = new stdClass;
-            $cuenta->delivery->costo = $cuenta->costoDelivery;
-            $cuenta->delivery->gratis = $cuenta->deliveryGratis;
-            unset($cuenta->costoDelivery);
-            unset($cuenta->deliveryGratis);
-        }
-    }
-
-    return agregarProductosVendidos($cuentas, $tipo);
-}
-
-function obtenerCotizaciones($filtros, $tipo)
-{
-    $sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
-		FROM cotizaciones
-		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
-		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
-		WHERE 1";
-
-    $parametros = [];
-
-    if ($filtros->clienteId) {
-        $sentencia .= " AND clientes.id = ?";
-        array_push($parametros, $filtros->clienteId);
-    }
-
-    if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
-        array_push($parametros, $filtros->fechaInicio);
-        array_push($parametros, $filtros->fechaFin);
-    }
-
-    $sentencia .= " ORDER BY cotizaciones.id DESC";
-
-    $cotizaciones = selectPrepare($sentencia, $parametros);
-    return agregarProductosVendidos($cotizaciones, $tipo);
-}
-
-
 function obtenerVentas($filtros)
 {
-    $sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen, deliveries.costo as costoDelivery, deliveries.gratis as deliveryGratis, metodos.nombre as nombreMetodo, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
-		FROM ventas
-		LEFT JOIN clientes ON clientes.id = ventas.idCliente
-		LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
+    $sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen,
+        MAX(deliveries.costo) as costoDelivery, MAX(deliveries.gratis) as deliveryGratis,
+        metodos.nombre as nombreMetodo,
+        IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
+        clientes.telefono AS telefonoCliente,
+        clientes.direccion AS direccionCliente
+        FROM ventas
+        LEFT JOIN clientes ON clientes.id = ventas.idCliente
+        LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
         LEFT JOIN metodos ON metodos.id = ventas.idMetodo
         LEFT JOIN deliveries ON deliveries.idVenta = ventas.id";
 
@@ -383,7 +311,7 @@ function obtenerVentas($filtros)
         array_push($parametros, $filtros->fechaFin);
     }
 
-    $sentencia .= " ORDER BY ventas.id DESC";
+    $sentencia .= " GROUP BY ventas.id ORDER BY ventas.id DESC";
 
     $ventas = selectPrepare($sentencia, $parametros);
 
@@ -398,6 +326,53 @@ function obtenerVentas($filtros)
     }
 
     return agregarProductosVendidos($ventas, 'venta');
+}
+
+function obtenerCuentasApartados($filtros, $tipo)
+{
+    $sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
+        cuentas_apartados.tipo, cuentas_apartados.total,
+        MAX(deliveries.costo) as costoDelivery, MAX(deliveries.gratis) as deliveryGratis,
+        cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
+        (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
+        IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
+        IFNULL(clientes.telefono, '') AS telefonoCliente,
+        IFNULL(clientes.direccion, '') AS direccionCliente,
+        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
+        FROM cuentas_apartados
+        LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
+        LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
+        LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
+        LEFT JOIN deliveries ON deliveries.idCuenta = cuentas_apartados.id
+        WHERE cuentas_apartados.tipo = ?";
+
+    $parametros = [$tipo];
+
+    if ($filtros->clienteId) {
+        $sentencia .= " AND clientes.id = ?";
+        array_push($parametros, $filtros->clienteId);
+    }
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cuentas_apartados.fecha) >= ? AND DATE(cuentas_apartados.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
+
+    $sentencia .= " GROUP BY cuentas_apartados.id ORDER BY cuentas_apartados.id DESC";
+
+    $cuentas = selectPrepare($sentencia, $parametros);
+
+    foreach ($cuentas as $cuenta) {
+        if ($cuenta->costoDelivery) {
+            $cuenta->delivery = new stdClass;
+            $cuenta->delivery->costo = $cuenta->costoDelivery;
+            $cuenta->delivery->gratis = $cuenta->deliveryGratis;
+            unset($cuenta->costoDelivery);
+            unset($cuenta->deliveryGratis);
+        }
+    }
+
+    return agregarProductosVendidos($cuentas, $tipo);
 }
 
 function agregarProductosVendidos($arreglo, $tipo)
@@ -533,7 +508,7 @@ function registrarDelivery($venta, $relacion, $id)
             insertar($sentencia, clean($parametros));
             $idChofer = obtenerUltimoId('choferes');
         }
-
+        
         $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
         $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
