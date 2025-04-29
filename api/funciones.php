@@ -607,14 +607,13 @@ function editarApartadoCuenta($id, $cuenta, $tipo)
         insertar($sentenciaInsertar, $parametrosInsertar);
     }
 
-    // Actualizar delivery si existe
-    if (isset($cuenta->delivery)) {
-        // Eliminar delivery anterior
-        $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idVenta = ?";
-        eliminar($sentenciaEliminarDelivery, [$id]);
+    // Eliminar todos los deliveries anteriores asociados a esta cuenta
+    $sentenciaEliminarDelivery = "DELETE FROM deliveries WHERE idCuenta = ?";
+    eliminar($sentenciaEliminarDelivery, [$id]);
 
-        // Registrar nuevo delivery
-        registrarDelivery($cuenta, 'idVenta', $id);
+    // Registrar los nuevos deliveries (pueden ser varios choferes)
+    if (isset($cuenta->delivery)) {
+        registrarDelivery($cuenta, 'idCuenta', $id);
     }
 
     return $resultado;
@@ -1855,13 +1854,11 @@ function obtenerApartadoCuenta($id, $tipo)
         FROM cuentas_apartados as cuentas
         LEFT JOIN clientes ON clientes.id = cuentas.idCliente
         LEFT JOIN usuarios ON usuarios.id = cuentas.idUsuario
-        LEFT JOIN deliveries ON deliveries.idVenta = cuentas.id
+        LEFT JOIN deliveries ON deliveries.idCuenta = cuentas.id
         LEFT JOIN productos_vendidos ON productos_vendidos.idReferencia = cuentas.id
         WHERE cuentas.id = ?";
 
     $venta = selectRegresandoObjeto($sentencia, [$id]);
-
-
 
     if ($venta && $venta->costoDelivery) {
         $venta->delivery = new stdClass;

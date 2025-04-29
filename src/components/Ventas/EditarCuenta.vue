@@ -110,12 +110,15 @@ export default {
       this.pagado = parseFloat(cuenta.pagado)
       this.id = cuenta.id,
       this.dias = cuenta.dias
-      this.delivery = {
+      this.costoDelivery = cuenta.delivery?.costo || 0,
+      this.esDelivery = cuenta.delivery != null,
+      this.deliveryGratis = cuenta.delivery?.gratis,
+      this.delivery = cuenta.delivery ? {
         costo: cuenta.delivery?.costo,
         destino: cuenta.direccionCliente,
-        gratis: !!cuenta.delivery?.gratis,
+        gratis: cuenta.delivery?.gratis,
         idChofer: cuenta.deliveryId
-      }
+      } : null
     })
   },
 
