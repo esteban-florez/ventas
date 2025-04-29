@@ -73,14 +73,6 @@
           {{ props.row.existencia }} {{ props.row.unidad }}
         </b-table-column>
 
-        <b-table-column field="nombreMarca" label="Marca" sortable searchable v-slot="props">
-          {{ props.row.nombreMarca }}
-        </b-table-column>
-
-        <b-table-column field="nombreCategoria" label="Categoría" sortable searchable v-slot="props">
-          {{ props.row.nombreCategoria }}
-        </b-table-column>
-
         <b-table-column field="nombreProveedor" label="Proveedor" sortable searchable v-slot="props">
           {{ props.row.nombreProveedor }}
         </b-table-column>
