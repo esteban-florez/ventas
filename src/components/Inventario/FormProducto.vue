@@ -62,21 +62,6 @@
     </b-field>
     <br>
     <b-field grouped group-multiline>
-      <b-field label="Selecciona una marca">
-        <b-select placeholder="Marca" icon="tag-multiple" v-model="producto.marca">
-          <option v-for="marca in marcas" :key="marca.id" :value="marca.id">
-            {{ marca.nombreMarca }}
-          </option>
-        </b-select>
-      </b-field>
-
-      <b-field label="Selecciona una categoría">
-        <b-select placeholder="Categoría" icon="archive" v-model="producto.categoria">
-          <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
-            {{ categoria.nombreCategoria }}
-          </option>
-        </b-select>
-      </b-field>
 
       <b-field label="Selecciona un proveedor">
         <b-select placeholder="Proveedor" icon="factory" v-model="producto.proveedor">
