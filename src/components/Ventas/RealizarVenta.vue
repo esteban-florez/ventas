@@ -149,6 +149,7 @@ export default {
         nombreCliente: (venta.cliente.nombre) ? venta.cliente.nombre : 'MOSTRADOR',
         nombreUsuario: AyudanteSesion.usuario().usuario,
         telefonoCliente: venta.cliente.telefono,
+        direccionCliente: venta.delivery?.destino ?? venta.cliente.direccion,
         fecha: new Date().toJSON().slice(0, 10).replace(/-/g, '/')
       }
 
