@@ -70,7 +70,7 @@ switch ($accion) {
 				"cotizaciones" => obtenerCotizaciones($payload->filtros, 'cotiza')
 			]
 		);
-		break; 		
+		break;
 
 	case 'eliminar_cotiza':
 		echo json_encode(eliminarCotizacion($payload->id));

@@ -141,6 +141,28 @@ function calcularIngresosPendientes()
     return selectRegresandoObjeto($sentencia)->pendientes;
 }
 
+function obtenerCotizaciones($filtros, $tipo)
+{
+    $sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
+		FROM cotizaciones
+		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
+		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
+		WHERE 1";
+
+    $parametros = [];
+
+    if ($filtros->fechaInicio && $filtros->fechaFin) {
+        $sentencia .= " AND (DATE(cotizaciones.fecha) >= ? AND DATE(cotizaciones.fecha) <= ?)";
+        array_push($parametros, $filtros->fechaInicio);
+        array_push($parametros, $filtros->fechaFin);
+    }
+
+    $sentencia .= " ORDER BY cotizaciones.id DESC";
+
+    $cotizaciones = selectPrepare($sentencia, $parametros);
+    return agregarProductosVendidos($cotizaciones, $tipo);
+}
+
 function eliminarCotizacion($id)
 {
     $sentenciaEliminarCotizacion = "DELETE FROM cotizaciones WHERE id = ?";
