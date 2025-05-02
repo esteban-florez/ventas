@@ -515,27 +515,34 @@ function registrarDelivery($venta, $relacion, $id)
     }
 }
 
-function vender($venta)
-{
+function vender($venta) {
     $venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
-    $sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO ventas (fecha, total, pagado, idCliente, idUsuario, usa_pagos_multiples) VALUES (?,?,?,?,?,?)";
 
-    $parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
+    $pagadoTotal = array_reduce($venta->pagos, fn($sum, $pago) => $sum + $pago->monto, 0);
+
+    $parametros = [date("Y-m-d H:i:s"), $venta->total, $pagadoTotal, $venta->cliente, $venta->usuario, $venta->pagoMixto];
 
     $registrado = insertar($sentencia, clean($parametros));
 
-    if (!$registrado)
-        return false;
+    if (!$registrado) return false;
 
     $idVenta = obtenerUltimoId('ventas');
+
+    foreach ($venta->pagos as $pago) {
+        $idMetodo = is_numeric($pago->idMetodo) ? $pago->idMetodo : null;
+        $simple = $pago->simple ? $pago->idMetodo : null;
+        $sentenciaPago = "INSERT INTO pagos_ventas (idVenta, idMetodo, monto, origen, simple, fecha) VALUES (?,?,?,?,?,?)";
+        $parametrosPago = [$idVenta, $idMetodo, $pago->monto, $pago->origen, $simple, date("Y-m-d H:i:s")];
+        insertar($sentenciaPago, clean($parametrosPago));
+    }
+
     $productosRegistrados = registrarProductosVendidos($venta->productos, $idVenta, 'venta');
 
     $valido = count($productosRegistrados) > 0;
-    if (!$valido)
-        return false;
+    if (!$valido) return false;
 
-    if (!$venta->delivery)
-        return $idVenta;
+    if (!$venta->delivery) return $idVenta;
 
     registrarDelivery($venta, 'idVenta', $idVenta);
 

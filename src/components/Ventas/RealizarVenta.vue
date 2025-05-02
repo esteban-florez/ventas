@@ -157,10 +157,8 @@ export default {
 
       switch (tipo) {
         case 'venta':
-          this.ventaRealizada.pagado = venta.pagado
-          this.ventaRealizada.simple = venta.simple
-          this.ventaRealizada.origen = venta.origen
-          this.ventaRealizada.idMetodo = venta.idMetodo
+          this.ventaRealizada.pagos = venta.pagos
+          this.ventaRealizada.pagoMixto = venta.pagoMixto || false
           this.ventaRealizada.delivery = venta.delivery
           this.ventaRealizada.chofer = venta.chofer
           break
@@ -177,6 +175,13 @@ export default {
           this.ventaRealizada.delivery = venta.delivery
           this.ventaRealizada.chofer = venta.chofer
           this.ventaRealizada.dias = venta.dias
+
+          // solo deberia ir esto
+          // this.ventaRealizada.pagos = venta.pagos
+          // this.ventaRealizada.pagoMixto = venta.pagoMixto || false
+          // this.ventaRealizada.dias = venta.dias
+          // this.ventaRealizada.delivery = venta.delivery
+          // this.ventaRealizada.chofer = venta.chofer
           break
       }
 

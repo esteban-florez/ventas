@@ -7,20 +7,84 @@
       </header>
       <section class="modal-card-body">
         <busqueda-cliente @seleccionado="onSeleccionado" :initialCliente="cliente.nombre ? cliente : null" />
-        <b-field class="mt-3" label="Método de pago">
-          <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
-            <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
-              {{ metodo }}
-            </option>
-            <option v-for="metodo in metodos" :key="metodo.id" :value="metodo.id">
-              {{ metodo.nombre }}
-            </option>
-          </b-select>
+
+        <!-- Pago Mixto -->
+        <b-field class="my-2" label="Pago mixto">
+          <b-switch v-model="pagoMixto" @input="resetMetodosPago"></b-switch>
         </b-field>
-        <b-field label="Origen" v-if="!esSimple && idMetodo">
-          <b-input type="text" name="origen" v-model="origen" placeholder="Origen del pago" required></b-input>
+
+        <template v-if="!pagoMixto">
+          <b-field class="mt-3" label="Método de pago">
+            <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
+              <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
+                {{ metodo }}
+              </option>
+              <option v-for="metodo in metodos" :key="metodo.id" :value="metodo.id">
+                {{ metodo.nombre }}
+              </option>
+            </b-select>
+          </b-field>
+          <b-field label="Origen" v-if="!esSimple && idMetodo">
+            <b-input type="text" name="origen" v-model="origen" placeholder="Origen del pago" required></b-input>
+          </b-field>
+        </template>
+
+        <section v-else>
+          <div v-for="(metodo, index) in metodosPago" :key="index" class="mb-4">
+            <div class="level">
+              <div class="level-left">
+                <h4 class="title is-6">Método {{ index + 1 }}</h4>
+              </div>
+              <div class="level-right">
+                <button class="button is-danger is-small" @click="eliminarMetodoPago(index)" :disabled="metodosPago.length === 1">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            <b-field label="Método">
+              <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="metodo.idMetodo" required>
+                <option v-for="metodo in metodosSimples" :key="metodo" :value="metodo">
+                  {{ metodo }}
+                </option>
+                <option v-for="metodo in metodos" :key="metodo.id" :value="metodo.id">
+                  {{ metodo.nombre }}
+                </option>
+              </b-select>
+            </b-field>
+
+            <b-field label="Monto">
+              <b-input type="number" step="0.01" v-model="metodo.monto" @input="validarMonto(index)" required>
+              </b-input>
+              <span v-if="metodo.monto">
+                ({{ formatoMonto(metodo.monto) }})
+              </span>
+            </b-field>
+
+            <b-field v-if="metodo.idMetodo && !esMetodoSimple(metodo.idMetodo)" label="Origen">
+              <b-input v-model="metodo.origen" required></b-input>
+            </b-field>
+          </div>
+
+          <b-button @click="agregarMetodoPago" :disabled="alcanzadoTotal" class="is-primary mb-4">
+            Agregar método
+          </b-button>
+        </section>
+
+        <b-field class="mt-3" label="El cliente paga con" v-if="!pagoMixto">
+          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required>
+          </b-input>
+          <span v-if="pagado">
+            ({{ formatoMonto(pagado) }})
+          </span>
         </b-field>
-        <b-switch v-model="esDelivery" @input="manejarEsDelivery" type="is-info">
+
+        <div v-else class="notification is-light">
+          <p class="has-text-weight-bold">Total pagado: ${{ formatoMonto(totalPagado) }}</p>
+        </div>
+
+        <!-- Deliveries -->
+        <b-switch class="my-2" v-model="esDelivery" @input="manejarEsDelivery" type="is-info">
           ¿Añadir servicio de delivery?
         </b-switch>
         <div style="display: contents" v-if="esDelivery">
@@ -76,15 +140,16 @@
             <b-input type="number" placeholder="Ej. 30000000" v-model="chofer.ci" required></b-input>
           </b-field>
         </div>
-        <b-field class="mt-3" label="El cliente paga con">
-          <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
-          <span v-if="pagado">
-            ({{ formatoMonto(pagado) }})
-          </span>
-        </b-field>
+
         <p class="is-size-1 has-text-weight-bold">Total ${{ formatoMonto(totalVenta) }}</p>
-        <p class="is-size-1 has-text-weight-bold">Cambio ${{ formatoMonto(cambio) }}</p>
+        <p class="is-size-1 has-text-weight-bold" v-if="cambio > 0">
+          Cambio ${{ formatoMonto(cambio) }}
+        </p>
+        <p class="is-size-1 has-text-weight-bold" v-else>
+          Por pagar ${{ formatoMonto(totalVenta - totalPagado) }}
+        </p>
       </section>
+
       <footer class="modal-card-foot">
         <b-button label="Cancelar" icon-left="cancel" size="is-medium" @click="$emit('close', 'venta')" />
         <b-button label="Terminar venta" type="is-success" icon-left="check" size="is-medium" native-type="submit" />
@@ -172,7 +237,10 @@ export default {
       },
       chofer: {...this.initialChofer},
       metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
-      tipos: TIPOS_CLIENTE
+      tipos: TIPOS_CLIENTE,
+      // Pago Mixto
+      pagoMixto: false,
+      metodosPago: [{idMetodo: null, monto: 0, origen: '', simple: false}],
     }
   },
 
@@ -196,52 +264,110 @@ export default {
     manejarDeliveryGratis() {
       this.$emit('actualizar', 'deliveryGratis', this.delivery.gratis);
     },
-
+    // Pago Mixto
+    esMetodoSimple(metodo) {
+      return this.metodosSimples.includes(metodo);
+    },
+    
+    agregarMetodoPago() {
+      if (!this.alcanzadoTotal) {
+        this.metodosPago.push({idMetodo: null, monto: 0, origen: '', simple: false});
+      }
+    },
+    
+    eliminarMetodoPago(index) {
+      this.metodosPago.splice(index, 1);
+    },
+    
+    validarMonto(index) {
+      const restante = this.totalVenta - this.totalPagado + parseFloat(this.metodosPago[index].monto);
+      if (restante < 0) {
+        this.metodosPago[index].monto = Math.max(0, this.metodosPago[index].monto + restante);
+      }
+    },
+    
+    resetMetodosPago() {
+      this.metodosPago = [{idMetodo: null, monto: 0, origen: '', simple: false}];
+    },
+    
     terminarVenta() {
-      if (this.pagado === '' || this.pagado < this.totalVenta) {
+      if (this.totalPagado < this.totalVenta) {
         this.$buefy.toast.open({
           type: 'is-danger',
-          message: 'Debes colocar el total pagado.'
-        })
-        return
+          message: 'El pago no cubre el total de la venta'
+        });
+        return;
       }
+
+      const pagos = this.pagoMixto 
+        ? this.metodosPago.map(metodo => ({
+            idMetodo: metodo.idMetodo,
+            monto: parseFloat(metodo.monto),
+            origen: metodo.origen,
+            simple: this.metodosSimples.includes(metodo.idMetodo)
+          }))
+        : [{
+            idMetodo: this.idMetodo,
+            monto: parseFloat(this.pagado),
+            origen: this.origen,
+            simple: this.esSimple
+          }];
 
       let payload = {
         tipo: 'venta',
-        pagado: this.pagado,
+        pagado: this.totalPagado,
         cambio: this.cambio,
         cliente: this.cliente,
-      }
+        pagos: pagos,
+        pagoMixto: this.pagoMixto
+      };
 
       if (this.esDelivery) {
-        payload.delivery = this.delivery
-        payload.chofer = this.chofer
+        payload.delivery = this.delivery;
+        payload.chofer = this.chofer;
       }
 
-      if (this.esSimple) {
-        payload.simple = this.idMetodo
-      } else {
-        payload.idMetodo = this.idMetodo
-        payload.origen = this.origen
-      }
-
-      this.$emit('terminar', payload)
-    },
-
+      this.$emit('terminar', payload);
+    }
   },
 
   computed: {
-    esSimple: function () {
-      return this.metodosSimples.includes(this.idMetodo)
+    esSimple() {
+      if (this.pagoMixto) return false;
+      return this.metodosSimples.includes(this.idMetodo);
     },
-    cambio: {
-      get() {
-        return this.totalVenta - this.pagado;
-      },
-      set(value) {
-        this.pagado = this.totalVenta - value;
+    
+    totalPagado() {
+      if (this.pagoMixto) {
+        return this.metodosPago.reduce((sum, metodo) => sum + parseFloat(metodo.monto || 0), 0);
       }
+      return parseFloat(this.pagado || 0);
+    },
+    
+    alcanzadoTotal() {
+      return this.totalPagado >= this.totalVenta;
+    },
+    
+    cambio() {
+      if (this.totalPagado > this.totalVenta) {
+        return this.totalPagado - this.totalVenta;
+      }
+      return 0;
     }
-  },
+  }
 }
 </script>
+
+<style scoped>
+.metodo-pago-item {
+  border: 1px solid #eee;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.title.is-6 {
+  margin-bottom: 0.5rem;
+}
+</style>

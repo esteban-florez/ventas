@@ -1,6 +1,6 @@
--- Migración: Agrega tablas y lógica para manejar pagos múltiples en ventas y abonos.
-
+-- ==================
 -- UP MIGRATION
+-- ==================
 
 START TRANSACTION;
 
@@ -9,10 +9,10 @@ START TRANSACTION;
 CREATE TABLE `pagos_ventas` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `idVenta` BIGINT UNSIGNED NOT NULL,
-    `idMetodo` BIGINT UNSIGNED,
+    `idMetodo` BIGINT UNSIGNED DEFAULT NULL,
     `monto` DECIMAL(9,2) NOT NULL,
-    `origen` VARCHAR(50),
-    `simple` VARCHAR(20),
+    `origen` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `simple` VARCHAR(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
     `fecha` DATETIME NOT NULL,
     FOREIGN KEY (`idVenta`) REFERENCES `ventas`(`id`),
     FOREIGN KEY (`idMetodo`) REFERENCES `metodos`(`id`)
@@ -21,10 +21,10 @@ CREATE TABLE `pagos_ventas` (
 CREATE TABLE `pagos_abonos` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `idAbono` BIGINT UNSIGNED NOT NULL,
-    `idMetodo` BIGINT UNSIGNED,
+    `idMetodo` BIGINT UNSIGNED DEFAULT NULL,
     `monto` DECIMAL(9,2) NOT NULL,
-    `origen` VARCHAR(50),
-    `simple` VARCHAR(20),
+    `origen` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `simple` VARCHAR(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
     `fecha` DATETIME NOT NULL,
     FOREIGN KEY (`idAbono`) REFERENCES `abonos`(`id`),
     FOREIGN KEY (`idMetodo`) REFERENCES `metodos`(`id`)
@@ -58,7 +58,9 @@ WHERE `id` IN (SELECT `idAbono` FROM `pagos_abonos`);
 
 COMMIT;
 
+-- ==================
 -- DOWN MIGRATION
+-- ==================
 
 START TRANSACTION;
 
