@@ -10,7 +10,7 @@
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
           Total ${{ formatoMonto(total) }}
         </p>
-         <nav class="level mt-2">
+        <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
             <b-button class="button is-responsive" type="is-success" inverted icon-left="check" size="is-large"
               @click="abrirDialogo()">
@@ -31,7 +31,8 @@
       aria-label="Modal Terminar Venta" close-button-aria-label="Close" aria-modal>
       <dialogo-terminar-venta :totalVenta="total" @close="onCerrar" @terminar="onTerminar" v-if="mostrarTerminarVenta"
         :metodos="metodos" :choferes="choferes" :initialCliente="cliente" :initialIdMetodo="metodo" 
-        :initialPagado="pagado" :initialDelivery="delivery" @actualizar="actualizar"></dialogo-terminar-venta>
+        :initialPagado="pagado" :initialDelivery="delivery" :initialChoferesSeleccionados="choferesSeleccionados" 
+        @actualizar="actualizar"></dialogo-terminar-venta>
     </b-modal>
     <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -81,7 +82,8 @@ export default {
     metodo: null,
     pagado: 0,
     delivery: null,
-    id: null
+    id: null,
+    choferesSeleccionados: [],
   }),
 
   mounted() {
@@ -104,16 +106,25 @@ export default {
       this.cliente = venta.cliente
       this.metodo = venta.simple
       this.pagado = parseFloat(venta.pagado)
-      this.id = venta.id,
-      this.costoDelivery = venta.delivery?.costo || 0,
-      this.esDelivery = venta.delivery != null,
-      this.deliveryGratis = venta.delivery?.gratis,
-      this.delivery = venta.delivery ? {
-        costo: venta.delivery.costo,
-        destino: venta.direccionCliente,
-        gratis: venta.delivery.gratis,
-        idChofer: venta.deliveryId
-      } : null
+      this.id = venta.id
+      
+      if (venta.delivery) {
+        this.costoDelivery = venta.delivery.costo || 0
+        this.esDelivery = true
+        this.deliveryGratis = venta.delivery.gratis
+        
+        this.delivery = {
+          costo: venta.delivery.costo,
+          destino: venta.direccionCliente,
+          gratis: venta.delivery.gratis,
+          idChofer: venta.delivery.choferes ? venta.delivery.choferes.map(c => c.id) : []
+        }
+        
+        this.choferesSeleccionados = venta.delivery.choferes || []
+      } else {
+        this.delivery = null
+        this.choferesSeleccionados = []
+      }
     })
   },
 

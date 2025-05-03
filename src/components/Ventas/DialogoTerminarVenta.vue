@@ -27,31 +27,42 @@
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
           <b-field class="mt-1" label="Costo del delivery">
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>
-            <span v-if="delivery.costo">
-              ({{ formatoMonto(delivery.costo) }})
-            </span>
-          </b-field> 
+          </b-field>
+
+          <div class="mb-2" v-if="delivery.costo">
+            ({{ formatoMonto(delivery.costo) }})
+          </div>
+          
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="manejarDeliveryGratis">
             ¿Delivery gratis para el cliente?
           </b-switch>
           <b-field label="Destino del delivery">
             <b-input placeholder="Calle, casa, barrio, ciudad, estado" v-model="delivery.destino" required></b-input>
           </b-field>
-          <b-field label="Chofer del delivery">
-          <b-select
-            class="wide"
-            placeholder="Seleccionar..."
-            icon="tag-multiple"
-            v-model="delivery.idChofer"
-            :multiple="true"
-            required
-          >
-            <option value="0">Registrar nuevo chofer</option>
-            <option v-for="chofer in choferes" :key="chofer.id" :value="chofer.id">
-              {{ chofer.nombre }} ({{ chofer.tipo[0] }}-{{ chofer.ci }})
-            </option>
-          </b-select>
-        </b-field>
+          
+          <b-field label="Chofer(es) del delivery">
+            <b-autocomplete
+              v-model="busquedaChofer"
+              :data="choferesFiltrados"
+              field="nombre"
+              placeholder="Buscar chofer..."
+              open-on-focus
+              @select="agregarChofer"
+              :keep-first="true"
+              icon="account-search"
+              clearable
+            >
+              <template #empty>No se encontraron choferes</template>
+            </b-autocomplete>
+          </b-field>
+
+        <section class="tags mt-2">
+          <span v-for="(chofer, index) in choferesSeleccionados" :key="chofer.id" class="tag is-primary is-medium">
+            {{ chofer.nombre }}
+            <button class="delete is-small" @click="eliminarChofer(index)"></button>
+          </span>
+        </section>
+
         </div>
         <div v-if="esDelivery && delivery.idChofer && delivery.idChofer.includes('0')">
           <!-- Formulario de nuevo chofer -->
@@ -78,10 +89,12 @@
         </div>
         <b-field class="mt-3" label="El cliente paga con">
           <b-input step="any" icon="currency-usd" type="number" placeholder="Monto pagado" v-model="pagado" required></b-input>
-          <span v-if="pagado">
-            ({{ formatoMonto(pagado) }})
-          </span>
         </b-field>
+        
+        <div class="mb-2" v-if="pagado">
+          ({{ formatoMonto(pagado) }})
+        </div>
+        
         <p class="is-size-1 has-text-weight-bold">Total ${{ formatoMonto(totalVenta) }}</p>
         <p class="is-size-1 has-text-weight-bold">Cambio ${{ formatoMonto(cambio) }}</p>
       </section>
@@ -145,6 +158,10 @@ export default {
         tipo: null,
         telefono: null
       })
+    },
+    initialChoferesSeleccionados: {
+      type: Array,
+      default: () => []
     }
   },
   components: { BusquedaCliente },
@@ -172,7 +189,10 @@ export default {
       },
       chofer: {...this.initialChofer},
       metodosSimples: Object.values(TIPOS_PAGO_SIMPLE),
-      tipos: TIPOS_CLIENTE
+      tipos: TIPOS_CLIENTE,
+      // Autocomplete choferes
+      busquedaChofer: '',
+      choferesSeleccionados: [...this.initialChoferesSeleccionados],
     }
   },
 
@@ -214,7 +234,17 @@ export default {
       }
 
       if (this.esDelivery) {
-        payload.delivery = this.delivery
+        if (this.choferesSeleccionados.length === 0) {
+          this.$buefy.toast.open({
+            type: 'is-danger',
+            message: 'Debes seleccionar al menos un chofer para el delivery'
+          })
+          return
+        }
+        payload.delivery = {
+          ...this.delivery,
+          idChofer: this.choferesSeleccionados.map(c => c.id)
+        };
         payload.chofer = this.chofer
       }
 
@@ -227,7 +257,16 @@ export default {
 
       this.$emit('terminar', payload)
     },
-
+    // Autocomplete choferes
+    agregarChofer(chofer) {
+      if (chofer && !this.choferesSeleccionados.some(c => c.id === chofer.id)) {
+        this.choferesSeleccionados.push(chofer)
+        this.busquedaChofer = ''
+      }
+    },
+    eliminarChofer(index) {
+      this.choferesSeleccionados.splice(index, 1)
+    }
   },
 
   computed: {
@@ -241,6 +280,13 @@ export default {
       set(value) {
         this.pagado = this.totalVenta - value;
       }
+    },
+    // Autocomplete choferes
+    choferesFiltrados() {
+      return this.choferes.filter(c => 
+        !this.choferesSeleccionados.some(sc => sc.id === c.id) &&
+        c.nombre.toLowerCase().includes(this.busquedaChofer.toLowerCase())
+      )
     }
   },
 }

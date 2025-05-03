@@ -1843,6 +1843,10 @@ function obtenerVenta($id)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
+        
+        $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idVenta = ?";
+        $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
+        
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
