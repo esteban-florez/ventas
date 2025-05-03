@@ -10,7 +10,7 @@
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
           Total ${{ formatoMonto(total) }}
         </p>
-         <nav class="level mt-2">
+        <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
             <b-button class="button is-responsive" type="is-success" inverted icon-left="check" size="is-large"
               @click="abrirDialogo()">
@@ -33,7 +33,7 @@
         v-if="mostrarAgregarCuenta" :metodos="metodos" :choferes="choferes"
         :initialCliente="cliente" :initialDias="dias" :initialPagado="pagado" :initialDelivery="delivery"
         @actualizar="actualizar" :id="!!id"
-        tipo="cuenta"></dialogo-agregar-cuenta-apartado>
+        tipo="cuenta" :initialChoferesSeleccionados="choferesSeleccionados"></dialogo-agregar-cuenta-apartado>
     </b-modal>
     <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
@@ -83,6 +83,7 @@ export default {
     id: null,
     dias: "",
     tipo: null,
+    choferesSeleccionados: [],
   }),
 
   mounted() {
@@ -108,17 +109,29 @@ export default {
       this.cliente = cuenta.cliente
       this.metodo = cuenta.simple
       this.pagado = parseFloat(cuenta.pagado)
-      this.id = cuenta.id,
+      this.id = cuenta.id
       this.dias = cuenta.dias
-      this.costoDelivery = cuenta.delivery?.costo || 0,
-      this.esDelivery = cuenta.delivery != null,
-      this.deliveryGratis = cuenta.delivery?.gratis,
-      this.delivery = cuenta.delivery ? {
-        costo: cuenta.delivery?.costo,
-        destino: cuenta.direccionCliente,
-        gratis: cuenta.delivery?.gratis,
-        idChofer: cuenta.deliveryId
-      } : null
+
+      if (cuenta.delivery) {
+        this.costoDelivery = cuenta.delivery.costo || 0
+        this.esDelivery = true
+        this.deliveryGratis = cuenta.delivery.gratis
+        
+        this.delivery = {
+          costo: cuenta.delivery.costo,
+          destino: cuenta.direccionCliente,
+          gratis: cuenta.delivery.gratis,
+          idChofer: cuenta.delivery.choferes ? cuenta.delivery.choferes.map(c => c.id) : []
+        }
+        
+        this.choferesSeleccionados = cuenta.delivery.choferes || []
+      } else {
+        this.delivery = null
+        this.choferesSeleccionados = []
+        this.costoDelivery = null
+        this.esDelivery = false
+        this.deliveryGratis = false
+      }
     })
   },
 

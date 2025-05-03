@@ -1876,7 +1876,7 @@ function obtenerApartadoCuenta($id, $tipo)
             cuentas.dias,
             deliveries.costo as costoDelivery,
             deliveries.gratis as deliveryGratis,
-            deliveries.idChofer as deliveryId,
+            metodos.nombre as nombreMetodo,
             IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
             IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
             clientes.telefono AS telefonoCliente,
@@ -1887,6 +1887,8 @@ function obtenerApartadoCuenta($id, $tipo)
         LEFT JOIN usuarios ON usuarios.id = cuentas.idUsuario
         LEFT JOIN deliveries ON deliveries.idCuenta = cuentas.id
         LEFT JOIN productos_vendidos ON productos_vendidos.idReferencia = cuentas.id
+        LEFT JOIN abonos ON abonos.idCuenta = cuentas.id
+        LEFT JOIN metodos ON metodos.id = abonos.idMetodo
         WHERE cuentas.id = ?";
 
     $venta = selectRegresandoObjeto($sentencia, [$id]);
@@ -1895,6 +1897,10 @@ function obtenerApartadoCuenta($id, $tipo)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
+        
+        $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idCuenta = ?";
+        $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
+        
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
