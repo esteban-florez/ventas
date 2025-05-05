@@ -27,6 +27,9 @@
     <div v-if="deliveries.length < 1">
       <p>No existen deliveries en el sistema.</p>
     </div>
+    <div>
+      <h2>Total de deliveries: {{ deliveries.length }}</h2>
+    </div>
   </section>
 </template>
 

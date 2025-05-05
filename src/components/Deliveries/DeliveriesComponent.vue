@@ -33,6 +33,12 @@
         </div>
       </div>
 
+      <div class="mb-2">
+        <b-tag type="is-info" size="is-medium">
+          Total de deliveries: {{ deliveries.length }}
+        </b-tag>
+      </div>
+
       <b-table class="box" :data="deliveries" :paginated="isPaginated" :per-page="perPage" :current-page.sync="currentPage"
         :pagination-simple="isPaginationSimple" :pagination-position="paginationPosition"
         :default-sort-direction="defaultSortDirection" :pagination-rounded="isPaginationRounded" :sort-icon="sortIcon"

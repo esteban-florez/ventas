@@ -57,6 +57,9 @@ export default {
     const payload = {
       accion: 'historial',
       proveedor: this.$route.query.proveedor || null,
+      productoId: this.$route.query.productoId || null,
+      fechaInicio: this.$route.query.fechaInicio || null,
+      fechaFin: this.$route.query.fechaFin || null,
     }
 
     HttpService.obtenerConConsultas('ventas.php', payload)

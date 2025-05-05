@@ -992,8 +992,8 @@ function actualizarAbono($abono)
 /*                                                                                                  
  __   __  _______  __   __  _______  ______    ___   _______  _______ 
 |  | |  ||       ||  | |  ||   _   ||    _ |  |   | |       ||       |
-|  |_|  ||  _____||  | |  ||  |_|  ||   | ||  |   | |   _   ||  _____|
-|       || |_____ |  |_|  ||       ||   |_||_ |   | |  | |  || |_____ 
+|  |_|  ||  _____||   |_| ||  |_|  ||   | ||  |   | |   _   ||  _____|
+|       || |_____ |       ||       ||   |_||_ |   | |  | |  || |_____ 
 |       ||_____  ||       ||       ||    __  ||   | |  |_|  ||_____  |
 |       | _____| ||       ||   _   ||   |  | ||   | |       | _____| |
 |_______||_______||_______||__| |__||___|  |_||___| |_______||_______|
@@ -1530,47 +1530,100 @@ function removerExistenciaProducto($producto)
     return insertar($sentencia, $parametros);
 }
 
-function obtenerHistorialInventario($proveedor)
+function obtenerHistorialInventario($proveedor = null, $productoId = null, $fechaInicio = null, $fechaFin = null)
 {
     $antiguo = "SELECT MIN(e1.fecha) FROM entradas AS e1 WHERE e1.idProducto = e.idProducto";
 
-    $sentencia1 = "SELECT e.fecha, e.cantidad,
+    // --- ENTRADAS ---
+    $whereEntradas = " WHERE 1=1";
+    $paramsEntradas = [];
+    if ($proveedor) {
+        $whereEntradas .= " AND pr.id = ?";
+        $paramsEntradas[] = $proveedor;
+    }
+    if ($productoId) {
+        $whereEntradas .= " AND e.idProducto = ?";
+        $paramsEntradas[] = $productoId;
+    }
+    if ($fechaInicio && $fechaFin) {
+        $whereEntradas .= " AND DATE(e.fecha) >= ? AND DATE(e.fecha) <= ?";
+        $paramsEntradas[] = $fechaInicio;
+        $paramsEntradas[] = $fechaFin;
+    }
+    $sentencia1 = "SELECT e.fecha, e.cantidad, e.monto,
         p.nombre AS nombreProducto, u.usuario AS nombreUsuario,
-         '+' AS signo, pr.nombre AS nombreProveedor,
+        '+' AS signo, pr.nombre AS nombreProveedor,
         IF(($antiguo) = e.fecha, 'Registro', 'Reposición') AS tipo
         FROM entradas AS e
         LEFT JOIN productos AS p ON p.id = e.idProducto
         LEFT JOIN usuarios AS u ON e.idUsuario = u.id
-        INNER JOIN proveedores AS pr ON p.proveedor = pr.id";
+        INNER JOIN proveedores AS pr ON p.proveedor = pr.id
+        $whereEntradas";
 
+    // --- VENTAS ---
+    $whereVentas = " WHERE 1=1";
+    $paramsVentas = [];
     if ($proveedor) {
-        $sentencia1 .= " AND pr.id = ?";
-        return selectPrepare($sentencia1, [$proveedor]);
+        $whereVentas .= " AND pr.id = ?";
+        $paramsVentas[] = $proveedor;
     }
-
-    $sentencia2 = "SELECT v.fecha, v.cantidad,
+    if ($productoId) {
+        $whereVentas .= " AND v.idProducto = ?";
+        $paramsVentas[] = $productoId;
+    }
+    if ($fechaInicio && $fechaFin) {
+        $whereVentas .= " AND DATE(v.fecha) >= ? AND DATE(v.fecha) <= ?";
+        $paramsVentas[] = $fechaInicio;
+        $paramsVentas[] = $fechaFin;
+    }
+    $sentencia2 = "SELECT v.fecha, v.cantidad, v.precio as monto,
         'Venta' AS tipo, p.nombre AS nombreProducto,
         u.usuario AS nombreUsuario, '-' AS signo,
-        c.nombre AS nombreCliente
+        c.nombre AS nombreCliente, pr.nombre AS nombreProveedor
         FROM productos_vendidos AS v
         LEFT JOIN productos AS p ON p.id = v.idProducto
         LEFT JOIN cuentas_apartados AS ca ON v.idReferencia = ca.id
         LEFT JOIN ventas AS ve ON v.idReferencia = ve.id
         LEFT JOIN usuarios AS u ON ca.idUsuario = u.id OR ve.idUsuario = u.id
-        LEFT JOIN clientes AS c ON ca.idCliente = c.id OR ve.idCliente = c.id;";
+        LEFT JOIN clientes AS c ON ca.idCliente = c.id OR ve.idCliente = c.id
+        LEFT JOIN proveedores AS pr ON p.proveedor = pr.id
+        $whereVentas";
 
-    $sentencia3 = "SELECT r.fecha, r.cantidad,
+    // --- REMOVIDOS ---
+    $whereRemovidos = " WHERE 1=1";
+    $paramsRemovidos = [];
+    if ($proveedor) {
+        $whereRemovidos .= " AND pr.id = ?";
+        $paramsRemovidos[] = $proveedor;
+    }
+    if ($productoId) {
+        $whereRemovidos .= " AND r.idProducto = ?";
+        $paramsRemovidos[] = $productoId;
+    }
+    if ($fechaInicio && $fechaFin) {
+        $whereRemovidos .= " AND DATE(r.fecha) >= ? AND DATE(r.fecha) <= ?";
+        $paramsRemovidos[] = $fechaInicio;
+        $paramsRemovidos[] = $fechaFin;
+    }
+    $sentencia3 = "SELECT r.fecha, r.cantidad, NULL as monto,
         'Retiro' as tipo, p.nombre AS nombreProducto,
-        u.usuario AS nombreUsuario, '-' AS signo
+        u.usuario AS nombreUsuario, '-' AS signo, NULL as nombreCliente, pr.nombre AS nombreProveedor
         FROM productos_removidos AS r
         LEFT JOIN productos AS p ON p.id = r.idProducto
-        LEFT JOIN usuarios AS u ON r.idUsuario = u.id;";
+        LEFT JOIN usuarios AS u ON r.idUsuario = u.id
+        LEFT JOIN proveedores AS pr ON p.proveedor = pr.id
+        $whereRemovidos";
 
-    $entradas = selectQuery($sentencia1);
-    $salidas = selectQuery($sentencia2);
-    $removidos = selectQuery($sentencia3);
+    $entradas = selectPrepare($sentencia1, $paramsEntradas);
+    $salidas = selectPrepare($sentencia2, $paramsVentas);
+    $removidos = selectPrepare($sentencia3, $paramsRemovidos);
 
     $movimientos = array_merge($entradas, $salidas, $removidos);
+
+    // Ordenar por fecha descendente
+    usort($movimientos, function($a, $b) {
+        return strtotime($b->fecha) - strtotime($a->fecha);
+    });
 
     return $movimientos;
 }

@@ -101,7 +101,12 @@ switch ($accion) {
 		break;
 
 	case 'historial':
-		echo json_encode(obtenerHistorialInventario($payload->proveedor));
+		echo json_encode(obtenerHistorialInventario(
+			$payload->proveedor ?? null,
+			$payload->productoId ?? null,
+			$payload->fechaInicio ?? null,
+			$payload->fechaFin ?? null
+		));
 		break;
 
 	case 'eliminar_venta':

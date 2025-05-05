@@ -26,6 +26,9 @@
         </b-button>
       </div>
     </div>
+    <busqueda-de-producto @seleccionado="onSeleccionadoProducto" @deseleccionado="onDeseleccionadoProducto" />
+    <busqueda-en-fecha @seleccionada="onBusquedaEnFecha" />
+    <br>
     <b-table class="box" :data="movimientos" :per-page="perPage" :paginated="true" :pagination-simple="false"
       :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
       <b-table-column field="nombreProducto" label="Producto" sortable searchable v-slot="props">
@@ -71,10 +74,12 @@
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import Utiles from '../../Servicios/Utiles'
+import BusquedaDeProducto from './BusquedaDeProducto.vue'
+import BusquedaEnFecha from '../Extras/BusquedaEnFecha.vue' // <-- AGREGA ESTA LÍNEA
 
 export default {
   name: 'HistorialComponent',
-  components: { NavComponent },
+  components: { NavComponent, BusquedaDeProducto, BusquedaEnFecha }, // <-- AGREGA BusquedaEnFecha AQUÍ
 
   data: () => ({
     cargando: false,
@@ -82,6 +87,9 @@ export default {
     proveedores: [],
     filtros: {
       proveedor: '',
+      productoId: null,
+      fechaInicio: "",
+      fechaFin: ""
     },
     perPage: 10,
   }),
@@ -95,12 +103,9 @@ export default {
   computed: {
     printHref() {
       let href = '#/pdf/movimientos'
-
       const entries = Object.entries(this.filtros)
         .filter(entry => Boolean(entry[1]))
-
       if (entries.length === 0) return href
-
       const filtros = Object.fromEntries(entries)
       const params = new URLSearchParams(filtros).toString()
       return `${href}?${params}`
@@ -116,6 +121,9 @@ export default {
       let payload = {
         accion: 'historial',
         proveedor: this.filtros.proveedor || null,
+        productoId: this.filtros.productoId || null,
+        fechaInicio: this.filtros.fechaInicio || null,
+        fechaFin: this.filtros.fechaFin || null,
       }
 
       HttpService.obtenerConConsultas('ventas.php', payload)
@@ -137,6 +145,19 @@ export default {
           this.proveedores = proveedores
           this.cargando = false
         })
+    },
+    onSeleccionadoProducto(producto) {
+      this.filtros.productoId = producto.id
+      this.obtenerMovimientos()
+    },
+    onDeseleccionadoProducto() {
+      this.filtros.productoId = null
+      this.obtenerMovimientos()
+    },
+    onBusquedaEnFecha(fechas) {
+      this.filtros.fechaInicio = fechas[0]?.toISOString().split('T')[0] || ""
+      this.filtros.fechaFin = fechas[1]?.toISOString().split('T')[0] || ""
+      this.obtenerMovimientos()
     },
   },
 }

@@ -53,5 +53,5 @@ function formatMessage(cuenta, date) {
     .map(producto => `- ${producto.nombre} (${producto.cantidad} ${producto.unidad}.)`)
     .join('\n    ')
 
-  return `*${OWNER_NAME}*\n\nEstimado/a *${nombreCliente}*, le notificamos que su cuenta pendiente desde el día *${localeDate(date)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productList}`
+  return `*${OWNER_NAME}*\n\nEstimado/a *${nombreCliente}*, le notificamos que su nota de entrega (ID: ${cuenta.id}) pendiente desde el día *${localeDate(date)}* con una deuda de *$${porPagar}* ha caducado:\n    ${productList}`
 }
