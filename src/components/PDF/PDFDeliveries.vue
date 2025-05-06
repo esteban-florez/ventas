@@ -22,6 +22,10 @@
       <b-table-column field="destino" label="Destino" v-slot="props">
         {{ props.row.destino }}
       </b-table-column>
+
+      <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
+        {{ props.row.nombreCliente }}
+      </b-table-column>
       </b-table>
     </div>
     <div v-if="deliveries.length < 1">

@@ -537,7 +537,7 @@ function registrarDelivery($venta, $relacion, $id)
         }
 
         $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
-        $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
+        $parametros = [$delivery->gratis ? 0 : $delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
     }
 }
@@ -1322,11 +1322,14 @@ function registrarPagoChofer($pago)
 function obtenerDeliveries($filtros)
 {
     $sentencia = "SELECT deliveries.*, choferes.nombre as nombreChofer, 
-        COALESCE(ventas.fecha, cuentas.fecha) as fecha
+        COALESCE(ventas.fecha, cuentas.fecha) as fecha,
+        COALESCE(clientes.nombre, clientes2.nombre, 'MOSTRADOR') as nombreCliente
         FROM deliveries
         LEFT JOIN choferes ON deliveries.idChofer = choferes.id
         LEFT JOIN ventas ON deliveries.idVenta = ventas.id
-        LEFT JOIN cuentas_apartados AS cuentas ON deliveries.idCuenta = cuentas.id";
+        LEFT JOIN cuentas_apartados AS cuentas ON deliveries.idCuenta = cuentas.id
+        LEFT JOIN clientes ON ventas.idCliente = clientes.id
+        LEFT JOIN clientes AS clientes2 ON cuentas.idCliente = clientes2.id";
 
     $parametros = [];
     if ($filtros->choferId) {

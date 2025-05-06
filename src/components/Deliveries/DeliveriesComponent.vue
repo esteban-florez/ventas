@@ -52,6 +52,10 @@
         {{ props.row.nombreChofer }}
       </b-table-column>
 
+      <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
+        {{ props.row.nombreCliente }}
+      </b-table-column>
+
       <b-table-column field="costo" label="Costo" sortable searchable v-slot="props">
         ${{ formatoMonto(props.row.costo) }}
       </b-table-column>
