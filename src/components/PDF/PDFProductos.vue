@@ -26,6 +26,10 @@
         <b-table-column field="precioVenta3" label="Precio venta 3" v-slot="props">
           ${{ props.row.precioVenta3 }}
         </b-table-column>
+        
+        <b-table-column field="precioVenta4" label="Precio venta 4" v-slot="props">
+          ${{ props.row.precioVenta3 }}
+        </b-table-column>
 
         <b-table-column field="ganancia" label="Ganacia" v-slot="props">
           <b>${{ props.row.precioVenta - props.row.precioCompra }}</b>

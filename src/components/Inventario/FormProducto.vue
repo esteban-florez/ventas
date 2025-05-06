@@ -36,6 +36,11 @@
           v-model="producto.precioVenta3" :min="producto.precioCompra"></b-input>
       </b-field>
 
+      <b-field label="Precio venta 4" expanded>
+        <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 4"
+          v-model="producto.precioVenta4" :min="producto.precioCompra"></b-input>
+      </b-field>
+
       <b-field label="Existencia" expanded v-if="!editar">
         <b-numberinput min="1" step="0.01" type="is-info" placeholder="Existencia" v-model="producto.existencia">
         </b-numberinput>
@@ -99,6 +104,9 @@ export default {
       unidad: null,
       precioCompra: '',
       precioVenta: '',
+      precioVenta2: '',
+      precioVenta3: '',
+      precioVenta4: '', 
       existencia: 0,
       vendidoMayoreo: false,
       precioMayoreo: '',
@@ -152,6 +160,9 @@ export default {
         nombre: "",
         precioCompra: "",
         precioVenta: "",
+        precioVenta2: "",
+        precioVenta3: "",
+        precioVenta4: "",
         existencia: 0,
         vendidoMayoreo: false,
         precioMayoreo: "",

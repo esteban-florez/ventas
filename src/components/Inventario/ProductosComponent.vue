@@ -55,6 +55,10 @@
         <b-table-column field="precioVenta3" label="Precio venta 3" sortable v-slot="props">
           ${{ formatoMonto(props.row.precioVenta3) }}
         </b-table-column>
+        
+        <b-table-column field="precioVenta4" label="Precio venta 3" sortable v-slot="props">
+          ${{ formatoMonto(props.row.precioVenta4) }}
+        </b-table-column>
 
         <b-table-column field="ganancia" label="Ganancia" sortable v-slot="props">
           <b>${{ formatoMonto(props.row.precioVenta - props.row.precioCompra) }}</b>

@@ -1041,7 +1041,7 @@ function calcularTotalIngresosMesUsuario($idUsuario)
 {
     $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(CURRENT_DATE())) AS totalIngresos";
     $parametros = [$idUsuario];
     return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
@@ -1678,9 +1678,14 @@ function buscarProductoPorNombreOCodigo($producto)
 
 function registrarProducto($producto)
 {
-    $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, precioVenta4, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->proveedor];
+    $parametros = [
+        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
+        $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, $producto->precioVenta4 ?? 0,
+        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
+        $producto->marca, $producto->categoria, $producto->proveedor
+    ];
 
     $resultado = insertar($sentencia, clean($parametros));
 
@@ -1702,10 +1707,10 @@ function registrarProducto($producto)
 function obtenerProductos()
 {
     $sentencia = "SELECT productos.*, IFNULL(categorias.nombreCategoria, 'NO ENCONTRADA') AS nombreCategoria, IFNULL(marcas.nombreMarca, 'NO ENCONTRADA') AS nombreMarca, IFNULL(proveedores.nombre, 'NO ENCONTRADO') AS nombreProveedor
-	FROM productos
-	LEFT JOIN categorias ON categorias.id = productos.categoria
-	LEFT JOIN marcas ON marcas.id = productos.marca
-	LEFT JOIN proveedores ON proveedores.id = productos.proveedor";
+    FROM productos
+    LEFT JOIN categorias ON categorias.id = productos.categoria
+    LEFT JOIN marcas ON marcas.id = productos.marca
+    LEFT JOIN proveedores ON proveedores.id = productos.proveedor";
 
     $productos = selectQuery($sentencia);
     $existencias = obtenerExistencia();
@@ -1728,9 +1733,14 @@ function obtenerProductoPorId($id)
 
 function editarProducto($producto)
 {
-    $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
+    $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, precioVenta4 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
 
-    $parametros = [$producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra, $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo, $producto->marca, $producto->categoria, $producto->proveedor, $producto->id];
+    $parametros = [
+        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
+        $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->precioVenta4,
+        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
+        $producto->marca, $producto->categoria, $producto->proveedor, $producto->id
+    ];
 
     return editar($sentencia, clean($parametros));
 }

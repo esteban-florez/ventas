@@ -65,8 +65,8 @@ import Utiles from '../../Servicios/Utiles'
 			},
 
       precios(producto) {
-        const { precioVenta, precioVenta2, precioVenta3 } = producto
-        return [precioVenta, precioVenta2, precioVenta3]
+        const { precioVenta, precioVenta2, precioVenta3, precioVenta4 } = producto
+        return [precioVenta, precioVenta2, precioVenta3, precioVenta4]
           .filter(precio => !!Number(precio))
       },
 

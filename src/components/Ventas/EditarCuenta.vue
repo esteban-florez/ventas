@@ -333,6 +333,7 @@ export default {
           precioVenta: producto.precioVenta,
           precioVenta2: producto.precioVenta2,
           precioVenta3: producto.precioVenta3,
+          precioVenta4: producto.precioVenta4,
           unidad: producto.unidad,
           cantidad: 1,
           existencia: producto.existencia,

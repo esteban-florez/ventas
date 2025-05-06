@@ -14,13 +14,13 @@
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
             <b-button class="button is-responsive" type="is-success" inverted icon-left="check" size="is-large"
               @click="abrirDialogo('venta')">
-              Terminar venta
+              Vender al contado
             </b-button>
           </div>
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_cuenta')">
             <b-button class="button is-responsive" type="is-info" inverted icon-left="wallet-plus" size="is-large"
               @click="abrirDialogo('cuenta')">
-              Agregar a cuenta
+              Vender a crédito
             </b-button>
           </div>
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_apartado')">
@@ -358,6 +358,7 @@ export default {
           precioVenta: producto.precioVenta,
           precioVenta2: producto.precioVenta2,
           precioVenta3: producto.precioVenta3,
+          precioVenta4: producto.precioVenta4,
           unidad: producto.unidad,
           cantidad: 1,
           existencia: producto.existencia,

@@ -1587,6 +1587,7 @@ CREATE TABLE `productos` (
   `precioVenta` decimal(8,2) NOT NULL,
   `precioVenta2` decimal(8,2) NOT NULL,
   `precioVenta3` decimal(8,2) NOT NULL,
+  `precioVenta4` decimal(8,2) NOT NULL,
   `vendidoMayoreo` tinyint(1) DEFAULT NULL,
   `precioMayoreo` decimal(8,2) DEFAULT NULL,
   `cantidadMayoreo` decimal(8,2) DEFAULT NULL,
