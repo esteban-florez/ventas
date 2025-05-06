@@ -14,9 +14,6 @@
         <template slot-scope="props">
           <div>
             <span>{{ props.option.nombre }}</span>
-            <span v-if="props.option.deuda !== undefined" class="has-text-grey is-size-7">
-              &mdash; Deuda: ${{ formatoMonto(props.option.deuda) }}
-            </span>
           </div>
         </template>
       </b-autocomplete>

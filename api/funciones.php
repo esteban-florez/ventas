@@ -537,7 +537,7 @@ function registrarDelivery($venta, $relacion, $id)
         }
 
         $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
-        $parametros = [$delivery->gratis ? 0 : $delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
+        $parametros = [$delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
         insertar($sentencia, clean($parametros));
     }
 }
@@ -1208,8 +1208,8 @@ function obtenerUsuarios()
 
 /*
 
- _______  ___      ___   _______  __    _  _______  _______  _______ 
-|       ||   |    |   | |       ||  |  | ||       ||       ||       |
+ _______  ___      ___   _______  __    _  _______  _______  _______  _______ 
+|       ||   |    |   | |       ||  |  | ||       ||       ||       ||       |
 |       ||   |    |   | |    ___||   |_| ||_     _||    ___||  _____|
 |       ||   |    |   | |   |___ |       |  |   |  |   |___ | |_____ 
 |      _||   |___ |   | |    ___||  _    |  |   |  |    ___||_____  |
