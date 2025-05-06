@@ -25,9 +25,6 @@
       <button class="delete" @click="deseleccionarChofer"></button>
       <p>Chofer: <b>{{ choferSeleccionado.nombre }}</b></p>
       <p>Teléfono: <b>{{ choferSeleccionado.telefono }}</b></p>
-      <p v-if="choferSeleccionado.deuda !== undefined">
-        Deuda: <b>${{ formatoMonto(choferSeleccionado.deuda) }}</b>
-      </p>
     </div>
   </section>
 </template>
