@@ -23,7 +23,7 @@
         <b-switch v-model="esDelivery" @input="manejarEsDelivery" type="is-info">
           ¿Añadir servicio de delivery?
         </b-switch>
-        <div style="display: contents" v-if="esDelivery">
+        <div style="display: contents" v-if="esDelivery"> 
           <h4 class="is-size-4 has-text-weight-bold mt-5 has-text-centered">Datos del delivery</h4>
           <b-field class="mt-1" label="Costo del delivery">
             <b-input step="0.01" icon="currency-usd" type="number" placeholder="Costo del delivery" v-model="delivery.costo" @input="manejarCostoDelivery" required></b-input>

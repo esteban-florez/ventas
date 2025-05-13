@@ -1,6 +1,6 @@
 <template>
-	<form>
-		<b-field label="Nombre del chofer">
+    <form @submit.prevent="registrar">
+        <b-field label="Nombre del chofer">
       <b-input step="any" icon="account" type="text" placeholder="Ej. Don Paco" v-model="datosChofer.nombre"></b-input>
     </b-field>
     <b-field label="Teléfono del chofer">
@@ -20,11 +20,15 @@
       <b-input :value="formatoMonto(datosChofer.deuda)" icon="currency-usd" readonly></b-input>
     </b-field>
     <div class="buttons has-text-centered mt-3">
-      <b-button type="is-primary" size="is-large" icon-left="check" @click="registrar">Registrar</b-button>
-      <b-button type="is-dark" size="is-large" icon-left="cancel" tag="router-link" to="/choferes">Cancelar</b-button>
+      <b-button type="is-primary" size="is-large" icon-left="check" native-type="submit">
+        Registrar
+      </b-button>
+      <b-button type="is-dark" size="is-large" icon-left="cancel" @click.prevent="cancelar">
+        Cancelar
+      </b-button>
     </div>
     <errores-component :errores="mensajesError" v-if="mensajesError.length > 0" />
-	</form>
+    </form>
 </template>
 <script>
 	import Utiles from '../../Servicios/Utiles'
@@ -48,8 +52,10 @@
 		}),
 
 		mounted() {
-      const copia = structuredClone(this.chofer)
-			this.datosChofer = copia
+      if (this.chofer) {
+        const copia = structuredClone(this.chofer)
+        this.datosChofer = copia
+      }
 		},
 
 		methods: {
@@ -63,7 +69,10 @@
           tipo: null,
           ci: "",
 				}
-			}
+			},
+      cancelar() {
+        this.$emit("cancelar")
+      }
 		}
 	}
 </script>

@@ -17,7 +17,7 @@ switch ($accion) {
 		echo json_encode(obtenerDeliveries($payload->filtros));
 		break;
 
-	default:
+	default: 
 		echo json_encode("No se reconoce");
 		break;
 }

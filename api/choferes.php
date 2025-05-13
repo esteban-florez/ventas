@@ -12,7 +12,7 @@ include_once "auth.php";
 
 $accion = $payload->accion;
 
-switch ($accion) {
+switch ($accion) { 
 	case 'obtener':
 		echo json_encode(obtenerChoferes());
 		break;
@@ -31,6 +31,10 @@ switch ($accion) {
 	
     case 'pagar_chofer':
         echo json_encode(registrarPagoChofer($payload->pago));
+        break;
+
+    case 'registrar':
+        echo json_encode(registrarChofer($payload->chofer));
         break;
 
 	default:

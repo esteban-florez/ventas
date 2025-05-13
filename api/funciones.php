@@ -527,17 +527,15 @@ function registrarDelivery($venta, $relacion, $id)
     $choferes = is_array($delivery->idChofer) ? $delivery->idChofer : [$delivery->idChofer];
 
     foreach ($choferes as $idChofer) {
-        // Si es '0', registrar nuevo chofer
-        if ($idChofer === '0' || $idChofer === 0) {
-            $chofer = $venta->chofer;
-            $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?,?,?,?)";
-            $parametros = [$chofer->nombre, $chofer->telefono, $chofer->tipo, $chofer->ci];
-            insertar($sentencia, clean($parametros));
-            $idChofer = obtenerUltimoId('choferes');
-        }
-
-        $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?,?,?,?,?)";
-        $parametros = [$delivery->gratis ? 0 : $delivery->costo, $delivery->destino, intval($delivery->gratis), $idChofer, $id];
+        // Registrar el delivery para cada chofer, SIEMPRE con el costo aunque sea gratis para el cliente
+        $sentencia = "INSERT INTO deliveries (costo, destino, gratis, idChofer, $relacion) VALUES (?, ?, ?, ?, ?)";
+        $parametros = [
+            $delivery->costo, // Siempre registrar el costo
+            $delivery->destino,
+            $delivery->gratis ? 1 : 0,
+            $idChofer,
+            $id
+        ];
         insertar($sentencia, clean($parametros));
     }
 }
@@ -991,8 +989,8 @@ function actualizarAbono($abono)
 
 /*                                                                                                  
  __   __  _______  __   __  _______  ______    ___   _______  _______ 
-|  | |  ||       ||  | |  ||   _   ||    _ |  |   | |       ||       |
-|  |_|  ||  _____||   |_| ||  |_|  ||   | ||  |   | |   _   ||  _____|
+|  |_|  ||       ||  | |  ||   _   ||    _ |  |   | |       ||       |
+|       ||  _____||   |_| ||  |_|  ||   | ||  |   | |   _   ||  _____|
 |       || |_____ |       ||       ||   |_||_ |   | |  | |  || |_____ 
 |       ||_____  ||       ||       ||    __  ||   | |  |_|  ||_____  |
 |       | _____| ||       ||   _   ||   |  | ||   | |       | _____| |
@@ -1041,7 +1039,7 @@ function calcularTotalIngresosMesUsuario($idUsuario)
 {
     $sentencia = "SELECT 
 	(SELECT IFNULL(SUM(total),0) FROM ventas WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE()) AND idUsuario = ?) + 
-	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(CURRENT_DATE())) AS totalIngresos";
+	(SELECT IFNULL(SUM(monto),0) FROM abonos WHERE MONTH(fecha) = MONTH(CURRENT_DATE()) AND YEAR(fecha) = YEAR(CURRENT_DATE())) AS totalIngresos";
     $parametros = [$idUsuario];
     return selectRegresandoObjeto($sentencia, $parametros)->totalIngresos;
 }
@@ -1057,7 +1055,7 @@ function obtenerVentasPorUsuario()
 
 function iniciarSesion($usuario)
 {
-    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
+    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?"; 
     $parametros = [$usuario->usuario];
     $resultado = selectRegresandoObjeto($sentencia, $parametros);
 
@@ -1347,6 +1345,18 @@ function obtenerDeliveries($filtros)
     $sentencia .= " ORDER BY COALESCE(ventas.fecha, cuentas.fecha) DESC";
 
     return selectPrepare($sentencia, $parametros);
+}
+
+function registrarChofer($chofer)
+{
+    $sentencia = "INSERT INTO choferes (nombre, telefono, tipo, ci) VALUES (?, ?, ?, ?)";
+    $parametros = [
+        $chofer->nombre,
+        $chofer->telefono,
+        $chofer->tipo,
+        $chofer->ci
+    ];
+    return insertar($sentencia, $parametros);
 }
 
 /* PROVEEDORES */

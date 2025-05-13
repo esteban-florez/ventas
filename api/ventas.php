@@ -110,7 +110,7 @@ switch ($accion) {
 		break;
 
 	case 'eliminar_venta':
-		echo json_encode(eliminarVenta($payload->id));
+		echo json_encode(eliminarVenta($payload->id)); 
 		break;
 
 	case 'eliminar_cuenta':

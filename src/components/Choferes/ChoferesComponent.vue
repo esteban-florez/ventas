@@ -5,6 +5,27 @@
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
       <b-breadcrumb-item active>Choferes</b-breadcrumb-item> 
     </b-breadcrumb>
+
+    <!-- Botón para registrar nuevo chofer -->
+    <div class="mb-3">
+      <b-button type="is-primary" icon-left="plus" @click="mostrarNuevoChofer = true">
+        Registrar nuevo chofer
+      </b-button>
+    </div>
+
+    <!-- Modal para el formulario de nuevo chofer -->
+    <b-modal v-model="mostrarNuevoChofer" has-modal-card trap-focus :destroy-on-hide="true">
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Registrar nuevo chofer</p>
+          <button type="button" class="delete" @click="mostrarNuevoChofer = false"></button>
+        </header>
+        <section class="modal-card-body">
+          <form-chofer @registrar="registrarChofer" @cancelar="mostrarNuevoChofer = false" :formatoMonto="formatoMonto" />
+        </section>
+      </div>
+    </b-modal>
+
     <div class="columns">
       <div class="column">
         <b-select v-model="perPage">
@@ -20,6 +41,7 @@
         </b-button>
       </div>
     </div>
+    
     <b-table class="box" :data="choferes" :per-page="perPage" :paginated="true" :pagination-simple="false"
     :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
       <b-table-column field="nombre" label="Nombre del chofer" sortable searchable v-slot="props">
@@ -60,15 +82,17 @@
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import Utiles from '../../Servicios/Utiles'
+import FormChofer from './FormChofer.vue'
 
 export default {
   name: "ChoferesComponent",
-  components: { NavComponent },
+  components: { NavComponent, FormChofer },
 
   data: () => ({
     cargando: false,
     perPage: 5,
-    choferes: []
+    choferes: [],
+    mostrarNuevoChofer: false, // Nuevo estado para mostrar el modal
   }),
 
   mounted() {
@@ -131,6 +155,26 @@ export default {
         }
       })
     },
+
+    registrarChofer(datosChofer) {
+      this.cargando = true
+      this.mostrarNuevoChofer = false
+      this.$buefy.toast.open('Registrando chofer...')
+      HttpService.registrar('choferes.php', {
+        accion: 'registrar',
+        chofer: datosChofer
+      }).then(() => {
+        this.obtenerChoferes()
+        this.$buefy.toast.open('Chofer registrado con éxito.')
+        this.cargando = false
+      }).catch(() => {
+        this.$buefy.toast.open({
+          message: 'Error al registrar chofer.',
+          type: 'is-danger'
+        })
+        this.cargando = false
+      })
+    }
   },
 }
 </script>

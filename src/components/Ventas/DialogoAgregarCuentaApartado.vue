@@ -42,7 +42,7 @@
           </b-field>
 
           <div class="mb-2" v-if="delivery.costo">
-            ({{ formatoMonto(delivery.costo) }})
+            ({{ formatoMonto(delivery.costo) }}) 
           </div>
 
           <b-switch class="mb-3" v-model="delivery.gratis" type="is-info" @input="$emit('actualizar', 'deliveryGratis', delivery.gratis)">
