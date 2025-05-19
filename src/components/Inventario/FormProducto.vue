@@ -125,9 +125,9 @@ export default {
     this.obtenerProveedores()
     if (this.productoProp) {
       this.producto = this.productoProp
+      this.producto.vendidoMayoreo = this.productoProp.vendidoMayoreo === 1
+      this.producto.cantidadMayoreo = parseInt(this.productoProp.cantidadMayoreo)
     }
-    this.producto.vendidoMayoreo = (this.productoProp.vendidoMayoreo === 1) ? true : false
-    this.producto.cantidadMayoreo = parseInt(this.productoProp.cantidadMayoreo)
   },
 
   methods: {
