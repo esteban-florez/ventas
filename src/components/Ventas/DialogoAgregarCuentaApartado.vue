@@ -233,8 +233,6 @@
     mounted() {
       this.clase = `has-background-${this.tipo === 'cuenta' ? 'info' : 'dark'}`
       this.titulo = this.tipo === 'cuenta' ? 'Agregar a cuenta' : 'Realizar apartado'
-
-      console.log(this.delivery, this.esDelivery)
     },
 
     computed: {

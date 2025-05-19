@@ -29,7 +29,6 @@ export default {
       return Utiles.formatoMonto(valor)
     },
     onRegistrado(producto) {
-      console.log(producto)
       this.cargando = true
 
       const precioCompra = Number(producto.precioCompra) * 100
