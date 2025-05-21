@@ -36,7 +36,7 @@
       </b-table-column>
 
       <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+        {{ formatoFechaCaracas(props.row.fecha) }}
       </b-table-column>
 
       <b-table-column field="porPagar" label="Por pagar" sortable v-slot="props">
@@ -102,9 +102,6 @@ export default {
   }),
 
   methods: {
-
-    
-
     cargarRegistrosFiltrados() {
       this.$emit('cargarRegistrosFiltrados')
     },
@@ -171,6 +168,14 @@ export default {
       hoy.setHours(0,0,0,0)
       if (hoy > fechaVencimiento) return 'VENCIDA'
       return 'VIGENTE'
+    },
+
+    formatoFechaCaracas(fecha) {
+      // Forzar la fecha como Caracas (-04:00)
+      return new Date(fecha.replace(' ', 'T') + '-04:00').toLocaleDateString(
+        'es-ES',
+        { day: '2-digit', month: '2-digit', year: 'numeric', }
+      ).replace(/\//g, '-')
     },
   },
 
