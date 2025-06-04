@@ -357,20 +357,27 @@ function obtenerCuentasApartados($filtros, $tipo)
 {
     $sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
         cuentas_apartados.tipo, cuentas_apartados.total,
-        MAX(deliveries.costo) as costoDelivery, MAX(deliveries.gratis) as deliveryGratis,
-        cuentas_apartados.dias, IFNULL(SUM(abonos.monto), 0) AS pagado,
-        (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar,
+        cuentas_apartados.dias,
+        IFNULL(deliveries.costo, 0) as costoDelivery,
+        IFNULL(abonos.total, 0) AS pagado,
+        (cuentas_apartados.total - IFNULL(abonos.total, 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
         IFNULL(clientes.telefono, '') AS telefonoCliente,
-        deliveries.idChofer as deliveryId,
         clientes.telefono AS telefonoCliente,
-        IFNULL(deliveries.destino, clientes.direccion) AS direccionCliente,
         IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
         FROM cuentas_apartados
         LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
         LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
-        LEFT JOIN abonos ON abonos.idCuenta = cuentas_apartados.id
-        LEFT JOIN deliveries ON deliveries.idCuenta = cuentas_apartados.id
+        LEFT JOIN (
+            SELECT idCuenta, SUM(d.costo) AS costo
+            FROM deliveries AS d
+            GROUP BY idCuenta)
+        AS deliveries ON deliveries.idCuenta = cuentas_apartados.id
+        LEFT JOIN (
+            SELECT idCuenta, SUM(a.monto) as total
+            FROM abonos AS a
+            GROUP BY idCuenta
+        ) AS abonos ON abonos.idCuenta = cuentas_apartados.id
         WHERE cuentas_apartados.tipo = ?";
 
     $parametros = [$tipo];
