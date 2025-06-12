@@ -103,11 +103,9 @@ export default {
       return Utiles.formatoMonto(valor)
     },
     formatoFechaCaracas(fecha) {
-      // Forzar la fecha como Caracas (-04:00)
-      return new Date(fecha.replace(' ', 'T') + '-04:00').toLocaleDateString(
-        'es-ES',
-        { day: '2-digit', month: '2-digit', year: 'numeric', }
-      ).replace(/\//g, '-')
+      if (!fecha) return 'Fecha inválida';
+      const [anio, mes, dia] = fecha.split('-');
+      return `${dia}-${mes}-${anio}`;
     },
     agruparPorMetodo(abonos) {
       const agrupados = {}
