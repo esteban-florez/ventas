@@ -3,10 +3,16 @@
     <div class="comprobante" :class="tamaño" id="comprobante">
       <div class="header carta-header" v-if="tamaño === 'carta'">
         <div class="logo-container">
-          <img src="@/assets/ofertacaracas.jpg" class="logo">
+          <img :src="imagenLogo()" class="logo">
         </div>
         <div class="empresa-info">
-          <h1>Ofertas Caracas</h1>
+          <h1>{{
+              local === 'ccs'
+                ? 'Oferta Caracas'
+                : local === 'prime'
+                  ? 'Food Prime'
+                  : 'Jiro Sushi Prime'
+              }}</h1>
         </div>
         <div class="factura-info">
           <p><b>Nota de Entrega: {{ venta.id }}</b></p>
@@ -71,10 +77,13 @@
 import Printd from 'printd'
 import html2pdf from 'html2pdf.js'
 import Utiles from '../../Servicios/Utiles'
+import jiroLogo from '@/assets/jirosushi.png'
+import primeLogo from '@/assets/FoodPrime.jpeg'
+import ccsLogo from '@/assets/ofertacaracas.jpg'
 
 export default {
   name: 'ComprobanteCompra',
-  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente'],
+  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente', 'local'],
 
   data: () => ({
     tiempo: '',
@@ -227,6 +236,14 @@ export default {
     formatoMonto(valor) {
       // Usa el formato global de montos
       return Utiles.formatoMonto(valor)
+    },
+
+    imagenLogo() {
+      switch(this.local) {
+        case 'ccs': return ccsLogo
+        case 'prime': return primeLogo
+        default: return jiroLogo
+      }
     },
 
     async imprimir() {

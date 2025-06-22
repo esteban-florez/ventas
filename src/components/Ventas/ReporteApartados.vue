@@ -14,6 +14,24 @@
         </div>
       </div>
     </div>
+    <b-modal
+    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+      <div class="modal-card" style="width: 320px">
+        <section class="modal-card-body">
+          <b-field class="mt-3" label="Local emisor">
+            <b-select class="wide" placeholder="Seleccionar..." v-model="local" required>
+              <option value="jiro">Jirosushi Prime</option>
+              <option value="ccs">Oferta Caracas</option>
+              <option value="prime">Food Prime</option>
+            </b-select>
+          </b-field>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end">
+          <b-button label="Continuar" type="is-primary" @click="confirmarLocal" :disabled="!local" />
+        </footer>
+      </div>
+    </b-modal>
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado apartados :('"
       :subtitulo="'Aquí aparecerán los apartados registrados'" v-if="apartados.length < 1" />
     <div class="mt-2" v-if="apartados.length > 0">
@@ -23,7 +41,7 @@
         @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
-      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
+      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :local="local" :enviarCliente="enviarCliente" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -57,7 +75,9 @@ export default {
     mostrarComprobante: false,
     enviarCliente: false,
     clienteId: null,
-    apartadosFiltrados: []
+    apartadosFiltrados: [],
+    local: null,
+    abrirModalLocal: false,
   }),
 
   mounted() {
@@ -92,6 +112,11 @@ export default {
       this.mostrarComprobante = resultado
     },
 
+    confirmarLocal() {
+      this.abrirModalLocal = false;
+      this.confirmarEnvioCliente();
+    },
+
     confirmarEnvioCliente() {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
@@ -117,6 +142,7 @@ export default {
       })
 
       this.porPagar = porPagar
+      this.local = null
 
       this.$buefy.dialog.confirm({
         message: 'Selecciona el tamaño a imprimir',
@@ -125,11 +151,11 @@ export default {
         trapFocus: true,
         onConfirm: () => {
           this.tamaño = 'tiquera'
-          this.mostrarComprobante = true
+          this.abrirModalLocal = true
         },
         onCancel: () => {
           this.tamaño = 'carta'
-          this.mostrarComprobante = true
+          this.abrirModalLocal = true
         },
       })
     },
