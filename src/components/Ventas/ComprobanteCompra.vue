@@ -190,7 +190,7 @@ export default {
   mounted() {
     this.d = new Printd();
     this.imprimir();
-    this.tiempo = this.venta.fecha.split(' ')
+    this.tiempo = this.venta.fecha.split(' ') ?? this.venta.fecha.split(', ')
   },
 
   computed: {

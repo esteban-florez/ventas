@@ -3,6 +3,24 @@
     <buscar-producto @seleccionado="onSeleccionado" />
     <mensaje-inicial :titulo="'No has agregado productos'"
       :subtitulo="'Agrega algunos productos a la lista para venderlos :)'" v-if="productos.length < 1" />
+    <b-modal
+    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+      <div class="modal-card" style="width: 320px">
+        <section class="modal-card-body">
+          <b-field class="mt-3" label="Local emisor">
+            <b-select class="wide" placeholder="Seleccionar..." v-model="local" required>
+              <option value="jiro">Jirosushi Prime</option>
+              <option value="ccs">Oferta Caracas</option>
+              <option value="prime">Food Prime</option>
+            </b-select>
+          </b-field>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end">
+          <b-button label="Continuar" type="is-primary" @click="confirmarLocal" :disabled="!local" />
+        </footer>
+      </div>
+    </b-modal>
     <div v-if="productos.length > 0">
       <tabla-productos :listaProductos="productos" @quitar="onQuitar" @aumentar="onAumentar"
         @precioCambiado="calcularTotal" />
@@ -58,7 +76,7 @@
       <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar"
         v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
     </b-modal>
-    <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
+    <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante" :local="local"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
   </section>
 </template>
@@ -105,7 +123,9 @@ export default {
     ventaRealizada: null,
     mostrarComprobante: false,
     enviarCliente: false,
-    tipoVenta: ""
+    tipoVenta: "",
+    local: null,
+    abrirModalLocal: false,
   }),
 
   mounted() {
@@ -150,7 +170,10 @@ export default {
         nombreUsuario: AyudanteSesion.usuario().usuario,
         telefonoCliente: venta.cliente.telefono,
         direccionCliente: venta.delivery?.destino ?? venta.cliente.direccion,
-        fecha: new Date().toJSON().slice(0, 10).replace(/-/g, '/')
+        fecha: new Intl.DateTimeFormat('es-ES', {
+          dateStyle: 'short',
+          timeStyle: "medium",
+        }).format(new Date()).replace(/-/g, '/')
       }
 
       let tipo = venta.tipo
@@ -235,14 +258,19 @@ export default {
             trapFocus: true,
             onConfirm: () => {
               this.tamaño = 'tiquera'
-              this.confirmarEnvioCliente()
+              this.abrirModalLocal = true
             },
             onCancel: () => {
               this.tamaño = 'carta'
-              this.confirmarEnvioCliente()
+              this.abrirModalLocal = true
             },
           })
         })
+    },
+
+    confirmarLocal() {
+      this.abrirModalLocal = false;
+      this.confirmarEnvioCliente();
     },
 
     confirmarEnvioCliente() {
