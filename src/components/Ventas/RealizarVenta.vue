@@ -231,6 +231,7 @@ export default {
             return;
           }
 
+          this.ventaRealizada.id = id
           this.productos = []
           this.total = 0
           this.cargando = false
