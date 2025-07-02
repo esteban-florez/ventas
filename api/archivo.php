@@ -12,22 +12,26 @@ try {
     $contents = file_get_contents($path);
     $base64 = base64_encode($contents);
 
-    $url = $_ENV['NOTIFS_URL'];
-    $response = fetch()
-        ->baseUri($url)
-        ->withHeaders([
-            'Content-Type' => 'application/json',
-            'Origin' => $_ENV['WEB_URL'],
-            'X-Api-Key' => $_ENV['NOTIFS_API_KEY'],
-        ])
-        ->withBody(['pdf' => $base64])
-        ->post("/pdf?numero={$numero}");
+    $url = $_ENV['NOTIFS_URL'] . "/pdf?numero={$numero}";
 
-    $data = $response->json();
-    echo json_encode($data);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['pdf' => $base64]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Origin: ' . $_ENV['WEB_URL'],
+        'X-Api-Key: ' . $_ENV['NOTIFS_API_KEY']
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    $data = json_decode($response, true);
+    return $data;
 } catch (\Throwable $th) {
     dd($th->getMessage());
-    echo json_encode(['mensaje' => 'Error en fetch-php']);
+    return ['mensaje' => 'Error processing PDF'];
 }
 
 

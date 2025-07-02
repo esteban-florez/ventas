@@ -1,6 +1,7 @@
-import 'dotenv/config'
-import { connect } from './whatsapp.mjs'
+import "dotenv/config"
+import { connect } from "./whatsapp.mjs"
 
-const WhatsApp = await connect()
+const phoneNumber = process.env.WHATSAPP_PHONE
+const WhatsApp = await connect(phoneNumber)
 
-WhatsApp.message(process.env.WHATSAPP_PHONE, 'Sesión iniciada exitosamente.')
+WhatsApp.message(phoneNumber, "Sesión iniciada exitosamente.")

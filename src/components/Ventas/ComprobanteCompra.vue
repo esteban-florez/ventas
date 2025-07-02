@@ -282,6 +282,9 @@ export default {
           formData.set('pdf', pdf)
 
           const { VUE_APP_API_URL: API_URL } = process.env
+          console.log('Enviando comprobante al cliente:', telefono)
+          console.log('API URL:', API_URL)
+          console.log('Fetch URL:', `${API_URL}/archivo.php?numero=${telefono}`)
           await fetch(`${API_URL}/archivo.php?numero=${telefono}`, {
             method: 'POST',
             body: formData,
