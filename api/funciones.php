@@ -1453,8 +1453,8 @@ function obtenerPagosProveedor($id)
 
 function pagarProveedor($pago)
 {
-    $sentencia = "INSERT INTO pagos_proveedores (fecha, monto, idProveedor, idUsuario) VALUES (?,?,?,?)";
-    $parametros = [date('Y-m-d H:i:s'), $pago->monto, $pago->idProveedor, $pago->idUsuario];
+    $sentencia = "INSERT INTO pagos_proveedores (fecha, monto, factura, idProveedor, idUsuario) VALUES (?,?,?,?,?)";
+    $parametros = [date('Y-m-d H:i:s'), $pago->monto, $pago->factura, $pago->idProveedor, $pago->idUsuario];
     return insertar($sentencia, $parametros);
 }
 

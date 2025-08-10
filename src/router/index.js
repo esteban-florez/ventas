@@ -52,6 +52,7 @@ import EditarVenta from "@/components/Ventas/EditarVenta.vue"
 import EditarCuenta from "@/components/Ventas/EditarCuenta.vue"
 import EditarAbono from "@/components/Abonos/EditarAbono.vue"
 import PDFDeliveries from "@/components/PDF/PDFDeliveries.vue"
+import RealizarPago from "@/components/Proveedores/RealizarPago.vue"
 
 Vue.use(VueRouter)
 
@@ -140,6 +141,11 @@ const routes = [
     path: "/editar-proveedor/:id",
     name: "EditarProveedor",
     component: EditarProveedor,
+  },
+  {
+    path: "/realizar-pago/:id",
+    name: "RealizarPago",
+    component: RealizarPago,
   },
   {
     path: "/roles",

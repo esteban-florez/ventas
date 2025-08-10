@@ -52,7 +52,6 @@
 <script>
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
-import AyudanteSesion from '@/Servicios/AyudanteSesion'
 import Utiles from '../../Servicios/Utiles'
 
 export default {
@@ -86,38 +85,9 @@ export default {
     },
 
     pagar(proveedor) {
-      this.$buefy.dialog.prompt({
-        message: '¿Cual es el monto del pago que vas a registrar?',
-        cancelText: 'Cancelar',
-        confirmText: 'Registrar',
-        inputAttrs: {
-          type: 'number',
-          placeholder: 'Escribe el monto del pago a registrar',
-          value: '',
-          min: 0.01,
-          max: Number(proveedor.deuda),
-          step: 0.01,
-        },
-        trapFocus: true,
-        onConfirm: (value) => {
-          this.cargando = true
-          HttpService.registrar('proveedores.php', {
-            accion: 'pagar_proveedor',
-            pago: {
-              monto: value,
-              idProveedor: proveedor.id,
-              idUsuario: AyudanteSesion.usuario().id,
-            },
-          })
-            .then(registrado => {
-              if (registrado) {
-                this.cargando = false
-                this.$buefy.toast.open('Pago registrado con éxito.')
-                this.obtenerProveedores()
-              }
-            })
-
-        }
+      this.$router.push({
+        name: 'RealizarPago',
+        params: { id: proveedor.id },
       })
     },
   }

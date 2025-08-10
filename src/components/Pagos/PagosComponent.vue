@@ -35,6 +35,10 @@
           ${{ formatoMonto(props.row.monto) }}
         </b-table-column>
 
+        <b-table-column field="factura" label="Factura" searchable v-slot="props">
+          {{ props.row.factura }}
+        </b-table-column>
+
         <b-table-column field="nombreUsuario" label="Usuario" sortable searchable v-slot="props">
           {{ props.row.nombreUsuario }}
         </b-table-column>
@@ -48,7 +52,6 @@ import MensajeInicial from '../Extras/MensajeInicial'
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
 import CartasTotales from '../Extras/CartasTotales.vue';
-import AyudanteSesion from '@/Servicios/AyudanteSesion';
 import Utiles from '../../Servicios/Utiles'
 
 export default {
@@ -114,38 +117,9 @@ export default {
     },
 
     pagar() {
-      this.$buefy.dialog.prompt({
-        message: '¿Cual es el monto del pago que vas a registrar?',
-        cancelText: 'Cancelar',
-        confirmText: 'Registrar',
-        inputAttrs: {
-          type: 'number',
-          placeholder: 'Escribe el monto del pago a registrar',
-          value: '',
-          min: 0.01,
-          max: Number(this.proveedor.deuda),
-          step: 0.01,
-        },
-        trapFocus: true,
-        onConfirm: (value) => {
-          this.cargando = true
-          HttpService.registrar('proveedores.php', {
-            accion: 'pagar_proveedor',
-            pago: {
-              monto: value,
-              idProveedor: this.proveedor.id,
-              idUsuario: AyudanteSesion.usuario().id,
-            },
-          })
-            .then(registrado => {
-              if (registrado) {
-                this.cargando = false
-                this.$buefy.toast.open('Pago registrado con éxito.')
-                this.obtenerPagos()
-              }
-            })
-
-        }
+      this.$router.push({
+        name: 'RealizarPago',
+        params: { id: this.proveedor.id },
       })
     },
   },
