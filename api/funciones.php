@@ -1002,7 +1002,7 @@ function actualizarAbono($abono)
 |       ||_____  ||       ||       ||    __  ||   | |  |_|  ||_____  |
 |       | _____| ||       ||   _   ||   |  | ||   | |       | _____| |
 |_______||_______||_______||__| |__||___|  |_||___| |_______||_______|
-                                                                    
+
 */
 
 // TODO -> los calculos de estadísticas de ventas (SUM(total) FROM ventas) deberían hacerse directo a la tabla "productos_vendidos" filtrando por tipo = venta, ya que el total de ventas puede incluir el delivery pagado por el cliente, que no sería una ganancia técnicamente
@@ -1062,7 +1062,7 @@ function obtenerVentasPorUsuario()
 
 function iniciarSesion($usuario)
 {
-    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?"; 
+    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
     $parametros = [$usuario->usuario];
     $resultado = selectRegresandoObjeto($sentencia, $parametros);
 
@@ -1641,7 +1641,7 @@ function obtenerHistorialInventario($proveedor = null, $productoId = null, $fech
     $movimientos = array_merge($entradas, $salidas, $removidos);
 
     // Ordenar por fecha descendente
-    usort($movimientos, function($a, $b) {
+    usort($movimientos, function ($a, $b) {
         return strtotime($b->fecha) - strtotime($a->fecha);
     });
 
@@ -1698,10 +1698,20 @@ function registrarProducto($producto)
     $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, precioVenta4, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $parametros = [
-        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
-        $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, $producto->precioVenta4 ?? 0,
-        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
-        $producto->marca, $producto->categoria, $producto->proveedor
+        $producto->codigo,
+        $producto->nombre,
+        $producto->unidad,
+        $producto->precioCompra,
+        $producto->precioVenta,
+        $producto->precioVenta2 ?? 0,
+        $producto->precioVenta3 ?? 0,
+        $producto->precioVenta4 ?? 0,
+        intval($producto->vendidoMayoreo),
+        $producto->precioMayoreo,
+        $producto->cantidadMayoreo,
+        $producto->marca,
+        $producto->categoria,
+        $producto->proveedor
     ];
 
     $resultado = insertar($sentencia, clean($parametros));
@@ -1753,10 +1763,21 @@ function editarProducto($producto)
     $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, precioVenta4 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
 
     $parametros = [
-        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
-        $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->precioVenta4,
-        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
-        $producto->marca, $producto->categoria, $producto->proveedor, $producto->id
+        $producto->codigo,
+        $producto->nombre,
+        $producto->unidad,
+        $producto->precioCompra,
+        $producto->precioVenta,
+        $producto->precioVenta2,
+        $producto->precioVenta3,
+        $producto->precioVenta4,
+        intval($producto->vendidoMayoreo),
+        $producto->precioMayoreo,
+        $producto->cantidadMayoreo,
+        $producto->marca,
+        $producto->categoria,
+        $producto->proveedor,
+        $producto->id
     ];
 
     return editar($sentencia, clean($parametros));
@@ -1926,10 +1947,10 @@ function obtenerVenta($id)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
-        
+
         $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idVenta = ?";
         $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
-        
+
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
@@ -1980,10 +2001,10 @@ function obtenerApartadoCuenta($id, $tipo)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
-        
+
         $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idCuenta = ?";
         $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
-        
+
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
@@ -2068,13 +2089,14 @@ function conectarBD()
     $user = $_ENV['DB_USER'];
     $pass = $_ENV['DB_PASSWORD'];
     $charset = $_ENV['DB_CHARSET'];
+    $port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
 
     $options = [
         \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
         \PDO::ATTR_EMULATE_PREPARES => false,
     ];
-    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
     try {
         $pdo = new \PDO($dsn, $user, $pass, $options);
         return $pdo;
