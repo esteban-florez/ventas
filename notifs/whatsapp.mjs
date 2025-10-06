@@ -115,8 +115,9 @@ export async function connect(phone) {
 async function sendMessage(chatId, message) {
   try {
     const phone = jid(chatId)
+    const [formattedPhone] = phone.split('@')
     await this.sock.sendMessage(phone, { text: message })
-    log.status(`Mensaje enviado a 0${chatId} de forma exitosa`)
+    log.status(`Mensaje enviado a ${formattedPhone} de forma exitosa`)
   } catch (error) {
     log.error("Error al enviar mensaje")
     log.error(error)
