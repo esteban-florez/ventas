@@ -358,7 +358,7 @@ function obtenerCuentasApartados($filtros, $tipo)
     $sentencia = "SELECT cuentas_apartados.id, cuentas_apartados.fecha,
         cuentas_apartados.tipo, cuentas_apartados.total,
         cuentas_apartados.dias,
-        IFNULL(deliveries.costo, 0) as costoDelivery,
+        IFNULL(MAX(deliveries.costo), 0) as costoDelivery,
         IFNULL(abonos.total, 0) AS pagado,
         (cuentas_apartados.total - IFNULL(abonos.total, 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
@@ -1002,7 +1002,7 @@ function actualizarAbono($abono)
 |       ||_____  ||       ||       ||    __  ||   | |  |_|  ||_____  |
 |       | _____| ||       ||   _   ||   |  | ||   | |       | _____| |
 |_______||_______||_______||__| |__||___|  |_||___| |_______||_______|
-                                                                    
+
 */
 
 // TODO -> los calculos de estadísticas de ventas (SUM(total) FROM ventas) deberían hacerse directo a la tabla "productos_vendidos" filtrando por tipo = venta, ya que el total de ventas puede incluir el delivery pagado por el cliente, que no sería una ganancia técnicamente
@@ -1062,7 +1062,7 @@ function obtenerVentasPorUsuario()
 
 function iniciarSesion($usuario)
 {
-    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?"; 
+    $sentencia = "SELECT * FROM usuarios WHERE usuario = ?";
     $parametros = [$usuario->usuario];
     $resultado = selectRegresandoObjeto($sentencia, $parametros);
 
@@ -1641,7 +1641,7 @@ function obtenerHistorialInventario($proveedor = null, $productoId = null, $fech
     $movimientos = array_merge($entradas, $salidas, $removidos);
 
     // Ordenar por fecha descendente
-    usort($movimientos, function($a, $b) {
+    usort($movimientos, function ($a, $b) {
         return strtotime($b->fecha) - strtotime($a->fecha);
     });
 
@@ -1698,10 +1698,20 @@ function registrarProducto($producto)
     $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, precioVenta4, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $parametros = [
-        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
-        $producto->precioVenta, $producto->precioVenta2 ?? 0, $producto->precioVenta3 ?? 0, $producto->precioVenta4 ?? 0,
-        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
-        $producto->marca, $producto->categoria, $producto->proveedor
+        $producto->codigo,
+        $producto->nombre,
+        $producto->unidad,
+        $producto->precioCompra,
+        $producto->precioVenta,
+        $producto->precioVenta2 ?? 0,
+        $producto->precioVenta3 ?? 0,
+        $producto->precioVenta4 ?? 0,
+        intval($producto->vendidoMayoreo),
+        $producto->precioMayoreo,
+        $producto->cantidadMayoreo,
+        $producto->marca,
+        $producto->categoria,
+        $producto->proveedor
     ];
 
     $resultado = insertar($sentencia, clean($parametros));
@@ -1753,10 +1763,21 @@ function editarProducto($producto)
     $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, precioVenta4 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
 
     $parametros = [
-        $producto->codigo, $producto->nombre, $producto->unidad, $producto->precioCompra,
-        $producto->precioVenta, $producto->precioVenta2, $producto->precioVenta3, $producto->precioVenta4,
-        intval($producto->vendidoMayoreo), $producto->precioMayoreo, $producto->cantidadMayoreo,
-        $producto->marca, $producto->categoria, $producto->proveedor, $producto->id
+        $producto->codigo,
+        $producto->nombre,
+        $producto->unidad,
+        $producto->precioCompra,
+        $producto->precioVenta,
+        $producto->precioVenta2,
+        $producto->precioVenta3,
+        $producto->precioVenta4,
+        intval($producto->vendidoMayoreo),
+        $producto->precioMayoreo,
+        $producto->cantidadMayoreo,
+        $producto->marca,
+        $producto->categoria,
+        $producto->proveedor,
+        $producto->id
     ];
 
     return editar($sentencia, clean($parametros));
@@ -1926,10 +1947,10 @@ function obtenerVenta($id)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
-        
+
         $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idVenta = ?";
         $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
-        
+
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
@@ -1980,10 +2001,10 @@ function obtenerApartadoCuenta($id, $tipo)
         $venta->delivery = new stdClass;
         $venta->delivery->costo = $venta->costoDelivery;
         $venta->delivery->gratis = $venta->deliveryGratis;
-        
+
         $sentenciaChoferes = "SELECT c.id, c.nombre FROM deliveries d JOIN choferes c ON d.idChofer = c.id WHERE d.idCuenta = ?";
         $venta->delivery->choferes = selectPrepare($sentenciaChoferes, [$id]);
-        
+
         unset($venta->costoDelivery);
         unset($venta->deliveryGratis);
     }
