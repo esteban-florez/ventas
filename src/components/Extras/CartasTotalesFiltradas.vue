@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-for="(row, rowIndex) in agruparRegistros" :key="'row-'+rowIndex" class="tile is-ancestor">
+    <div v-for="(row, rowIndex) in agruparRegistros" :key="'row-' + rowIndex" class="tile is-ancestor">
       <div class="tile is-parent">
-        <div class="card tile is-child" v-for="(item, index) in row" :key="'payment-'+rowIndex+'-'+index">
+        <div class="card tile is-child" v-for="(item, index) in row" :key="'payment-' + rowIndex + '-' + index">
           <div class="card-content">
             <div class="level is-mobile">
               <div class="level-item">
@@ -22,7 +22,7 @@
                 <div class="level-item has-widget-icon">
                   <div class="is-widget-icon">
                     <span class="icon is-large" :class="item.clase">
-                      <b-icon :icon="item.icono" size="is-large"/>
+                      <b-icon :icon="item.icono" size="is-large" />
                     </span>
                   </div>
                 </div>
@@ -40,19 +40,21 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "CartasTotalesFiltradas",
-  props: ["metodosPago"],
+  props: ["registros"],
   computed: {
-    agruparRegistros() {
+    agruparRegistros ()
+    {
       const chunkSize = 3;
       const chunks = [];
-      for (let i = 0; i < this.metodosPago.length; i += chunkSize) {
-        chunks.push(this.metodosPago.slice(i, i + chunkSize));
+      for (let i = 0; i < this.registros.length; i += chunkSize) {
+        chunks.push(this.registros.slice(i, i + chunkSize));
       }
       return chunks;
     }
   },
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     }
   }

@@ -143,10 +143,11 @@ function calcularIngresosPendientes()
 
 function obtenerCotizaciones($filtros, $tipo)
 {
-    $sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente
+    $sentencia = "SELECT cotizaciones.id, cotizaciones.fecha, cotizaciones.total, cotizaciones.hasta, IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente, IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario, clientes.telefono AS telefonoCliente, clientes.direccion AS direccionCliente, cotizaciones.idTasa
 		FROM cotizaciones
 		LEFT JOIN clientes ON clientes.id = cotizaciones.idCliente
-		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario 
+		LEFT JOIN usuarios ON usuarios.id = cotizaciones.idUsuario
+        LEFT JOIN tasas ON tasas.id = cotizaciones.idTasa
 		WHERE 1";
 
     $parametros = [];
@@ -161,6 +162,12 @@ function obtenerCotizaciones($filtros, $tipo)
 
     $cotizaciones = selectPrepare($sentencia, $parametros);
     return agregarProductosVendidos($cotizaciones, $tipo);
+}
+
+function obtenerTasa()
+{
+    $sentencia = "SELECT * FROM tasas ORDER BY fecha DESC LIMIT 1";
+    return selectRegresandoObjeto($sentencia);
 }
 
 function eliminarCotizacion($id)
@@ -309,20 +316,23 @@ function obtenerPagosCuentasApartados($filtros, $tipo)
 function obtenerVentas($filtros)
 {
     $sentencia = "SELECT ventas.id, ventas.fecha, ventas.total, ventas.pagado, ventas.simple, ventas.idMetodo, ventas.origen,
-        MAX(deliveries.costo) as costoDelivery,
-        MAX(deliveries.gratis) as deliveryGratis,
         metodos.nombre as nombreMetodo,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
         IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
-        deliveries.gratis as deliveryGratis,
-        deliveries.idChofer as deliveryId,
         clientes.telefono AS telefonoCliente,
-        IFNULL(deliveries.destino, clientes.direccion) AS direccionCliente
+        clientes.direccion AS direccionCliente,
+        ventas.idTasa,
+        tasas.valor as tasaValor,
+        IF(ventas.idTasa IS NOT NULL, ROUND(ventas.total * tasas.valor, 2), NULL) as totalBs,
+        (SELECT costo FROM deliveries WHERE idVenta = ventas.id ORDER BY id DESC LIMIT 1) as costoDelivery,
+        (SELECT gratis FROM deliveries WHERE idVenta = ventas.id ORDER BY id DESC LIMIT 1) as deliveryGratis,
+        (SELECT idChofer FROM deliveries WHERE idVenta = ventas.id ORDER BY id DESC LIMIT 1) as deliveryId,
+        (SELECT destino FROM deliveries WHERE idVenta = ventas.id ORDER BY id DESC LIMIT 1) as deliveryDestino
         FROM ventas
         LEFT JOIN clientes ON clientes.id = ventas.idCliente
         LEFT JOIN usuarios ON usuarios.id = ventas.idUsuario
         LEFT JOIN metodos ON metodos.id = ventas.idMetodo
-        LEFT JOIN deliveries ON deliveries.idVenta = ventas.id";
+        LEFT JOIN tasas ON tasas.id = ventas.idTasa";
 
     $parametros = [];
     if ($filtros->clienteId) {
@@ -336,7 +346,7 @@ function obtenerVentas($filtros)
         array_push($parametros, $filtros->fechaFin);
     }
 
-    $sentencia .= " GROUP BY ventas.id ORDER BY ventas.id DESC";
+    $sentencia .= " ORDER BY ventas.id DESC";
 
     $ventas = selectPrepare($sentencia, $parametros);
 
@@ -345,8 +355,17 @@ function obtenerVentas($filtros)
             $venta->delivery = new stdClass;
             $venta->delivery->costo = $venta->costoDelivery;
             $venta->delivery->gratis = $venta->deliveryGratis;
+            $venta->delivery->id = $venta->deliveryId;
+            $venta->direccionCliente = $venta->deliveryDestino ?: $venta->direccionCliente;
+
             unset($venta->costoDelivery);
             unset($venta->deliveryGratis);
+            unset($venta->deliveryId);
+            unset($venta->deliveryDestino);
+        }
+
+        if ($venta->totalBs !== null) {
+            $venta->totalBs = (float) $venta->totalBs;
         }
     }
 
@@ -492,13 +511,21 @@ function obtenerCuentasApartadosFiltrados($filtros, $tipo)
             WHEN a.simple IS NOT NULL THEN a.simple
         END AS metodo_pago,
         COUNT(DISTINCT ca.id) AS cuentas_apartados_totales,
-        SUM(a.monto) AS total_pagado
+        SUM(a.monto) AS total,
+        SUM(
+            CASE 
+                WHEN t.valor IS NOT NULL THEN ROUND(a.monto * t.valor, 2)
+                ELSE 0 
+            END
+        ) AS totalBs
     FROM 
         cuentas_apartados ca
     INNER JOIN
         abonos a ON a.idCuenta = ca.id
     LEFT JOIN
-        metodos m ON a.idMetodo = m.id";
+        metodos m ON a.idMetodo = m.id
+    LEFT JOIN
+        tasas t ON a.idTasa = t.id";
 
     if ($filtros->clienteId) {
         $sentencia .= " LEFT JOIN clientes c ON c.id = ca.idCliente";
@@ -550,9 +577,11 @@ function registrarDelivery($venta, $relacion, $id)
 function vender($venta)
 {
     $venta->cliente = (isset($venta->cliente)) ? $venta->cliente : 0;
-    $sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario) VALUES (?,?,?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO ventas (fecha, total, pagado, origen, `simple`, idMetodo, idCliente, idUsuario, idTasa) VALUES (?,?,?,?,?,?,?,?,?)";
 
-    $parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario];
+    dd($venta);
+
+    $parametros = [date("Y-m-d H:i:s"), $venta->total, $venta->pagado, $venta->origen, $venta->simple, $venta->idMetodo, $venta->cliente, $venta->usuario, $venta->idTasa];
 
     $registrado = insertar($sentencia, clean($parametros));
 
@@ -895,7 +924,8 @@ function montoPorPagarCuentaApartado($id)
     $sentencia = "SELECT (cuentas_apartados.total - IFNULL(SUM(abonos.monto), 0)) AS porPagar
         FROM cuentas_apartados
         LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
-        WHERE cuentas_apartados.id = ?";
+        WHERE cuentas_apartados.id = ?
+        GROUP BY cuentas_apartados.id, cuentas_apartados.total";
 
     return selectRegresandoObjeto($sentencia, [$id])->porPagar;
 }
@@ -927,11 +957,16 @@ function obtenerTodosLosAbonosFiltrados($filtros)
         metodos.nombre AS metodo, 
         cuentas_apartados.tipo, 
         cuentas_apartados.id AS idCuenta, 
-        clientes.nombre AS nombreCliente
+        clientes.nombre AS nombreCliente,
+        tasas.valor AS tasaValor,
+        IF(tasas.valor IS NOT NULL, 
+           ROUND(abonos.monto * tasas.valor, 2), 
+           NULL) as montoBs
     FROM abonos
     LEFT JOIN metodos ON abonos.idMetodo = metodos.id
     LEFT JOIN cuentas_apartados ON abonos.idCuenta = cuentas_apartados.id
     LEFT JOIN clientes ON cuentas_apartados.idCliente = clientes.id
+    LEFT JOIN tasas ON tasas.id = abonos.idTasa
     WHERE 1=1";
 
     $parametros = [];
@@ -957,23 +992,38 @@ function obtenerTodosLosAbonosFiltrados($filtros)
 
 function obtenerAbonosPorCuentaApartado($id)
 {
-    $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo FROM abonos
+    $abonos = selectPrepare("SELECT abonos.*, metodos.nombre AS metodo,
+        tasas.valor AS tasaValor,
+        IF(abonos.idTasa IS NOT NULL, ROUND(abonos.monto * tasas.valor, 2), NULL) as montoBs
+        FROM abonos
         LEFT JOIN metodos ON abonos.idMetodo = metodos.id
+        LEFT JOIN tasas ON tasas.id = abonos.idTasa
         WHERE abonos.idCuenta = ?", [$id]);
 
-    $cuentaApartado = obtenerCuentaApartado($id);
+    $cuentaApartado = selectRegresandoObjeto("
+        SELECT cuentas_apartados.*, 
+               clientes.nombre AS nombreCliente,
+               IFNULL(SUM(abonos.monto), 0) AS pagado,
+               (total - IFNULL(SUM(abonos.monto), 0)) AS porPagar
+        FROM cuentas_apartados
+        LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
+        LEFT JOIN abonos ON cuentas_apartados.id = abonos.idCuenta
+        WHERE cuentas_apartados.id = ?
+        GROUP BY cuentas_apartados.id", [$id]);
+
+    $tasa = selectRegresandoObjeto("SELECT * FROM tasas ORDER BY id DESC LIMIT 1");
 
     if ($abonos === false || $cuentaApartado === false)
         return false;
 
-    return ['abonos' => $abonos, 'cuentaApartado' => $cuentaApartado];
+    return ['abonos' => $abonos, 'cuentaApartado' => $cuentaApartado, 'tasa' => $tasa];
 }
 
 function registrarAbono($abono)
 {
-    $sentencia = "INSERT INTO abonos (fecha, monto, origen, `simple`, idMetodo, idCuenta) VALUES (?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO abonos (fecha, monto, origen, `simple`, idMetodo, idCuenta, idTasa) VALUES (?,?,?,?,?,?,?)";
 
-    $parametros = [date('Y-m-d H:i:s'), $abono->monto, $abono->origen, $abono->simple, $abono->idMetodo, $abono->idCuenta];
+    $parametros = [date('Y-m-d H:i:s'), $abono->monto, $abono->origen, $abono->simple, $abono->idMetodo, $abono->idCuenta, $abono->idTasa];
 
     insertar($sentencia, clean($parametros));
     return obtenerUltimoId('abonos');
@@ -1695,7 +1745,7 @@ function buscarProductoPorNombreOCodigo($producto)
 
 function registrarProducto($producto)
 {
-    $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, precioVenta4, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO productos (codigo, nombre, unidad, precioCompra, precioVenta, precioVenta2, precioVenta3, precioVenta4, precioVenta5, precioVenta6, precioVenta7, vendidoMayoreo, precioMayoreo, cantidadMayoreo, marca, categoria, proveedor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $parametros = [
         $producto->codigo,
@@ -1706,6 +1756,9 @@ function registrarProducto($producto)
         $producto->precioVenta2 ?? 0,
         $producto->precioVenta3 ?? 0,
         $producto->precioVenta4 ?? 0,
+        $producto->precioVenta5 ?? 0,
+        $producto->precioVenta6 ?? 0,
+        $producto->precioVenta7 ?? 0,
         intval($producto->vendidoMayoreo),
         $producto->precioMayoreo,
         $producto->cantidadMayoreo,

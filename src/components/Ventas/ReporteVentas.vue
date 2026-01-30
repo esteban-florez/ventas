@@ -13,9 +13,8 @@
         </div>
       </div>
     </div>
-    <b-modal
-    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
-    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+    <b-modal v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+      aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
       <div class="modal-card" style="width: 320px">
         <section class="modal-card-body">
           <b-field class="mt-3" label="Local emisor">
@@ -46,7 +45,8 @@
           </b-select>
         </div>
         <div class="column is-flex is-justify-content-end">
-          <b-button type="is-primary" tag="a" :href="printHref" @click="guardarVentasFiltradas" target="__blank" rel="noopener noreferrer">
+          <b-button type="is-primary" tag="a" :href="printHref" @click="guardarVentasFiltradas" target="__blank"
+            rel="noopener noreferrer">
             Imprimir
           </b-button>
         </div>
@@ -58,8 +58,11 @@
         :sort-icon-size="sortIconSize" default-sort="user.first_name" aria-next-label="Next page"
         aria-previous-label="Previous page" aria-page-label="Page" aria-current-label="Current page">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
-      </b-table-column>
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          }).replace(/\//g, '-') }}
+        </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
           {{ props.row.nombreCliente }}
@@ -73,8 +76,12 @@
           ${{ formatoMonto(props.row.pagado - props.row.total) }}
         </b-table-column>
 
-        <b-table-column field="total" label="Total" sortable v-slot="props">
-          <b>${{ formatoMonto(props.row.total) }}</b> 
+        <b-table-column field="total" label="Total Dólares" sortable v-slot="props">
+          <b>${{ formatoMonto(props.row.total) }}</b>
+        </b-table-column>
+
+        <b-table-column field="total" label="Total Bolívares" sortable v-slot="props">
+          <b>{{ props.row.totalBs ? `Bs. ${formatoMonto(props.row.totalBs)}` : '-' }}</b>
         </b-table-column>
 
         <b-table-column field="metodo" label="Método de pago" sortable v-slot="props">
@@ -92,15 +99,15 @@
 
         <b-table-column field="acciones" label="Acciones" v-slot="props">
           <b-button type="is-warning" icon-left="pencil-outline" tag="router-link"
-          :to="{ name: 'EditarVenta', params: { id: props.row.id } }" v-if="can('ventas.editar')">Editar</b-button>
-          <b-button type="is-danger" icon-left="trash-can-outline" 
-            @click="eliminarVenta(props.row)" v-if="can('ventas.eliminar')">Eliminar</b-button>
+            :to="{ name: 'EditarVenta', params: { id: props.row.id } }" v-if="can('ventas.editar')">Editar</b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline" @click="eliminarVenta(props.row)"
+            v-if="can('ventas.eliminar')">Eliminar</b-button>
         </b-table-column>
 
       </b-table>
     </div>
-    <comprobante-compra :venta="this.ventaSeleccionada" :tipo="'venta'" v-if="mostrarComprobante"
-      @impreso="onImpreso" :tamaño="tamaño" :enviarCliente="enviarCliente" :local="local" />
+    <comprobante-compra :venta="this.ventaSeleccionada" :tipo="'venta'" v-if="mostrarComprobante" @impreso="onImpreso"
+      :tamaño="tamaño" :enviarCliente="enviarCliente" :local="local" :tasa="tasa" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -120,6 +127,7 @@ export default {
   components: { BusquedaEnFecha, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
+    tasa: null,
     filtros: {
       fechaInicio: "",
       fechaFin: ""
@@ -146,12 +154,14 @@ export default {
     abrirModalLocal: false,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerVentas()
   },
 
   computed: {
-    printHref() {
+    printHref ()
+    {
       let href = '#/pdf/ventas'
 
       const entries = Object.entries(this.filtros)
@@ -170,15 +180,18 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    onImpreso(resultado) {
+    onImpreso (resultado)
+    {
       this.mostrarComprobante = resultado
     },
 
-    generarComprobante(venta) {
+    generarComprobante (venta)
+    {
       this.ventaSeleccionada = venta
       this.local = null
 
@@ -187,18 +200,21 @@ export default {
         cancelText: 'Carta',
         confirmText: 'Tiquera',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.tamaño = 'tiquera'
           this.abrirModalLocal = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.tamaño = 'carta'
           this.abrirModalLocal = true
         },
       })
     },
 
-    async guardarEdicionVenta() {
+    async guardarEdicionVenta ()
+    {
       this.cargando = true
       try {
         const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
@@ -229,13 +245,15 @@ export default {
       }
     },
 
-    async eliminarVenta(venta) {
+    async eliminarVenta (venta)
+    {
       this.$buefy.dialog.confirm({
         message: '¿Estás seguro de que deseas eliminar esta venta?',
         confirmText: 'Eliminar',
         cancelText: 'Cancelar',
         type: 'is-danger',
-        onConfirm: async () => {
+        onConfirm: async () =>
+        {
           this.cargando = true
           try {
             const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
@@ -266,30 +284,35 @@ export default {
       })
     },
 
-    confirmarLocal() {
+    confirmarLocal ()
+    {
       this.abrirModalLocal = false;
       this.confirmarEnvioCliente();
     },
 
-    confirmarEnvioCliente() {
+    confirmarEnvioCliente ()
+    {
       this.abrirModalLocal = false
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
         cancelText: 'No',
         confirmText: 'Sí',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.enviarCliente = true
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.enviarCliente = false
           this.mostrarComprobante = true
         },
       })
     },
 
-    async onGenerarComprobante(cuenta) {
+    async onGenerarComprobante (cuenta)
+    {
       this.cuentaSeleccionada = cuenta
       const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
         accion: 'por_pagar', id: cuenta.id,
@@ -302,24 +325,28 @@ export default {
         cancelText: 'Carta',
         confirmText: 'Tiquera',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.tamaño = 'tiquera'
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.tamaño = 'carta'
           this.mostrarComprobante = true
         },
       })
     },
 
-    onBusquedaEnFecha(fechas) {
+    onBusquedaEnFecha (fechas)
+    {
       this.filtros.fechaInicio = fechas[0].toISOString().split('T')[0]
       this.filtros.fechaFin = fechas[1].toISOString().split('T')[0]
       this.obtenerVentas()
     },
 
-    obtenerVentas() {
+    obtenerVentas ()
+    {
       this.cargando = true
       let payload = {
         filtros: {
@@ -331,9 +358,12 @@ export default {
       }
 
       HttpService.obtenerConConsultas('ventas.php', payload)
-        .then(resultado => {
+        .then(resultado =>
+        {
           this.ventas = resultado.ventas
-          this.ventasFiltradas = resultado.ventasFiltradas.map(venta => {
+          this.tasa = resultado.tasa.valor
+          this.ventasFiltradas = resultado.ventasFiltradas.map(venta =>
+          {
             return {
               nombre: venta.metodo_pago,
               total: `$ ${this.formatoMonto(venta.total_pagado)}`,
@@ -353,34 +383,39 @@ export default {
         })
     },
 
-    guardarVentasFiltradas() {
-      const ventasFiltradas = this.ventasFiltradas.map(venta => {
+    guardarVentasFiltradas ()
+    {
+      const ventasFiltradas = this.ventasFiltradas.map(venta =>
+      {
         return {
           nombre: venta.nombre,
           total: venta.total,
+          totalBs: venta.totalBs,
           cantidad: venta.cantidad,
         }
       })
       localStorage.setItem('metodos_pago', JSON.stringify(ventasFiltradas));
     },
 
-    onDeseleccionado() {
+    onDeseleccionado ()
+    {
       this.clienteId = null
       this.obtenerVentas()
     },
 
-    onSeleccionado(cliente) {
+    onSeleccionado (cliente)
+    {
       this.clienteId = cliente.id
 
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
 
-      this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = setTimeout(() =>
+      {
         this.obtenerVentas();
       }, 500);
     },
   }
 }
 </script>
-

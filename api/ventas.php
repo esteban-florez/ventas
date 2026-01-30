@@ -34,7 +34,8 @@ switch ($accion) {
 			[
 				"totalVentas" => obtenerTotalVentas($payload->filtros),
 				"ventas" => obtenerVentas($payload->filtros),
-				"ventasFiltradas" => obtenerVentasFiltradas($payload->filtros)
+				"ventasFiltradas" => obtenerVentasFiltradas($payload->filtros),
+				'tasa' => obtenerTasa()
 			]
 		);
 		break;
@@ -46,7 +47,8 @@ switch ($accion) {
 				"totalCuentas" => obtenerTotalCuentasApartados($payload->filtros, 'cuenta'),
 				"totalPorPagar" => obtenerTotalPorPagarCuentasApartados($payload->filtros, 'cuenta'),
 				"cuentas" => obtenerCuentasApartados($payload->filtros, 'cuenta'),
-				"cuentasFiltradas" => obtenerCuentasApartadosFiltrados($payload->filtros, 'cuenta')
+				"cuentasFiltradas" => obtenerCuentasApartadosFiltrados($payload->filtros, 'cuenta'),
+				'tasa' => obtenerTasa()
 			]
 		)
 		;
@@ -59,7 +61,8 @@ switch ($accion) {
 				"totalApartados" => obtenerTotalCuentasApartados($payload->filtros, 'apartado'),
 				"totalPorPagar" => obtenerTotalPorPagarCuentasApartados($payload->filtros, 'apartado'),
 				"apartados" => obtenerCuentasApartados($payload->filtros, 'apartado'),
-				"apartadosFiltrados" => obtenerCuentasApartadosFiltrados($payload->filtros, 'apartado')
+				"apartadosFiltrados" => obtenerCuentasApartadosFiltrados($payload->filtros, 'apartado'),
+				'tasa' => obtenerTasa()
 			]
 		);
 		break;
@@ -67,7 +70,8 @@ switch ($accion) {
 	case 'obtener_cotizaciones':
 		echo json_encode(
 			[
-				"cotizaciones" => obtenerCotizaciones($payload->filtros, 'cotiza')
+				"cotizaciones" => obtenerCotizaciones($payload->filtros, 'cotiza'),
+				'tasa' => obtenerTasa()
 			]
 		);
 		break;
@@ -110,7 +114,7 @@ switch ($accion) {
 		break;
 
 	case 'eliminar_venta':
-		echo json_encode(eliminarVenta($payload->id)); 
+		echo json_encode(eliminarVenta($payload->id));
 		break;
 
 	case 'eliminar_cuenta':
@@ -139,6 +143,10 @@ switch ($accion) {
 
 	case 'eliminar_abono':
 		echo json_encode(eliminarAbono($payload->id));
+		break;
+
+	case 'obtener_tasa':
+		echo json_encode(obtenerTasa());
 		break;
 
 	default:

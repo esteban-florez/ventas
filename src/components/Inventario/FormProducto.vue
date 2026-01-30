@@ -41,6 +41,21 @@
           v-model="producto.precioVenta4" :min="producto.precioCompra"></b-input>
       </b-field>
 
+      <b-field label="Precio venta 5" expanded>
+        <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 5"
+          v-model="producto.precioVenta5" :min="producto.precioCompra"></b-input>
+      </b-field>
+
+      <b-field label="Precio venta 6" expanded>
+        <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 6"
+          v-model="producto.precioVenta6" :min="producto.precioCompra"></b-input>
+      </b-field>
+
+      <b-field label="Precio venta 7" expanded>
+        <b-input step="any" icon="currency-usd" type="number" placeholder="Precio de venta 7"
+          v-model="producto.precioVenta7" :min="producto.precioCompra"></b-input>
+      </b-field>
+
       <b-field label="Existencia" expanded v-if="!editar">
         <b-numberinput min="1" step="0.01" type="is-info" placeholder="Existencia" v-model="producto.existencia">
         </b-numberinput>
@@ -106,7 +121,10 @@ export default {
       precioVenta: '',
       precioVenta2: '',
       precioVenta3: '',
-      precioVenta4: '', 
+      precioVenta4: '',
+      precioVenta5: '',
+      precioVenta6: '',
+      precioVenta7: '',
       existencia: 0,
       vendidoMayoreo: false,
       precioMayoreo: '',
@@ -119,7 +137,8 @@ export default {
     unidades: Object.entries(UNIDADES),
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerCategorias()
     this.obtenerMarcas()
     this.obtenerProveedores()
@@ -131,7 +150,8 @@ export default {
   },
 
   methods: {
-    registrar() {
+    registrar ()
+    {
       let producto = {
         "Código": this.producto.codigo,
         "Nombre": this.producto.nombre,
@@ -163,6 +183,9 @@ export default {
         precioVenta2: "",
         precioVenta3: "",
         precioVenta4: "",
+        precioVenta5: "",
+        precioVenta6: "",
+        precioVenta7: "",
         existencia: 0,
         vendidoMayoreo: false,
         precioMayoreo: "",
@@ -172,32 +195,38 @@ export default {
       }
     },
 
-    obtenerMarcas() {
+    obtenerMarcas ()
+    {
       let payload = {
         accion: 'obtener'
       }
       HttpService.obtenerConConsultas('marcas.php', payload)
-        .then(marcas => {
+        .then(marcas =>
+        {
           this.marcas = marcas
         })
-    },                  
+    },
 
-    obtenerCategorias() {
+    obtenerCategorias ()
+    {
       let payload = {
         accion: 'obtener'
       }
       HttpService.obtenerConConsultas('categorias.php', payload)
-        .then(categorias => {
+        .then(categorias =>
+        {
           this.categorias = categorias
         })
     },
 
-    obtenerProveedores() {
+    obtenerProveedores ()
+    {
       let payload = {
         accion: 'obtener'
       }
       HttpService.obtenerConConsultas('proveedores.php', payload)
-        .then(proveedores => {
+        .then(proveedores =>
+        {
           this.proveedores = proveedores
         })
     },

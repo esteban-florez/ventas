@@ -3,9 +3,8 @@
     <buscar-producto @seleccionado="onSeleccionado" />
     <mensaje-inicial :titulo="'No has agregado productos'"
       :subtitulo="'Agrega algunos productos a la lista para venderlos :)'" v-if="productos.length < 1" />
-    <b-modal
-    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
-    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+    <b-modal v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+      aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
       <div class="modal-card" style="width: 320px">
         <section class="modal-card-body">
           <b-field class="mt-3" label="Local emisor">
@@ -26,7 +25,7 @@
         @precioCambiado="calcularTotal" />
       <div class="notification is-primary mt-3">
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
-          Total ${{formatoMonto(total.toFixed(2)) }}
+          Total ${{ formatoMonto(total.toFixed(2)) }}
         </p>
         <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
@@ -76,8 +75,8 @@
       <dialogo-cotizar :totalVenta="total" @close="onCerrar" @terminar="onTerminar"
         v-if="mostrarRegistrarCotizacion"></dialogo-cotizar>
     </b-modal>
-    <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante" :local="local"
-      :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
+    <comprobante-compra :venta="this.ventaRealizada" :tipo="tipoVenta" @impreso="onImpreso" v-if="mostrarComprobante"
+      :local="local" :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" />
   </section>
 </template>
 <script>
@@ -128,14 +127,16 @@ export default {
     abrirModalLocal: false,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.cargando = true
     const payload = { accion: 'obtener' }
 
     Promise.all([
       HttpService.obtenerConConsultas('metodos.php', payload),
       HttpService.obtenerConConsultas('choferes.php', payload)
-    ]).then(([metodos, choferes]) => {
+    ]).then(([metodos, choferes]) =>
+    {
       this.metodos = metodos
       this.choferes = choferes
       this.cargando = false
@@ -143,23 +144,37 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    onImpreso(resultado) {
+    onImpreso (resultado)
+    {
       this.mostrarComprobante = resultado
     },
 
-    actualizar(prop, valor) {
+    actualizar (prop, valor)
+    {
       this[prop] = valor
       this.calcularTotal()
     },
 
-    onTerminar(venta) {
+    async onTerminar (venta)
+    {
       this.calcularTotal()
 
       let total = this.total
+
+      let tasa = null
+
+      if (venta.moneda === 'bs') {
+        const resultado = await HttpService.registrar('ventas.php', {
+          accion: 'obtener_tasa'
+        })
+
+        tasa = resultado.id
+      }
 
       this.ventaRealizada = {
         total,
@@ -170,6 +185,9 @@ export default {
         nombreUsuario: AyudanteSesion.usuario().usuario,
         telefonoCliente: venta.cliente.telefono,
         direccionCliente: venta.delivery?.destino ?? venta.cliente.direccion,
+        ...(venta.moneda === 'bs' && ({
+          idTasa: tasa
+        })),
         fecha: new Intl.DateTimeFormat('es-ES', {
           dateStyle: 'short',
           timeStyle: "medium",
@@ -221,7 +239,8 @@ export default {
       this.deliveryGratis = false
 
       HttpService.registrar('ventas.php', datos)
-        .then(id => {
+        .then(id =>
+        {
           if (!id) {
             this.cargando = false
             this.$buefy.toast.open({
@@ -247,7 +266,8 @@ export default {
               accion: 'por_pagar', id,
             })
           }
-        }).then(porPagar => {
+        }).then(porPagar =>
+        {
           if (porPagar) {
             this.porPagar = porPagar
           }
@@ -257,11 +277,13 @@ export default {
             cancelText: 'Carta',
             confirmText: 'Tiquera',
             trapFocus: true,
-            onConfirm: () => {
+            onConfirm: () =>
+            {
               this.tamaño = 'tiquera'
               this.abrirModalLocal = true
             },
-            onCancel: () => {
+            onCancel: () =>
+            {
               this.tamaño = 'carta'
               this.abrirModalLocal = true
             },
@@ -269,29 +291,34 @@ export default {
         })
     },
 
-    confirmarLocal() {
+    confirmarLocal ()
+    {
       this.abrirModalLocal = false;
       this.confirmarEnvioCliente();
     },
 
-    confirmarEnvioCliente() {
+    confirmarEnvioCliente ()
+    {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
         cancelText: 'No',
         confirmText: 'Sí',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.enviarCliente = true
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.enviarCliente = false
           this.mostrarComprobante = true
         },
       })
     },
 
-    cancelarVenta() {
+    cancelarVenta ()
+    {
       this.$buefy.dialog.confirm({
         title: 'Cancelar venta',
         message: '¿Seguro que deseas cancelar la venta?',
@@ -299,7 +326,8 @@ export default {
         cancelText: 'No, continuar',
         type: 'is-danger',
         hasIcon: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.productos = []
           this.total = 0
           this.$buefy.toast.open('Venta cancelada')
@@ -308,13 +336,15 @@ export default {
     },
 
 
-    abrirDialogo(opcion) {
+    abrirDialogo (opcion)
+    {
       this.mostrarTerminarVenta = false;
       this.mostrarAgregarCuenta = false;
       this.mostrarAgregarApartado = false;
       this.mostrarRegistrarCotizacion = false;
-      
-      this.$nextTick(() => {
+
+      this.$nextTick(() =>
+      {
         this.mostrarDialogo = true;
         switch (opcion) {
           case "venta":
@@ -333,19 +363,22 @@ export default {
       });
     },
 
-    onCerrar(opcion) {
+    onCerrar (opcion)
+    {
       this.mostrarDialogo = false
       if (opcion === 'venta' || opcion === 'cuenta' || opcion === 'apartado' || opcion === 'cotiza') {
         this.mostrarTerminarVenta = this.mostrarAgregarCuenta = this.mostrarAgregarApartado = this.mostrarRegistrarCotizacion = false
       }
     },
 
-    onQuitar(id) {
+    onQuitar (id)
+    {
       let indice = this.productos.findIndex(producto => producto.id === id)
       this.productos.splice(indice, 1)
     },
 
-    onAumentar(producto) {
+    onAumentar (producto)
+    {
       let verificaExistencia = this.verificarExistenciaAlcanzada(producto.existencia, producto.id)
 
       if (verificaExistencia) return
@@ -356,7 +389,8 @@ export default {
       this.calcularTotal()
     },
 
-    onSeleccionado(producto) {
+    onSeleccionado (producto)
+    {
       let verificaExistencia = this.verificarExistenciaAlcanzada(producto.existencia, producto.id)
 
       if (verificaExistencia) return
@@ -377,7 +411,8 @@ export default {
       this.calcularTotal()
     },
 
-    agregarALista(producto) {
+    agregarALista (producto)
+    {
       this.productos.push(
         {
           id: producto.id,
@@ -388,6 +423,9 @@ export default {
           precioVenta2: producto.precioVenta2,
           precioVenta3: producto.precioVenta3,
           precioVenta4: producto.precioVenta4,
+          precioVenta5: producto.precioVenta5,
+          precioVenta6: producto.precioVenta6,
+          precioVenta7: producto.precioVenta7,
           unidad: producto.unidad,
           cantidad: 1,
           existencia: producto.existencia,
@@ -399,9 +437,11 @@ export default {
       )
     },
 
-    verificarExistenciaAlcanzada(existencia, id) {
+    verificarExistenciaAlcanzada (existencia, id)
+    {
       let resultado = false
-      this.productos.forEach(producto => {
+      this.productos.forEach(producto =>
+      {
         if (producto.id === id) {
           if (parseInt(producto.cantidad) >= parseInt(existencia)) {
             this.$buefy.toast.open({
@@ -417,8 +457,10 @@ export default {
       return resultado
     },
 
-    verificarMayoreo(cantidadMayoreo, id, precioMayoreo) {
-      this.productos.forEach(producto => {
+    verificarMayoreo (cantidadMayoreo, id, precioMayoreo)
+    {
+      this.productos.forEach(producto =>
+      {
         if (producto.id !== id) return
 
         if (producto.cantidad >= parseInt(cantidadMayoreo)) {
@@ -427,7 +469,8 @@ export default {
             confirmText: 'Sí, aplicar',
             cancelText: 'No aplicar',
             message: 'El producto ' + producto.nombre + ' tiene mayoreo a partir de ' + cantidadMayoreo + ' piezas, ¿Desea aplicar el mayoreo?',
-            onConfirm: () => {
+            onConfirm: () =>
+            {
               producto.precio = precioMayoreo
               producto.mayoreoAplicado = true
               this.$buefy.toast.open('Mayoreo aplicado correctamente a ' + producto.nombre)
@@ -442,11 +485,13 @@ export default {
       })
     },
 
-    verificarSiEstaEnLista(id) {
+    verificarSiEstaEnLista (id)
+    {
       return this.productos.findIndex(producto => producto.id === id)
     },
 
-    aumentarCantidad(indice) {
+    aumentarCantidad (indice)
+    {
       let lista = this.productos
       let producto = lista[indice]
       producto.cantidad++
@@ -454,9 +499,11 @@ export default {
 
     },
 
-    calcularTotal() {
+    calcularTotal ()
+    {
       let total = 0
-      this.productos.forEach(producto => {
+      this.productos.forEach(producto =>
+      {
         total = parseFloat(producto.cantidad * producto.precio) + parseFloat(total)
       })
 
@@ -471,7 +518,8 @@ export default {
   },
 
   watch: {
-    mostrarDialogo(newValue) {
+    mostrarDialogo (newValue)
+    {
       if (!newValue) {
         this.costoDelivery = 0
         this.deliveryGratis = false

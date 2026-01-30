@@ -8,9 +8,10 @@
     <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
       Datos de {{ this.cuentaApartado && this.cuentaApartado.tipo === 'cuenta' ? 'cuenta' : 'apartado' }}
     </h3>
-    <cartas-totales :totales="datosCuentaApartado" />
+    <cartas-totales-filtradas :registros="datosCuentaApartado" />
     <hr>
-    <mensaje-inicial :titulo="'No se han registrado abonos'" :subtitulo="'Haz click el botón de la esquina para registrar un nuevo abono'" v-if="abonos.length < 1" />
+    <mensaje-inicial :titulo="'No se han registrado abonos'"
+      :subtitulo="'Haz click el botón de la esquina para registrar un nuevo abono'" v-if="abonos.length < 1" />
     <template v-else>
       <h3 class="has-text-centered is-size-4 mb-3 has-text-weight-bold">
         Lista de abonos
@@ -33,14 +34,22 @@
       </div>
       <b-table class="box" :data="abonos" :per-page="perPage" :paginated="true" :pagination-simple="false"
         :pagination-position="'bottom'" :default-sort-direction="'asc'" :pagination-rounded="true">
-        
-        
+
+
         <b-table-column field="fecha" label="Fecha" v-slot="props">
           {{ formatoFechaCaracas(props.row.fecha) }}
         </b-table-column>
 
-        <b-table-column field="monto" label="Monto" sortable searchable v-slot="props">
+        <b-table-column field="monto" label="Monto Dólares" sortable searchable v-slot="props">
           ${{ formatoMonto(props.row.monto) }}
+        </b-table-column>
+
+        <b-table-column field="monto" label="Monto Bolívares" sortable searchable v-slot="props">
+          {{ props.row.idTasa ? `Bs. ${formatoMonto(props.row.montoBs)}` : '-' }}
+        </b-table-column>
+
+        <b-table-column field="monto" label="Factura generada en" sortable searchable v-slot="props">
+          {{ props.row.idTasa ? 'Bolívares' : 'Dólares' }}
         </b-table-column>
 
         <b-table-column field="metodo" label="Método de pago" sortable searchable v-slot="props">
@@ -58,8 +67,7 @@
             <b-icon icon="ticket-outline">
             </b-icon>
           </b-button>
-          <b-button type="is-danger" icon-left="trash-can-outline"
-            @click="eliminarAbono(props.row)">Eliminar</b-button>
+          <b-button type="is-danger" icon-left="trash-can-outline" @click="eliminarAbono(props.row)">Eliminar</b-button>
         </b-table-column>
       </b-table>
     </template>
@@ -70,14 +78,15 @@
 import MensajeInicial from '../Extras/MensajeInicial'
 import NavComponent from '../Extras/NavComponent'
 import HttpService from '../../Servicios/HttpService'
-import CartasTotales from '../Extras/CartasTotales.vue'
 import Utiles from '../../Servicios/Utiles'
+import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas.vue'
 
 export default {
   name: "AbonosComponent",
-  components: { MensajeInicial, NavComponent, CartasTotales },
+  components: { MensajeInicial, NavComponent, CartasTotalesFiltradas },
 
   data: () => ({
+    tasa: null,
     cargando: false,
     abonos: [],
     perPage: 5,
@@ -86,31 +95,41 @@ export default {
     link: null,
   }),
 
-  async mounted() {
+  async mounted ()
+  {
+    const resultado = await HttpService.registrar('ventas.php', {
+      accion: 'obtener_tasa'
+    })
+
+    this.tasa = resultado.valor
     await this.obtenerAbonos()
     if (Number(this.cuentaApartado.porPagar) === 0 && this.can('abonos.registrar')) return
     this.link = { name: 'RealizarAbono', params: { id: this.$route.params.id } }
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    generarComprobante({ row }) {
+    generarComprobante ({ row })
+    {
       const datos = { abono: row, cuenta: this.cuentaApartado }
       localStorage.setItem('comprobante-abono', JSON.stringify(datos))
       const ruta = this.$router.resolve({ name: 'PDFAbono' })
       window.open(ruta.href, '_blank')
     },
 
-    async eliminarAbono(abono) {
+    async eliminarAbono (abono)
+    {
       this.$buefy.dialog.confirm({
         message: '¿Estás seguro de que deseas eliminar este abono?',
         confirmText: 'Eliminar',
         cancelText: 'Cancelar',
         type: 'is-danger',
-        onConfirm: async () => {
+        onConfirm: async () =>
+        {
           this.cargando = true
           try {
             const respuesta = await HttpService.obtenerConConsultas('ventas.php', {
@@ -141,13 +160,15 @@ export default {
       })
     },
 
-    formatoFechaCaracas(fecha) {
+    formatoFechaCaracas (fecha)
+    {
       if (!fecha) return 'Fecha inválida';
       const [anio, mes, dia] = fecha.split('-');
       return `${dia}-${mes}-${anio}`;
     },
 
-    async obtenerAbonos() {
+    async obtenerAbonos ()
+    {
       this.cargando = true
       let payload = {
         accion: 'obtener_abonos',
@@ -186,7 +207,13 @@ export default {
         },
         {
           nombre: 'Monto por pagar',
-          total: this.formatoMonto(cuentaApartado.porPagar),
+          total: `$${this.formatoMonto(cuentaApartado.porPagar)}`,
+          icono: 'clock',
+          clase: 'has-text-danger',
+        },
+        {
+          nombre: 'Monto por pagar',
+          total: `Bs.${this.formatoMonto(Math.round(cuentaApartado.porPagar * this.tasa * 100) / 100)}`,
           icono: 'clock',
           clase: 'has-text-danger',
         },

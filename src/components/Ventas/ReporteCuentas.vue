@@ -13,9 +13,8 @@
         </div>
       </div>
     </div>
-    <b-modal
-    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
-    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+    <b-modal v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+      aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
       <div class="modal-card" style="width: 320px">
         <section class="modal-card-body">
           <b-field class="mt-3" label="Local emisor">
@@ -34,18 +33,13 @@
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado cuentas :('"
       :subtitulo="'Aquí aparecerán las cuentas registradas'" v-if="cuentas.length < 1" />
     <div class="mt-2" v-if="cuentas.length > 0">
-      <cartas-totales :totales="totalesGenerales" :formatoMonto="formatoMonto" />
-      <cartas-totales-filtradas :metodosPago="cuentasFiltradas" :formatoMonto="formatoMonto" />
-      <tabla-cuentas-apartados
-        :datos="cuentas"
-        :printHref="printHref"
-        :formatoMonto="formatoMonto"
-        :filtros="filtrosCompletos"
-        @imprimir="onGenerarComprobante"
-      />
+      <cartas-totales-filtradas :registros="totalesGenerales" :formatoMonto="formatoMonto" />
+      <cartas-totales-filtradas :registros="cuentasFiltradas" :formatoMonto="formatoMonto" />
+      <tabla-cuentas-apartados :datos="cuentas" :printHref="printHref" :formatoMonto="formatoMonto"
+        :filtros="filtrosCompletos" @imprimir="onGenerarComprobante" />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
-      :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" :local="local" />
+      :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" :local="local" :tasa="tasa" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -54,7 +48,6 @@
 import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
-import CartasTotales from '../Extras/CartasTotales'
 import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas'
 import HttpService from '../../Servicios/HttpService'
 import Utiles from '../../Servicios/Utiles'
@@ -63,9 +56,10 @@ import ComprobanteCompra from './ComprobanteCompra'
 
 export default {
   name: "ReporteCuentas",
-  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
+  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
+    tasa: null,
     filtros: {
       fechaInicio: "",
       fechaFin: ""
@@ -84,12 +78,14 @@ export default {
     abrirModalLocal: false,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerCuentas()
   },
 
   computed: {
-    printHref() {
+    printHref ()
+    {
       let href = '#/pdf/cuentas'
 
       const entries = Object.entries(this.filtros)
@@ -103,9 +99,10 @@ export default {
 
       const filtros = Object.fromEntries(entries)
       const params = new URLSearchParams(filtros).toString()
-      return `${href}?${params}`   
+      return `${href}?${params}`
     },
-    filtrosCompletos() {
+    filtrosCompletos ()
+    {
       return {
         ...this.filtros,
         clienteId: this.clienteId || null,
@@ -115,15 +112,18 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    onImpreso(resultado) {
+    onImpreso (resultado)
+    {
       this.mostrarComprobante = resultado
     },
 
-    async onGenerarComprobante(cuenta) {
+    async onGenerarComprobante (cuenta)
+    {
       this.cuentaSeleccionada = cuenta
       const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
         accion: 'por_pagar', id: cuenta.id,
@@ -137,46 +137,54 @@ export default {
         cancelText: 'Carta',
         confirmText: 'Tiquera',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.tamaño = 'tiquera'
           this.abrirModalLocal = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.tamaño = 'carta'
           this.abrirModalLocal = true
         },
       })
     },
 
-    confirmarLocal() {
+    confirmarLocal ()
+    {
       this.abrirModalLocal = false;
       this.confirmarEnvioCliente();
     },
 
-    confirmarEnvioCliente() {
+    confirmarEnvioCliente ()
+    {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
         cancelText: 'No',
         confirmText: 'Sí',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.enviarCliente = true
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.enviarCliente = false
           this.mostrarComprobante = true
         },
       })
     },
 
-    onBusquedaEnFecha(fechas) {
+    onBusquedaEnFecha (fechas)
+    {
       this.filtros.fechaInicio = fechas[0].toISOString().split('T')[0]
       this.filtros.fechaFin = fechas[1].toISOString().split('T')[0]
       this.obtenerCuentas()
     },
 
-    obtenerCuentas() {
+    obtenerCuentas ()
+    {
       this.cargando = true
       this.filtros = {
         ...this.filtros,
@@ -188,22 +196,29 @@ export default {
         accion: 'obtener_cuentas'
       }
       HttpService.obtenerConConsultas('ventas.php', payload)
-        .then(resultado => {
+        .then(resultado =>
+        {
           this.cuentas = resultado.cuentas
-          this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta => {
+          this.tasa = resultado.tasa.valor
+          this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta =>
+          {
             return {
               nombre: cuenta.metodo_pago,
-              total: Number(cuenta.total_pagado), // Guardar como número
+              total: `${this.formatoMonto(cuenta.total)}`,
+              totalBs: `${this.formatoMonto(cuenta.totalBs)}`,
               icono: 'credit-card-outline',
               clase: 'has-text-info',
               cantidad: cuenta.cuentas_apartados_totales,
             }
           })
 
+          this.guardarCuentasApartadosFiltrados()
+
           this.totalesGenerales = [
             { nombre: "# Cuentas", total: this.cuentas.length, icono: "wallet", clase: "has-text-primary" },
             { nombre: "Total ", total: this.formatoMonto(resultado.totalCuentas), icono: "cash-fast", clase: "has-text-success" },
-            { nombre: "Por pagar", total: this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Por pagar Dólares", total: this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Por pagar Bolívares", total: this.formatoMonto(resultado.totalPorPagar * this.tasa), icono: "alert", clase: "has-text-danger" },
             { nombre: "Pagos", total: this.formatoMonto(resultado.totalPagos), icono: "account-cash", clase: "has-text-grey-light" },
             { nombre: "# Productos", total: Utiles.calcularProductosVendidos(this.cuentas), icono: "package-variant", clase: "has-text-warning" },
             { nombre: "Ganancia", total: this.formatoMonto(Utiles.calcularTotalGanancia(this.cuentas)), icono: "currency-usd", clase: "has-text-info" }
@@ -212,30 +227,36 @@ export default {
         })
     },
 
-    guardarCuentasApartadosFiltrados() {
-      const cuentasFiltradas = this.cuentasFiltradas.map(cuenta => {
+    guardarCuentasApartadosFiltrados ()
+    {
+      const cuentasFiltradas = this.cuentasFiltradas.map(cuenta =>
+      {
         return {
           nombre: cuenta.nombre,
           total: cuenta.total,
+          totalBs: cuenta.totalBs,
           cantidad: cuenta.cantidad,
         }
       })
       localStorage.setItem('metodos_pago', JSON.stringify(cuentasFiltradas));
     },
 
-    onDeseleccionado() {
+    onDeseleccionado ()
+    {
       this.clienteId = null
       this.obtenerCuentas()
     },
 
-    onSeleccionado(cliente) {
+    onSeleccionado (cliente)
+    {
       this.clienteId = cliente.id
 
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
 
-      this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = setTimeout(() =>
+      {
         this.obtenerCuentas();
       }, 500);
     },

@@ -4,7 +4,10 @@
     <div v-if="cotizaciones.length > 0">
       <b-table class="box" :data="cotizaciones">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          }).replace(/\//g, '-') }}
         </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
@@ -16,11 +19,17 @@
         </b-table-column>
 
         <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" v-slot="props">
-          {{ new Date(props.row.hasta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') }}
+          {{ new Date(props.row.hasta).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+          }).replace(/\//g, '-') }}
         </b-table-column>
 
-        <b-table-column field="total" label="Total" v-slot="props">
+        <b-table-column field="total" label="Total Dólares" v-slot="props">
           <b>${{ formatoMonto(props.row.total) }}</b>
+        </b-table-column>
+
+        <b-table-column field="total" label="Total Bolívares" v-slot="props">
+          <b>Bs. {{ formatoMonto(props.row.total * tasa) }}</b>
         </b-table-column>
 
         <b-table-column field="productos" label="Productos" v-slot="props">
@@ -45,16 +54,19 @@ export default {
   components: { TablaProductosVendidos },
 
   data: () => ({
+    tasa: null,
     cotizaciones: [],
   }),
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(Number(valor))
     }
   },
 
-  mounted() {
+  mounted ()
+  {
     document.body.style.opacity = '0'
 
     const payload = {
@@ -67,10 +79,13 @@ export default {
     }
 
     HttpService.obtenerConConsultas('ventas.php', payload)
-      .then(resultado => {
+      .then(resultado =>
+      {
         this.cotizaciones = resultado.cotizaciones
+        this.tasa = resultado.tasa.valor
         return new Promise(res => setTimeout(res, 100))
-      }).then(() => {
+      }).then(() =>
+      {
         const d = new Printd()
         const table = document.querySelector('#pdf')
 

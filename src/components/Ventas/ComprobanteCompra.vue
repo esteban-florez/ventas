@@ -7,12 +7,12 @@
         </div>
         <div class="empresa-info">
           <h1>{{
-              local === 'ccs'
-                ? 'Oferta Caracas'
-                : local === 'prime'
-                  ? 'Food Prime'
-                  : 'Jiro Sushi Prime'
-              }}</h1>
+            local === 'ccs'
+              ? 'Oferta Caracas'
+              : local === 'prime'
+                ? 'Food Prime'
+                : 'Jiro Sushi Prime'
+          }}</h1>
         </div>
         <div class="factura-info">
           <p><b>Nota de Entrega: {{ venta.id }}</b></p>
@@ -54,13 +54,17 @@
 
       <div class="pago-container">
         <div class="pago-info">
-          <p><b>Total:</b> ${{ formatoMonto(venta.total) }}</p>
+          <p><b>Total:</b> {{ cotiza && venta.idTasa ? `Bs. ${formatoMonto(parseFloat(venta.total) * tasa)}` :
+            `$${formatoMonto(venta.total)}` }}</p>
+          <p v-if="cotiza && venta.idTasa"><b>Nota:</b> Montos referenciales a la tasa del dia Bs. {{ tasa }}</p>
           <p v-if="venta.delivery && !venta.delivery.gratis"><b>
-            Delivery:</b>${{ formatoMonto(venta.delivery.costo) }}
+              Delivery:</b>${{ formatoMonto(venta.delivery.costo) }}
           </p>
-          <p v-if="!cotiza"><b>Su pago:</b> ${{ formatoMonto(venta.pagado) }}</p>
+          <p v-if="!cotiza"><b>Su pago:</b> {{ venta.totalBs ? `Bs. ${formatoMonto(venta.totalBs)}` :
+            `$${formatoMonto(venta.pagado)}` }}</p>
           <p v-if="tipoVenta"><b>Cambio:</b> ${{ formatoMonto(venta.pagado - venta.total) }}</p>
           <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ formatoMonto(porPagar) }}</p>
+          <p v-if="cuenta || apartado"><b>Por pagar:</b> Bs. {{ formatoMonto((porPagar * tasa).toFixed(2)) }}</p>
         </div>
       </div>
 
@@ -83,7 +87,7 @@ import ccsLogo from '@/assets/ofertacaracas.jpg'
 
 export default {
   name: 'ComprobanteCompra',
-  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente', 'local'],
+  props: ['venta', 'tipo', 'porPagar', 'tamaño', 'enviarCliente', 'local', 'tasa'],
 
   data: () => ({
     tiempo: '',
@@ -180,36 +184,43 @@ export default {
     `,
   }),
 
-  beforeMount() {
+  beforeMount ()
+  {
     this.generarTitulo()
     const { VUE_APP_OWNER_NAME, VUE_APP_OWNER_PHONE } = process.env
     this.nombre = VUE_APP_OWNER_NAME
     this.telefono = VUE_APP_OWNER_PHONE
   },
 
-  mounted() {
+  mounted ()
+  {
     this.d = new Printd();
     this.imprimir();
     this.tiempo = this.venta.fecha.split(' ') ?? this.venta.fecha.split(', ')
   },
 
   computed: {
-    cuenta() {
+    cuenta ()
+    {
       return this.tipo === 'cuenta'
     },
-    apartado() {
+    apartado ()
+    {
       return this.tipo === 'apartado'
     },
-    cotiza() {
+    cotiza ()
+    {
       return this.tipo === 'cotiza'
     },
-    tipoVenta() {
+    tipoVenta ()
+    {
       return this.tipo === 'venta'
     },
   },
 
   methods: {
-    generarTitulo() {
+    generarTitulo ()
+    {
       switch (this.tipo) {
         case 'venta':
           this.titulo = 'COMPROBANTE DE COMPRA'
@@ -233,32 +244,37 @@ export default {
       }
     },
 
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       // Usa el formato global de montos
       return Utiles.formatoMonto(valor)
     },
 
-    imagenLogo() {
-      switch(this.local) {
+    imagenLogo ()
+    {
+      switch (this.local) {
         case 'ccs': return ccsLogo
         case 'prime': return primeLogo
         default: return jiroLogo
       }
     },
 
-    async imprimir() {
+    async imprimir ()
+    {
       let zona = document.getElementById('comprobante')
 
       const options = {
         margin: 5,
-        filename: 'Comprobante.pdf',
+        filename: `Comprobante.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       }
 
-      setTimeout(async () => {
-        this.d.onAfterPrint(async () => {
+      setTimeout(async () =>
+      {
+        this.d.onAfterPrint(async () =>
+        {
           const telefono = this.venta.telefonoCliente
           if (!this.enviarCliente || !telefono) return
           const comprobante = html.querySelector('#comprobante')

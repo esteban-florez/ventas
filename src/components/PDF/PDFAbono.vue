@@ -8,8 +8,16 @@
 
       <div class="parrafo">
         <p>
-          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de 
-          <b>${{ formatoMonto(abono.monto) }}</b>, tras lo cual su monto restante es de 
+          El día <b>{{ fecha }}</b> el cliente <b>{{ cuenta.nombreCliente }}</b>, realizó un abono por un monto de
+          <span v-if="abono.montoBs">
+            <b>Bs. {{ formatoMonto(abono.montoBs) }}</b>
+            <b> a una tasa de Bs. {{ (abono.montoBs / abono.monto).toFixed(2) }}</b>
+            <b> equivalente a ${{ formatoMonto(abono.monto) }}</b>
+          </span>
+          <span v-else>
+            <b>${{ formatoMonto(abono.monto) }}</b>
+          </span>,
+          tras lo cual su monto restante es de
           <b>${{ formatoMonto(cuenta.porPagar) }}</b>.
         </p>
       </div>
@@ -48,12 +56,14 @@ export default {
   }),
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     }
   },
 
-  async mounted() {
+  async mounted ()
+  {
     const { VUE_APP_OWNER_NAME, VUE_APP_OWNER_PHONE } = process.env
     this.nombre = VUE_APP_OWNER_NAME
     this.telefono = VUE_APP_OWNER_PHONE
@@ -64,12 +74,13 @@ export default {
     this.cuenta = cuenta
     this.abono = abono
     localStorage.removeItem('comprobante-abono')
-    
+
     const d = new Printd()
     d.onAfterPrint(() => window.close())
-    
+
     new Promise(res => setTimeout(res, 1000))
-      .then(() => {
+      .then(() =>
+      {
         const comprobante = document.querySelector('#pdf')
         d.print(comprobante, [`
           h1 {
@@ -108,7 +119,8 @@ export default {
   },
 
   computed: {
-    fecha() {
+    fecha ()
+    {
       return new Intl.DateTimeFormat('es', {
         dateStyle: 'long',
       }).format(new Date(this.abono.fecha))

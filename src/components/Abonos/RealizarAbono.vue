@@ -3,7 +3,8 @@
     <p class="title is-1">Realizar abono</p>
     <b-breadcrumb align="is-left">
       <b-breadcrumb-item tag='router-link' to="/">Inicio</b-breadcrumb-item>
-      <b-breadcrumb-item tag='router-link' :to="{ name: 'AbonosComponent', params: { id: this.$route.params.id } }">Abonos</b-breadcrumb-item>
+      <b-breadcrumb-item tag='router-link'
+        :to="{ name: 'AbonosComponent', params: { id: this.$route.params.id } }">Abonos</b-breadcrumb-item>
       <b-breadcrumb-item active>Realizar abono</b-breadcrumb-item>
     </b-breadcrumb>
     <p class="is-size-5 has-text-weight-semibold">
@@ -15,7 +16,8 @@
     </b-switch>
     <form @submit.prevent="onRegistrar">
       <b-field label="Monto a abonar">
-        <b-input type="number" step="0.01" v-model="monto" placeholder="Introduce el monto a abonar..." icon="currency-usd" :max="porPagar" :readonly="liquidar" required></b-input>
+        <b-input type="number" step="0.01" v-model="monto" placeholder="Introduce el monto a abonar..."
+          icon="currency-usd" :max="porPagar" :readonly="liquidar" required></b-input>
       </b-field>
       <b-field label="Método de pago">
         <b-select class="wide" placeholder="Seleccionar..." icon="tag-multiple" v-model="idMetodo" required>
@@ -28,7 +30,15 @@
         </b-select>
       </b-field>
       <b-field label="Origen" v-if="!esSimple && idMetodo">
-        <b-input type="text" name="origen" v-model="origen" placeholder="Origen del pago" icon="account" required></b-input>
+        <b-input type="text" name="origen" v-model="origen" placeholder="Origen del pago" icon="account"
+          required></b-input>
+      </b-field>
+      <b-field class="mt-3" label="Esta factura se genera en">
+        <b-select class="wide" placeholder="Seleccionar..." icon="receipt" v-model="moneda" required
+          @input="manejarMoneda">
+          <option key="usd" value="usd">Dólares</option>
+          <option key="bs" value="bs">Bolívares</option>
+        </b-select>
       </b-field>
       <hr class="mb-2 mt-4">
       <p class="is-size-5 has-text-weight-semibold">
@@ -36,7 +46,8 @@
       </p>
       <div class="buttons has-text-centered mt-5">
         <b-button native-type="submit" type="is-primary" icon-left="check">Registrar</b-button>
-        <b-button type="is-dark" icon-left="cancel" tag="router-link" :to="{ name: 'AbonosComponent', params: { id: this.$route.params.id } }">Cancelar</b-button>
+        <b-button type="is-dark" icon-left="cancel" tag="router-link"
+          :to="{ name: 'AbonosComponent', params: { id: this.$route.params.id } }">Cancelar</b-button>
       </div>
     </form>
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
@@ -51,6 +62,7 @@ export default {
   name: 'RealizarAbono',
 
   data: () => ({
+    moneda: 'usd',
     cargando: false,
     metodos: [],
     porPagar: null,
@@ -62,12 +74,14 @@ export default {
     liquidar: false,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerDatos()
   },
 
   methods: {
-    fijarMonto() {
+    fijarMonto ()
+    {
       if (this.liquidar) {
         this.monto = this.porPagar.toFixed(2)
       } else {
@@ -75,11 +89,18 @@ export default {
       }
     },
 
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    async obtenerDatos() {
+    manejarMoneda ()
+    {
+      this.$emit('actualizar', 'moneda', this.moneda)
+    },
+
+    async obtenerDatos ()
+    {
       this.cargando = true
 
       const porPagarPromise = HttpService.obtenerConConsultas('ventas.php', {
@@ -100,13 +121,25 @@ export default {
       this.cargando = false
     },
 
-    async onRegistrar() {
+    async onRegistrar ()
+    {
       this.cargando = true
+      let tasa = null
+
+      if (this.moneda === 'bs') {
+        const resultado = await HttpService.registrar('ventas.php', {
+          accion: 'obtener_tasa'
+        })
+
+        tasa = resultado.id
+      }
+
       const payload = {
         accion: 'realizar_abono',
         abono: {
           monto: this.monto,
           idCuenta: this.$route.params.id,
+          idTasa: tasa
         },
       }
 
@@ -136,10 +169,12 @@ export default {
   },
 
   computed: {
-    esSimple() {
+    esSimple ()
+    {
       return this.metodosSimples.includes(this.idMetodo)
     },
-    restante() {
+    restante ()
+    {
       return this.porPagar - Number(this.monto)
     }
   }
@@ -147,10 +182,10 @@ export default {
 </script>
 
 <style>
-  input[readonly].input {
-    background-color: whitesmoke;
-    cursor: default;
-    pointer-events: none;
-    user-select: none;
-  }
+input[readonly].input {
+  background-color: whitesmoke;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+}
 </style>

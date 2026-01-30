@@ -14,9 +14,8 @@
         </div>
       </div>
     </div>
-    <b-modal
-    v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
-    aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
+    <b-modal v-model="abrirModalLocal" has-modal-card trap-focus :destroy-on-hide="false" aria-role="dialog"
+      aria-label="Modal Seleccionar Local" close-button-aria-label="Close" aria-modal>
       <div class="modal-card" style="width: 320px">
         <section class="modal-card-body">
           <b-field class="mt-3" label="Local emisor">
@@ -35,13 +34,14 @@
     <mensaje-inicial class="mt-2" :titulo="'No se han encontrado apartados :('"
       :subtitulo="'Aquí aparecerán los apartados registrados'" v-if="apartados.length < 1" />
     <div class="mt-2" v-if="apartados.length > 0">
-      <cartas-totales :totales="totalesGenerales" />
-      <cartas-totales-filtradas :metodosPago="apartadosFiltrados" />
-      <tabla-cuentas-apartados :datos="apartados"
-        @imprimir="onGenerarComprobante" :printHref="printHref" @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
+      <cartas-totales-filtradas :registros="totalesGenerales" />
+      <cartas-totales-filtradas :registros="apartadosFiltrados" />
+      <tabla-cuentas-apartados :datos="apartados" @imprimir="onGenerarComprobante" :printHref="printHref"
+        @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
-      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :local="local" :enviarCliente="enviarCliente" />
+      v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :local="local" :enviarCliente="enviarCliente"
+      :tasa="tasa" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -50,7 +50,6 @@
 import BusquedaCliente from '../Clientes/BusquedaCliente'
 import BusquedaEnFecha from '../Extras/BusquedaEnFecha'
 import MensajeInicial from '../Extras/MensajeInicial'
-import CartasTotales from '../Extras/CartasTotales'
 import CartasTotalesFiltradas from '../Extras/CartasTotalesFiltradas'
 import TablaCuentasApartados from './TablaCuentasApartados'
 import ComprobanteCompra from './ComprobanteCompra'
@@ -59,9 +58,10 @@ import Utiles from '../../Servicios/Utiles'
 
 export default {
   name: "ReporteApartados",
-  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotales, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
+  components: { BusquedaEnFecha, TablaCuentasApartados, MensajeInicial, CartasTotalesFiltradas, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
+    tasa: null,
     filtros: {
       fechaInicio: "",
       fechaFin: ""
@@ -80,12 +80,14 @@ export default {
     abrirModalLocal: false,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerApartados()
   },
 
   computed: {
-    printHref() {
+    printHref ()
+    {
       let href = '#/pdf/apartados'
 
       const entries = Object.entries(this.filtros)
@@ -104,37 +106,44 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    onImpreso(resultado) {
+    onImpreso (resultado)
+    {
       this.mostrarComprobante = resultado
     },
 
-    confirmarLocal() {
+    confirmarLocal ()
+    {
       this.abrirModalLocal = false;
       this.confirmarEnvioCliente();
     },
 
-    confirmarEnvioCliente() {
+    confirmarEnvioCliente ()
+    {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
         cancelText: 'No',
         confirmText: 'Sí',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.enviarCliente = true
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.enviarCliente = false
           this.mostrarComprobante = true
         },
       })
     },
 
-    async onGenerarComprobante(apartado) {
+    async onGenerarComprobante (apartado)
+    {
       this.apartadoSeleccionado = apartado
 
       const porPagar = await HttpService.obtenerConConsultas('ventas.php', {
@@ -149,24 +158,28 @@ export default {
         cancelText: 'Carta',
         confirmText: 'Tiquera',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.tamaño = 'tiquera'
           this.abrirModalLocal = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.tamaño = 'carta'
           this.abrirModalLocal = true
         },
       })
     },
 
-    onBusquedaEnFecha(fechas) {
+    onBusquedaEnFecha (fechas)
+    {
       this.filtros.fechaInicio = fechas[0].toISOString().split('T')[0]
       this.filtros.fechaFin = fechas[1].toISOString().split('T')[0]
       this.obtenerApartados()
     },
 
-    obtenerApartados() {
+    obtenerApartados ()
+    {
       this.cargando = true
       let payload = {
         filtros: {
@@ -176,22 +189,29 @@ export default {
         accion: 'obtener_apartados'
       }
       HttpService.obtenerConConsultas('ventas.php', payload)
-        .then(resultado => {
+        .then(resultado =>
+        {
           this.apartados = resultado.apartados
-          this.apartadosFiltrados = resultado.apartadosFiltrados.map(apartado => {
+          this.tasa = resultado.tasa.valor;
+          this.apartadosFiltrados = resultado.apartadosFiltrados.map(apartado =>
+          {
             return {
               nombre: apartado.metodo_pago,
-              total: `$ ${this.formatoMonto(apartado.total_pagado)}`,
+              total: `${this.formatoMonto(apartado.total)}`,
+              totalBs: `${this.formatoMonto(apartado.totalBs)}`,
               icono: 'credit-card-outline',
               clase: 'has-text-info',
               cantidad: apartado.cuentas_apartados_totales,
             }
           })
 
+          this.guardarCuentasApartadosFiltrados()
+
           this.totalesGenerales = [
             { nombre: "# Apartados", total: this.apartados.length, icono: "wallet-travel", clase: "has-text-primary" },
             { nombre: "Total ", total: '$' + this.formatoMonto(resultado.totalApartados), icono: "cash-fast", clase: "has-text-success" },
-            { nombre: "Por pagar", total: '$' + this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Por pagar Dólares", total: '$' + this.formatoMonto(resultado.totalPorPagar), icono: "alert", clase: "has-text-danger" },
+            { nombre: "Por pagar Bolívares", total: 'Bs. ' + this.formatoMonto(resultado.totalPorPagar * this.tasa), icono: "alert", clase: "has-text-danger" },
             { nombre: "Pagos", total: '$' + this.formatoMonto(resultado.totalPagos), icono: "account-cash", clase: "has-text-grey-light" },
             { nombre: "# Productos", total: Utiles.calcularProductosVendidos(this.apartados), icono: "package-variant", clase: "has-text-warning" },
             { nombre: "Ganancia", total: '$' + this.formatoMonto(Utiles.calcularTotalGanancia(this.apartados)), icono: "currency-usd", clase: "has-text-info" }
@@ -200,11 +220,14 @@ export default {
         })
     },
 
-    guardarCuentasApartadosFiltrados() {
-      const apartadosFiltrados = this.apartadosFiltrados.map(apartado => {
+    guardarCuentasApartadosFiltrados ()
+    {
+      const apartadosFiltrados = this.apartadosFiltrados.map(apartado =>
+      {
         return {
           nombre: apartado.nombre,
           total: apartado.total,
+          totalBs: apartado.totalBs,
           cantidad: apartado.cantidad,
         }
       })
@@ -212,19 +235,22 @@ export default {
     },
 
 
-    onDeseleccionado() {
+    onDeseleccionado ()
+    {
       this.clienteId = null
       this.obtenerApartados()
     },
 
-    onSeleccionado(cliente) {
+    onSeleccionado (cliente)
+    {
       this.clienteId = cliente.id
 
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
 
-      this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = setTimeout(() =>
+      {
         this.obtenerApartados();
       }, 500);
     },

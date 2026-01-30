@@ -20,7 +20,10 @@
           {{ props.row.id }}
         </b-table-column>
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          }).replace(/\//g, '-') }}
         </b-table-column>
         <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
           {{ props.row.nombreCliente }}
@@ -33,17 +36,23 @@
           <span class="tag is-warning is-large" v-if="obtenerEstadoCuenta(props.row) === 'VIGENTE'">VIGENTE</span>
           <span class="tag is-danger is-large" v-if="obtenerEstadoCuenta(props.row) === 'VENCIDA'">VENCIDA</span>
         </b-table-column>
-        <b-table-column field="porPagar" label="Por pagar" v-slot="props">
+        <b-table-column field="porPagar" label="Por pagar Dólares" v-slot="props">
           <span class="has-text-danger has-text-weight-bold"> ${{ formatoMonto(props.row.porPagar) }}</span>
         </b-table-column>
+        <b-table-column field="porPagar" label="Por pagar Bolívares" v-slot="props">
+          <span class="has-text-danger has-text-weight-bold"> Bs. {{ formatoMonto(props.row.porPagar * tasa) }}</span>
+        </b-table-column>
       </b-table>
-      
+
       <br />
       <br />
-      
+
       <b-table class="box" :data="cuentasFiltradasTotal">
         <b-table-column field="totalPorPagar" label="Monto total por pagar" v-slot="props">
           ${{ formatoMonto(props.row.totalPorPagar) }}
+        </b-table-column>
+        <b-table-column field="totalPorPagar" label="Monto total por pagar" v-slot="props">
+          Bs. {{ formatoMonto(props.row.totalPorPagar * tasa) }}
         </b-table-column>
       </b-table>
 
@@ -66,17 +75,21 @@ export default {
   data: () => ({
     cuentas: [],
     cuentasFiltradas: [],
-    cuentasFiltradasTotal: []
+    cuentasFiltradasTotal: [],
+    tasa: null
   }),
 
   computed: {
-    totalGlobalCuentas() {
+    totalGlobalCuentas ()
+    {
       return this.cuentas.reduce((acc, cuenta) => acc + Number(cuenta.total), 0)
     },
-    pagosAgrupados() {
+    pagosAgrupados ()
+    {
       // Agrupa y suma los montos por método de pago
       const agrupados = {};
-      this.cuentasFiltradas.forEach(item => {
+      this.cuentasFiltradas.forEach(item =>
+      {
         if (!agrupados[item.nombre]) {
           agrupados[item.nombre] = { nombre: item.nombre, total: 0 };
         }
@@ -91,13 +104,14 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    async fetchSalesData() {
+    async fetchSalesData ()
+    {
       this.cuentasFiltradas = JSON.parse(localStorage.getItem('metodos_pago') || '[]');
-      localStorage.removeItem('metodos_pago');
 
       const payload = {
         accion: 'obtener_cuentas',
@@ -110,6 +124,7 @@ export default {
 
       const resultado = await HttpService.obtenerConConsultas('ventas.php', payload);
       this.cuentas = resultado.cuentas || [];
+      this.tasa = resultado.tasa.valor || 0;
 
       // Sumar los porPagar de las cuentas mostradas en la tabla principal
       const totalPorPagar = this.cuentas.reduce((acc, item) => acc + Number(item.porPagar || 0), 0);
@@ -122,12 +137,16 @@ export default {
       }];
     },
 
-    printDocument() {
-      return new Promise(resolve => {
-        setTimeout(() => {
+    printDocument ()
+    {
+      return new Promise(resolve =>
+      {
+        setTimeout(() =>
+        {
           const d = new Printd();
           const table = document.querySelector('#pdf');
-          d.onAfterPrint(() => {
+          d.onAfterPrint(() =>
+          {
             window.close();
             resolve();
           });
@@ -136,19 +155,21 @@ export default {
       });
     },
 
-    obtenerEstadoCuenta(cuenta) {
+    obtenerEstadoCuenta (cuenta)
+    {
       if (cuenta.porPagar < 1) return 'LIQUIDADO'
       const fechaCreacion = new Date(cuenta.fecha.replace(' ', 'T'))
       const fechaVencimiento = new Date(fechaCreacion)
       fechaVencimiento.setDate(fechaVencimiento.getDate() + Number(cuenta.dias || 0))
       const hoy = new Date()
-      hoy.setHours(0,0,0,0)
+      hoy.setHours(0, 0, 0, 0)
       if (hoy > fechaVencimiento) return 'VENCIDA'
       return 'VIGENTE'
     }
   },
 
-  async mounted() {
+  async mounted ()
+  {
     document.body.style.opacity = '0';
     await this.fetchSalesData();
     await this.printDocument();

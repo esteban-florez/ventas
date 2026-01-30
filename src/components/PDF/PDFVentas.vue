@@ -29,8 +29,11 @@
 
       <b-table class="box" :data="ventas">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-      {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
-      </b-table-column>
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          }).replace(/\//g, '-') }}
+        </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" v-slot="props">
           {{ props.row.nombreCliente }}
@@ -48,8 +51,12 @@
           ${{ props.row.pagado - props.row.total }}
         </b-table-column>
 
-        <b-table-column field="total" label="Total" v-slot="props">
-          <b>${{ props.row.total }}</b>
+        <b-table-column field="total" label="Total Dólares" v-slot="props">
+          <b>${{ formatoMonto(props.row.total) }}</b>
+        </b-table-column>
+
+        <b-table-column field="totalBs" label="Total Bolívares" v-slot="props">
+          <b>{{ props.row.totalBs ? `Bs. ${formatoMonto(props.row.totalBs)}` : '-' }}</b>
         </b-table-column>
 
         <b-table-column field="metodo" label="Método de pago" v-slot="props">
@@ -74,6 +81,7 @@
 <script>
 import Printd from 'printd'
 import HttpService from '@/Servicios/HttpService';
+import Utiles from '@/Servicios/Utiles';
 
 export default {
   name: 'PDFVentas',
@@ -85,15 +93,21 @@ export default {
   }),
 
   methods: {
-    async fetchSalesData() {
+    formatoMonto (valor)
+    {
+      return Utiles.formatoMonto(valor)
+    },
+
+    async fetchSalesData ()
+    {
       this.ventasFiltradas = JSON.parse(localStorage.getItem('metodos_pago') || '[]');
       localStorage.removeItem('metodos_pago');
       this.ventasFiltradasTotal = [{
         nombre: 'Total',
-        total: this.ventasFiltradas.reduce((acc, item) => acc + Number(item.total.slice(1)), 0),
+        total: this.ventasFiltradas.reduce((acc, item) => acc + Number(item.total.split('$ ')[1].replace('.', '').replace(',', '.')), 0),
         cantidad: this.ventasFiltradas.reduce((acc, item) => acc + item.cantidad, 0),
       }]
-      
+
       const payload = {
         accion: 'obtener_ventas',
         filtros: {
@@ -102,31 +116,36 @@ export default {
           clienteId: this.$route.query.clienteId || null,
         },
       };
-      
+
       const resultado = await HttpService.obtenerConConsultas('ventas.php', payload);
       this.ventas = resultado.ventas || [];
     },
-    
-    printDocument() {
-      return new Promise(resolve => {
-        setTimeout(() => {
+
+    printDocument ()
+    {
+      return new Promise(resolve =>
+      {
+        setTimeout(() =>
+        {
           const d = new Printd();
           const table = document.querySelector('#pdf');
-          
-          d.onAfterPrint(() => {
+
+          d.onAfterPrint(() =>
+          {
             window.close();
             resolve();
           });
-          
+
           d.print(table, ['/pdf.css']);
         }, 100);
       });
     }
   },
 
-  async mounted() {
+  async mounted ()
+  {
     document.body.style.opacity = '0';
-    
+
     await this.fetchSalesData();
     await this.printDocument();
   },

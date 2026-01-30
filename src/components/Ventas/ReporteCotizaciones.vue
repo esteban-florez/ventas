@@ -39,7 +39,10 @@
         default-sort="user.first_name" aria-next-label="Next page" aria-previous-label="Previous page"
         aria-page-label="Page" aria-current-label="Current page">
         <b-table-column field="fecha" label="Fecha" sortable searchable v-slot="props">
-          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', }).replace(/\//g, '-') }}
+          {{ new Date(props.row.fecha).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+          }).replace(/\//g, '-') }}
         </b-table-column>
 
         <b-table-column field="nombreCliente" label="Cliente" sortable searchable v-slot="props">
@@ -51,11 +54,17 @@
         </b-table-column>
 
         <b-table-column style="min-width: max-content;" field="hasta" label="Válido hasta" sortable v-slot="props">
-          {{ new Date(props.row.hasta ).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') }}
+          {{ new Date(props.row.hasta).toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+          }).replace(/\//g, '-') }}
         </b-table-column>
 
-        <b-table-column field="total" label="Total" sortable v-slot="props">
+        <b-table-column field="total" label="Total Dólares" sortable v-slot="props">
           <b>${{ formatoMonto(props.row.total) }}</b>
+        </b-table-column>
+
+        <b-table-column field="total" label="Total Bolívares" sortable v-slot="props">
+          <b>Bs. {{ formatoMonto(parseFloat(props.row.total) * tasa) }}</b>
         </b-table-column>
 
         <b-table-column field="productos" label="Productos" sortable v-slot="props">
@@ -78,7 +87,7 @@
       </b-table>
     </div>
     <comprobante-compra :venta="this.cotizacionSeleccionada" :tipo="'cotiza'" @impreso="onImpreso"
-      v-if="mostrarComprobante" :tamaño="tamaño" :enviarCliente="enviarCliente" />
+      v-if="mostrarComprobante" :tamaño="tamaño" :enviarCliente="enviarCliente" :tasa="tasa" />
     <b-loading :is-full-page="true" v-model="cargando" :can-cancel="false"></b-loading>
   </section>
 </template>
@@ -97,6 +106,7 @@ export default {
   components: { BusquedaEnFecha, MensajeInicial, TablaProductosVendidos, ComprobanteCompra, BusquedaCliente },
 
   data: () => ({
+    tasa: null,
     filtros: {
       fechaInicio: "",
       fechaFin: ""
@@ -119,12 +129,14 @@ export default {
     clienteId: null,
   }),
 
-  mounted() {
+  mounted ()
+  {
     this.obtenerCotizaciones()
   },
 
   computed: {
-    printHref() {
+    printHref ()
+    {
       let href = '#/pdf/cotizaciones'
 
       const entries = Object.entries(this.filtros)
@@ -143,15 +155,18 @@ export default {
   },
 
   methods: {
-    formatoMonto(valor) {
+    formatoMonto (valor)
+    {
       return Utiles.formatoMonto(valor)
     },
 
-    onImpreso(resultado) {
+    onImpreso (resultado)
+    {
       this.mostrarComprobante = resultado
     },
 
-    generarComprobante(cotizacion) {
+    generarComprobante (cotizacion)
+    {
       this.cotizacionSeleccionada = cotizacion
 
       this.$buefy.dialog.confirm({
@@ -159,35 +174,41 @@ export default {
         cancelText: 'Carta',
         confirmText: 'Tiquera',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.tamaño = 'tiquera'
           this.confirmarEnvioCliente()
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.tamaño = 'carta'
           this.confirmarEnvioCliente()
         },
       })
     },
 
-    confirmarEnvioCliente() {
+    confirmarEnvioCliente ()
+    {
       this.$buefy.dialog.confirm({
         message: '¿Enviar al cliente mediante WhatsApp?',
         cancelText: 'No',
         confirmText: 'Sí',
         trapFocus: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.enviarCliente = true
           this.mostrarComprobante = true
         },
-        onCancel: () => {
+        onCancel: () =>
+        {
           this.enviarCliente = false
           this.mostrarComprobante = true
         },
       })
     },
 
-    eliminar(id) {
+    eliminar (id)
+    {
       this.$buefy.dialog.confirm({
         title: 'Eliminar cotización',
         message: '¿Seguro que deseas eliminar esta cotizacion?',
@@ -195,13 +216,15 @@ export default {
         cancelText: 'Cancelar',
         type: 'is-danger',
         hasIcon: true,
-        onConfirm: () => {
+        onConfirm: () =>
+        {
           this.cargando = true
           HttpService.eliminar('ventas.php', {
             accion: 'eliminar_cotiza',
             id: id
           })
-            .then(resultado => {
+            .then(resultado =>
+            {
               if (resultado) {
                 this.cargando = false
                 this.$buefy.toast.open('cotización eliminada')
@@ -213,13 +236,15 @@ export default {
       })
     },
 
-    onBusquedaEnFecha(fechas) {
+    onBusquedaEnFecha (fechas)
+    {
       this.filtros.fechaInicio = fechas[0].toISOString().split('T')[0]
       this.filtros.fechaFin = fechas[1].toISOString().split('T')[0]
       this.obtenerCotizaciones()
     },
 
-    obtenerCotizaciones() {
+    obtenerCotizaciones ()
+    {
       this.cargando = true
       let payload = {
         filtros: {
@@ -229,8 +254,10 @@ export default {
         accion: 'obtener_cotizaciones'
       }
       HttpService.obtenerConConsultas('ventas.php', payload)
-        .then(resultado => {
+        .then(resultado =>
+        {
           this.cotizaciones = resultado.cotizaciones
+          this.tasa = resultado.tasa.valor ?? 0
           this.cotizaciones = this.cotizaciones.map(cotiza => ({
             ...cotiza,
             total: this.formatoMonto(cotiza.total)
@@ -239,19 +266,22 @@ export default {
         })
     },
 
-    onDeseleccionado() {
+    onDeseleccionado ()
+    {
       this.clienteId = null
       this.obtenerCotizaciones()
     },
 
-    onSeleccionado(cliente) {
+    onSeleccionado (cliente)
+    {
       this.clienteId = cliente.id
 
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
 
-      this.debounceTimeout = setTimeout(() => {
+      this.debounceTimeout = setTimeout(() =>
+      {
         this.obtenerCotizaciones();
       }, 500);
     },

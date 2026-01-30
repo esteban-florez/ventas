@@ -1,8 +1,20 @@
-import Chart from 'chart.js'
-const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+import Chart from "chart.js"
+const MESES = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+]
 
 const Utiles = {
-
   resetearGrafica(contenedor, grafica, id) {
     const $contenedorGrafica = document.querySelector(contenedor)
     let $grafica = document.querySelector(grafica)
@@ -18,37 +30,38 @@ const Utiles = {
     const labels = this.generarEtiquetas(array)
     const totales = this.generarValores(array)
 
-
     const data = {
       labels: labels,
-      datasets: [{
-        label: "Total ",
-        data: totales,
-        backgroundColor: this.generarColores(labels.length),
-        fill: false,
-        tension: 0.1,
-        borderWidth: 3
-      }]
+      datasets: [
+        {
+          label: "Total ",
+          data: totales,
+          backgroundColor: this.generarColores(labels.length),
+          fill: false,
+          tension: 0.1,
+          borderWidth: 3,
+        },
+      ],
     }
 
-    var ctx = document.getElementById(id).getContext('2d');
+    var ctx = document.getElementById(id).getContext("2d")
 
     var options = {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
         y: {
-          beginAtZero: true
-        }
-      }
-    };
+          beginAtZero: true,
+        },
+      },
+    }
 
     new Chart(ctx, {
       responsive: true,
       type: tipo,
       data: data,
-      options: options
-    });
+      options: options,
+    })
   },
 
   generarColores(tamanio) {
@@ -69,22 +82,35 @@ const Utiles = {
   },
 
   generarEtiquetas(array) {
-    const labels = array.map(elemento => {
+    const labels = array.map((elemento) => {
       return elemento[Object.keys(elemento)[0]]
     })
     return labels
   },
 
   generarValores(array) {
-    const totales = array.map(elemento => {
+    const totales = array.map((elemento) => {
       return elemento.totalVentas
     })
     return totales
   },
 
-  formatoMonto(valor) {
+  formatoMonto(valor, moneda = null) {
     if (isNaN(valor)) return valor
-    return Number(valor).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+    const numero = Number(valor)
+
+    if (moneda === "bs") {
+      return `Bs ${numero.toLocaleString("es-VE", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`
+    }
+
+    return numero.toLocaleString("es-VE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   },
 
   validarDatos(datos) {
@@ -97,9 +123,11 @@ const Utiles = {
 
   calcularTotalGanancia(ventas) {
     let total = 0
-    ventas.forEach(venta => {
-      venta.productos.forEach(producto => {
-        total += parseFloat(producto.cantidad * producto.precio) - parseFloat(producto.cantidad * producto.precioCompra)
+    ventas.forEach((venta) => {
+      venta.productos.forEach((producto) => {
+        total +=
+          parseFloat(producto.cantidad * producto.precio) -
+          parseFloat(producto.cantidad * producto.precioCompra)
       })
     })
     return total
@@ -107,8 +135,8 @@ const Utiles = {
 
   calcularProductosVendidos(ventas) {
     let total = 0
-    ventas.forEach(venta => {
-      venta.productos.forEach(producto => {
+    ventas.forEach((venta) => {
+      venta.productos.forEach((producto) => {
         total += parseFloat(producto.cantidad)
       })
     })
@@ -116,4 +144,4 @@ const Utiles = {
   },
 }
 
-export default Utiles;
+export default Utiles
