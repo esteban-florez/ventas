@@ -50,10 +50,6 @@
         </span>
       </b-table-column>
 
-      <b-table-column field="porPagar" label="Por pagar" sortable v-slot="props">
-        <span class="has-text-danger has-text-weight-bold"> ${{ formatoMontoLocal(props.row.porPagar) }}</span>
-      </b-table-column>
-
       <b-table-column field="dias" label="Duración" sortable v-slot="props" v-if="datos[0].tipo === 'cuenta'">
         {{ props.row.dias }} días
       </b-table-column>
