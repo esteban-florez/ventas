@@ -36,7 +36,7 @@
       <cartas-totales-filtradas :registros="totalesGenerales" :formatoMonto="formatoMonto" />
       <cartas-totales-filtradas :registros="cuentasFiltradas" :formatoMonto="formatoMonto" />
       <tabla-cuentas-apartados :datos="cuentas" :printHref="printHref" :formatoMonto="formatoMonto"
-        :filtros="filtrosCompletos" @imprimir="onGenerarComprobante" />
+        :filtros="filtrosCompletos" @imprimir="onGenerarComprobante" :tasa="tasa" />
     </div>
     <comprobante-compra :venta="this.cuentaSeleccionada" :tipo="'cuenta'" @impreso="onImpreso" v-if="mostrarComprobante"
       :porPagar="porPagar" :tamaño="tamaño" :enviarCliente="enviarCliente" :local="local" :tasa="tasa" />
@@ -183,7 +183,7 @@ export default {
       this.obtenerCuentas()
     },
 
-    obtenerCuentas ()
+    async obtenerCuentas ()
     {
       this.cargando = true
       this.filtros = {
@@ -200,6 +200,7 @@ export default {
         {
           this.cuentas = resultado.cuentas
           this.tasa = resultado.tasa.valor
+          console.log(this.cuentas)
           this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta =>
           {
             return {

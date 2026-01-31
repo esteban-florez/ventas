@@ -37,7 +37,8 @@
       <cartas-totales-filtradas :registros="totalesGenerales" />
       <cartas-totales-filtradas :registros="apartadosFiltrados" />
       <tabla-cuentas-apartados :datos="apartados" @imprimir="onGenerarComprobante" :printHref="printHref"
-        @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados" />
+        @actualizar-cuentas="obtenerApartados" @cargarRegistrosFiltrados="guardarCuentasApartadosFiltrados"
+        :tasa="tasa" />
     </div>
     <comprobante-compra :venta="this.apartadoSeleccionado" :tipo="'apartado'" @impreso="onImpreso"
       v-if="mostrarComprobante" :porPagar="porPagar" :tamaño="tamaño" :local="local" :enviarCliente="enviarCliente"
@@ -178,7 +179,7 @@ export default {
       this.obtenerApartados()
     },
 
-    obtenerApartados ()
+    async obtenerApartados ()
     {
       this.cargando = true
       let payload = {

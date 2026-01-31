@@ -378,26 +378,35 @@ function obtenerCuentasApartados($filtros, $tipo)
         cuentas_apartados.tipo, cuentas_apartados.total,
         cuentas_apartados.dias,
         IFNULL(MAX(deliveries.costo), 0) as costoDelivery,
+        IFNULL(MAX(deliveries.gratis), 0) as deliveryGratis,
         IFNULL(abonos.total, 0) AS pagado,
         (cuentas_apartados.total - IFNULL(abonos.total, 0)) AS porPagar,
         IFNULL(clientes.nombre, 'MOSTRADOR') AS nombreCliente,
         IFNULL(clientes.telefono, '') AS telefonoCliente,
-        clientes.telefono AS telefonoCliente,
-        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario
-        FROM cuentas_apartados
-        LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
-        LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
-        LEFT JOIN (
-            SELECT idCuenta, SUM(d.costo) AS costo
-            FROM deliveries AS d
-            GROUP BY idCuenta)
-        AS deliveries ON deliveries.idCuenta = cuentas_apartados.id
-        LEFT JOIN (
-            SELECT idCuenta, SUM(a.monto) as total
-            FROM abonos AS a
-            GROUP BY idCuenta
-        ) AS abonos ON abonos.idCuenta = cuentas_apartados.id
-        WHERE cuentas_apartados.tipo = ?";
+        IFNULL(usuarios.usuario, 'NO ENCONTRADO') AS nombreUsuario,
+        cuentas_apartados.idTasa,
+        tasas.valor AS tasaValor,
+        IF(cuentas_apartados.idTasa IS NOT NULL, 
+           ROUND(cuentas_apartados.total * tasas.valor, 2), 
+           NULL) AS totalBs,
+        IF(cuentas_apartados.idTasa IS NOT NULL, 
+           ROUND((cuentas_apartados.total - IFNULL(abonos.total, 0)) * tasas.valor, 2), 
+           NULL) AS porPagarBs
+    FROM cuentas_apartados
+    LEFT JOIN clientes ON clientes.id = cuentas_apartados.idCliente
+    LEFT JOIN usuarios ON usuarios.id = cuentas_apartados.idUsuario
+    LEFT JOIN (
+        SELECT idCuenta, SUM(d.costo) AS costo, MAX(d.gratis) AS gratis
+        FROM deliveries AS d
+        GROUP BY idCuenta
+    ) AS deliveries ON deliveries.idCuenta = cuentas_apartados.id
+    LEFT JOIN (
+        SELECT idCuenta, SUM(a.monto) as total
+        FROM abonos AS a
+        GROUP BY idCuenta
+    ) AS abonos ON abonos.idCuenta = cuentas_apartados.id
+    LEFT JOIN tasas ON tasas.id = cuentas_apartados.idTasa
+    WHERE cuentas_apartados.tipo = ?";
 
     $parametros = [$tipo];
 
@@ -776,10 +785,10 @@ function eliminarVenta($id)
 
 function agregarCuentaApartado($venta)
 {
-    $sentencia = "INSERT INTO cuentas_apartados (fecha, total, dias, tipo, idCliente, idUsuario) VALUES (?,?,?,?,?,?)";
+    $sentencia = "INSERT INTO cuentas_apartados (fecha, total, dias, tipo, idCliente, idUsuario, idTasa) VALUES (?,?,?,?,?,?,?)";
 
     $ahora = date("Y-m-d H:i:s");
-    $parametros = [$ahora, $venta->total, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario];
+    $parametros = [$ahora, $venta->total, $venta->dias, $venta->tipo, $venta->cliente, $venta->usuario, $venta->idTasa];
 
     $registrado = insertar($sentencia, clean($parametros));
 
