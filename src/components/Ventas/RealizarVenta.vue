@@ -27,6 +27,9 @@
         <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
           Total ${{ formatoMonto(total.toFixed(2)) }}
         </p>
+        <p class=" has-text-weight-bold has-text-centered" style="font-size:5em">
+          Total Bs. {{ formatoMonto(total.toFixed(2) * tasa) }}
+        </p>
         <nav class="level mt-2">
           <div class="level-item has-text-centered" v-if="can('ventas.registrar_venta')">
             <b-button class="button is-responsive" type="is-success" inverted icon-left="check" size="is-large"
@@ -104,6 +107,7 @@ export default {
   },
 
   data: () => ({
+    tasa: null,
     cargando: false,
     tamaño: 'tiquera',
     productos: [],
@@ -133,10 +137,12 @@ export default {
     const payload = { accion: 'obtener' }
 
     Promise.all([
+      HttpService.obtenerConConsultas('ventas.php', { accion: 'obtener_tasa' }),
       HttpService.obtenerConConsultas('metodos.php', payload),
       HttpService.obtenerConConsultas('choferes.php', payload)
-    ]).then(([metodos, choferes]) =>
+    ]).then(([tasa, metodos, choferes]) =>
     {
+      this.tasa = tasa.valor ?? 0
       this.metodos = metodos
       this.choferes = choferes
       this.cargando = false
