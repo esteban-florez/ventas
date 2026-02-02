@@ -1839,7 +1839,7 @@ function obtenerProductoPorId($id)
 
 function editarProducto($producto)
 {
-    $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, precioVenta4 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
+    $sentencia = "UPDATE productos SET codigo = ?, nombre = ?, unidad = ?, precioCompra = ?, precioVenta = ?, precioVenta2 = ?, precioVenta3 = ?, precioVenta4 = ?, precioVenta5 = ?, precioVenta6 = ?, precioVenta7 = ?, vendidoMayoreo = ?, precioMayoreo = ?, cantidadMayoreo = ?, marca = ?, categoria = ?, proveedor = ? WHERE id = ?";
 
     $parametros = [
         $producto->codigo,
@@ -1850,6 +1850,9 @@ function editarProducto($producto)
         $producto->precioVenta2,
         $producto->precioVenta3,
         $producto->precioVenta4,
+        $producto->precioVenta5,
+        $producto->precioVenta6,
+        $producto->precioVenta7,
         intval($producto->vendidoMayoreo),
         $producto->precioMayoreo,
         $producto->cantidadMayoreo,

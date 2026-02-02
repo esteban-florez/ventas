@@ -56,8 +56,20 @@
           ${{ formatoMonto(props.row.precioVenta3) }}
         </b-table-column>
         
-        <b-table-column field="precioVenta4" label="Precio venta 3" sortable v-slot="props">
+        <b-table-column field="precioVenta4" label="Precio venta 4" sortable v-slot="props">
           ${{ formatoMonto(props.row.precioVenta4) }}
+        </b-table-column>
+        
+        <b-table-column field="precioVenta5" label="Precio venta 5" sortable v-slot="props">
+          ${{ formatoMonto(props.row.precioVenta5) }}
+        </b-table-column>
+        
+        <b-table-column field="precioVenta6" label="Precio venta 6" sortable v-slot="props">
+          ${{ formatoMonto(props.row.precioVenta6) }}
+        </b-table-column>
+        
+        <b-table-column field="precioVenta7" label="Precio venta 7" sortable v-slot="props">
+          ${{ formatoMonto(props.row.precioVenta7) }}
         </b-table-column>
 
         <b-table-column field="ganancia" label="Ganancia" sortable v-slot="props">
