@@ -200,7 +200,6 @@ export default {
         {
           this.cuentas = resultado.cuentas
           this.tasa = resultado.tasa.valor ?? 0
-          console.log(this.cuentas)
           this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta =>
           {
             return {
