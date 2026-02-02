@@ -82,7 +82,7 @@ export default {
       .then(resultado =>
       {
         this.cotizaciones = resultado.cotizaciones
-        this.tasa = resultado.tasa.valor
+        this.tasa = resultado.tasa.valor ?? 0
         return new Promise(res => setTimeout(res, 100))
       }).then(() =>
       {

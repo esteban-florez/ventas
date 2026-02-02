@@ -199,7 +199,7 @@ export default {
         .then(resultado =>
         {
           this.cuentas = resultado.cuentas
-          this.tasa = resultado.tasa.valor
+          this.tasa = resultado.tasa.valor ?? 0
           console.log(this.cuentas)
           this.cuentasFiltradas = resultado.cuentasFiltradas.map(cuenta =>
           {

@@ -124,7 +124,7 @@ export default {
 
       const resultado = await HttpService.obtenerConConsultas('ventas.php', payload);
       this.cuentas = resultado.cuentas || [];
-      this.tasa = resultado.tasa.valor || 0;
+      this.tasa = resultado.tasa.valor ?? 0;
 
       // Sumar los porPagar de las cuentas mostradas en la tabla principal
       const totalPorPagar = this.cuentas.reduce((acc, item) => acc + Number(item.porPagar || 0), 0);

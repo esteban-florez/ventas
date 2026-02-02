@@ -170,6 +170,23 @@ function obtenerTasa()
     return selectRegresandoObjeto($sentencia);
 }
 
+function insertarTasa($valor)
+{
+    try {
+        $sentencia = "INSERT INTO tasas (valor) VALUES (?)";
+        $parametros = [(float)$valor];
+        $resultado = insertar($sentencia, $parametros);
+        
+        if ($resultado) {
+            return obtenerUltimoId('tasas');
+        } else {
+            return "Error al insertar tasa";
+        }
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
+}
+
 function eliminarCotizacion($id)
 {
     $sentenciaEliminarCotizacion = "DELETE FROM cotizaciones WHERE id = ?";
@@ -2150,18 +2167,37 @@ function conectarBD()
     $db = $_ENV['DB_NAME'];
     $user = $_ENV['DB_USER'];
     $pass = $_ENV['DB_PASSWORD'];
-    $charset = $_ENV['DB_CHARSET'];
+    $charset = $_ENV['DB_CHARSET'] ?? 'utf8';
 
     $options = [
         \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
         \PDO::ATTR_EMULATE_PREPARES => false,
     ];
-    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    
+    // Try connection with environment charset first
     try {
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
         $pdo = new \PDO($dsn, $user, $pass, $options);
         return $pdo;
     } catch (\PDOException $e) {
+        // If charset error, try with utf8 (more compatible)
+        if (strpos($e->getMessage(), 'Unknown character set') !== false) {
+            try {
+                $dsn = "mysql:host=$host;dbname=$db;charset=utf8";
+                $pdo = new \PDO($dsn, $user, $pass, $options);
+                return $pdo;
+            } catch (\PDOException $e2) {
+                // Try without charset as last resort
+                try {
+                    $dsn = "mysql:host=$host;dbname=$db";
+                    $pdo = new \PDO($dsn, $user, $pass, $options);
+                    return $pdo;
+                } catch (\PDOException $e3) {
+                    throw new \PDOException($e3->getMessage(), (int) $e3->getCode());
+                }
+            }
+        }
         throw new \PDOException($e->getMessage(), (int) $e->getCode());
     }
 }

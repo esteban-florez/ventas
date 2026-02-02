@@ -361,7 +361,7 @@ export default {
         .then(resultado =>
         {
           this.ventas = resultado.ventas
-          this.tasa = resultado.tasa.valor
+          this.tasa = resultado.tasa.valor ?? 0
           this.ventasFiltradas = resultado.ventasFiltradas.map(venta =>
           {
             return {

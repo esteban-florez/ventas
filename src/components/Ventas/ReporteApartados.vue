@@ -193,7 +193,7 @@ export default {
         .then(resultado =>
         {
           this.apartados = resultado.apartados
-          this.tasa = resultado.tasa.valor;
+          this.tasa = resultado.tasa.valor ?? 0;
           this.apartadosFiltrados = resultado.apartadosFiltrados.map(apartado =>
           {
             return {
