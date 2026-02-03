@@ -39,6 +39,9 @@
         <b-table-column field="tipo" label="Tipo" v-slot="props">
           {{ props.row.tipo }}
         </b-table-column>
+        <b-table-column field="origen" label="Se originó en" v-slot="props">
+          {{ props.row.montoBs ? 'Bolívares' : 'Dólares' }}
+        </b-table-column>
         <b-table-column field="monto" label="Monto Dólares" v-slot="props">
           ${{ formatoMonto(props.row.monto) }}
         </b-table-column>

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS tasas (
 ALTER TABLE ventas ADD COLUMN idTasa BIGINT REFERENCES tasas(id);
 ALTER TABLE abonos ADD COLUMN  idTasa BIGINT REFERENCES tasas(id);
 ALTER TABLE cuentas_apartados ADD COLUMN  idTasa BIGINT REFERENCES tasas(id);
+ALTER TABLE cotizaciones ADD COLUMN  idTasa BIGINT REFERENCES tasas(id);
 
 ALTER TABLE productos ADD COLUMN precioVenta5 DECIMAL(8,2) AFTER precioVenta4; 
 ALTER TABLE productos ADD COLUMN precioVenta6 DECIMAL(8,2) AFTER precioVenta5; 
@@ -21,6 +22,7 @@ DROP TABLE tasas;
 ALTER TABLE ventas DROP COLUMN idTasa;
 ALTER TABLE abonos DROP COLUMN idTasa;
 ALTER TABLE cuentas_apartados DROP COLUMN idTasa;
+ALTER TABLE cotizaciones DROP COLUMN idTasa;
 
 ALTER TABLE productos DROP COLUMN precioVenta5; 
 ALTER TABLE productos DROP COLUMN precioVenta6; 
