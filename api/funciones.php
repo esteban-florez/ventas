@@ -174,9 +174,9 @@ function insertarTasa($valor)
 {
     try {
         $sentencia = "INSERT INTO tasas (valor) VALUES (?)";
-        $parametros = [(float)$valor];
+        $parametros = [(float) $valor];
         $resultado = insertar($sentencia, $parametros);
-        
+
         if ($resultado) {
             return obtenerUltimoId('tasas');
         } else {
@@ -545,9 +545,9 @@ function obtenerCuentasApartadosFiltrados($filtros, $tipo)
             END
         ) AS totalBs
     FROM 
-        cuentas_apartados ca
+        abonos a
     INNER JOIN
-        abonos a ON a.idCuenta = ca.id
+        cuentas_apartados ca ON a.idCuenta = ca.id
     LEFT JOIN
         metodos m ON a.idMetodo = m.id
     LEFT JOIN
@@ -566,7 +566,7 @@ function obtenerCuentasApartadosFiltrados($filtros, $tipo)
     }
 
     if ($filtros->fechaInicio && $filtros->fechaFin) {
-        $sentencia .= " AND DATE(ca.fecha) >= ? AND DATE(ca.fecha) <= ?";
+        $sentencia .= " AND DATE(a.fecha) >= ? AND DATE(a.fecha) <= ?";
         array_push($parametros, $filtros->fechaInicio, $filtros->fechaFin);
     }
 
@@ -2177,7 +2177,7 @@ function conectarBD()
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
         \PDO::ATTR_EMULATE_PREPARES => false,
     ];
-    
+
     // Try connection with environment charset first
     try {
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
