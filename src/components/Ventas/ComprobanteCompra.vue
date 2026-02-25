@@ -60,8 +60,7 @@
           <p v-if="venta.delivery && !venta.delivery.gratis"><b>
               Delivery:</b>${{ formatoMonto(venta.delivery.costo) }}
           </p>
-          <p v-if="!cotiza"><b>Su pago:</b> {{ venta.totalBs ? `Bs. ${formatoMonto(venta.totalBs)}` :
-            `$${formatoMonto(venta.pagado)}` }}</p>
+          <p v-if="!cotiza"><b>Su pago:</b> {{ `$${formatoMonto(venta.pagado)}` }}</p>
           <p v-if="tipoVenta"><b>Cambio:</b> ${{ formatoMonto(venta.pagado - venta.total) }}</p>
           <p v-if="cuenta || apartado"><b>Por pagar:</b> ${{ formatoMonto(porPagar) }}</p>
           <p v-if="cuenta || apartado"><b>Por pagar:</b> Bs. {{ formatoMonto((porPagar * tasa).toFixed(2)) }}</p>
